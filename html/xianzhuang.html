@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>城乡建设领域碳排放监测管理平台</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/iconfont.css">
+    <link rel="stylesheet" href="../css/elementUI.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/xianzhuang.css">
+</head>
+<body>
+    <div id="app">
+        <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+        <!-- header -->
+        <div class="sys-header">
+            <div class="full-screen iconfont">&#xe607;</div>
+            <div class="home">
+                <div class="home-icon iconfont">&#xe751;</div>
+                <span class="home-text">首页</span>
+            </div>
+            <div class="nav">
+                <ul class="nav-left">
+                    <li v-for="(item, index) in navLeft" :key="index">
+                        <div class="nav-icon"></div>
+                        <div class="nav-name">{{ item.name }}</div>
+                    </li>
+                </ul>
+                <div class="sys-title-placeholder"></div>
+                <ul class="nav-right">
+                    <li v-for="(item, index) in navRight" :key="index">
+                        <div class="nav-icon"></div>
+                        <div class="nav-name">{{ item.name }}</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="header-right-line"></div>
+            <div class="header-right">
+                <div class="header-right-top">
+                    <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+                    <div class="text">
+                        <span>欢迎您！</span>
+                        <a>{{ userName }}</a>
+                    </div>
+                </div>
+                <div class="header-right-bottom">2023/03/27 17:00</div>
+            </div>
+        </div>
+
+        <!-- 年度切换 -->
+        <div class="sys-toggle-area">
+            <div class="year-group">
+                <div class="label">年度</div>
+                <div class="cx-select">
+                    <div class="cx-select-input">
+                        {{ year }}
+                        <div class="cx-select-suffix iconfont">&#xe64b;</div>
+                    </div>
+                    <ul class="cx-option">
+                        <li v-for="yearDate in yearOptions" :class="[yearDate === year && 'year-active']" :key="yearDate" @click="handleYearClick(yearDate)">{{ yearDate }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="energy-group">
+                <div class="energy-group-item energy-group-item--active">用能</div>
+                <div class="energy-group-item">排放</div>
+            </div>
+            <div class="area-line"></div>
+            <div class="area-group">
+                <div class="area-group-item area-group-item--active">全国</div>
+                <div class="area-group-item">各地</div>
+            </div>
+            <div class="cx-placeholder">
+                <div class="analyse">
+                    <div class="analyse-icon"></div>
+                    <div class="analyse-text">对比分析</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统内容部分 -->
+        <div class="container">
+            <div class="layout-ele">
+                <div class="xz-item">
+                    <div class="xz-item-title">能耗总量</div>
+                    <div class="chart-container" id="nhzl"></div>
+                </div>
+                <div class="xz-item">
+                    <div class="xz-item-title">用能占比</div>
+                    <div class="chart-container" id="ynzb"></div>
+                </div>
+                <div class="xz-item">
+                    <div class="xz-item-title">用能增速</div>
+                    <div class="chart-container" id="ynzs"></div>
+                </div>
+            </div>
+            <div class="layout-ele">
+                <div class="map"></div>
+                <div class="category">
+                    <div class="category-item"
+                         :class="[
+                            item.value === category && 'category-item--active',
+                            item.size === 'small' && 'category-item-small'
+                         ]"
+                         v-for="(item, index) in categories"
+                         :key="index"
+                         @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+                </div>
+            </div>
+            <div class="layout-ele">
+                <div class="xz-item">
+                    <div class="xz-item-title">用能结构</div>
+                    <div class="chart-container" id="ynjg"></div>
+                </div>
+                <div class="xz-item">
+                    <div class="xz-item-title">电气化率</div>
+                    <div class="chart-container" id="dqhl"></div>
+                </div>
+                <div class="xz-item">
+                    <div class="xz-item-title">用能强度</div>
+                    <div class="chart-toggle-group">
+                        <div class="group-item"
+                             :class="[ynqdActive === 1 && 'group-item--active']"
+                             @click="handleYNQDToggle(1)">人均</div>
+                        <div class="group-item"
+                             :class="[ynqdActive === 2 && 'group-item--active']"
+                             @click="handleYNQDToggle(2)">面均</div>
+                    </div>
+                    <div class="chart-container" id="ynqd"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/vue.min.js"></script>
+    <script src="../js/element.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/select.js"></script>
+    <script src="../js/echarts.min.js"></script>
+    <script>
+        const myApp = new Vue({
+            el: "#app",
+            data: {
+                userName: "管理员",
+                navList: [
+                    { iconPath: "", name: "现状" },
+                    { iconPath: "", name: "预测" },
+                    { iconPath: "", name: "调度" },
+                    { iconPath: "", name: "考评" },
+                    { iconPath: "", name: "重点建筑监管" },
+                    { iconPath: "", name: "重点行业监管" },
+                    { iconPath: "", name: "技术产品" },
+                    { iconPath: "", name: "数据查询" },
+                ],
+                year: 2023,
+                yearOptions: [ 2023, 2022, 2021, 2020, 2019 ],
+                category: 1,
+                categories: [
+                    { categoryName: "城乡建设领域", value: 1, size: "medium" },
+                    { categoryName: "建筑运行", value: 2, size: "medium" },
+                    { categoryName: "城镇居建", value: 3, size: "small" },
+                    { categoryName: "公共建筑", value: 4, size: "small" },
+                    { categoryName: "农村居建", value: 5, size: "small" },
+                    { categoryName: "集中供暖", value: 6, size: "small" },
+                    { categoryName: "建筑业", value: 7, size: "medium" },
+                    { categoryName: "基础设施", value: 8, size: "medium" }
+                ],
+                ynqdActive: 1
+            },
+            methods: {
+                handleYearClick(yearDate) {
+                    this.year = yearDate;
+                    const ele = $('.cx-select');
+                    ele.find('.cx-option').slideUp();
+                    ele.hasClass('focus')
+                        ? ele.removeClass('focus')
+                        : ele.addClass('focus')
+                },
+
+                handleCategoryClick({ value }) {
+                    this.category = value;
+                },
+
+                /**
+                 * 绘制能耗总量图表
+                 */
+                drawNHZLChart() {
+                    const nhzlData = {
+                        gonggong: ["34", "99", "43", "40"],
+                        juzhu: ["79", "74", "75", "75"],
+                        year: ["2016", "2017", "2018", "2019"]
+                    }
+                    const myChart = echarts.init(document.getElementById('nhzl'));
+                    const option = {
+                        backgroundColor:  'transparent',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            confine: true,
+                            formatter: function(params){
+                                let relVal = `${params[0].name}年`;
+                                let prefix
+                                for (let i = 0, l = params.length; i < l; i++) {
+                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
+                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} 亿tce`;
+                                }
+                                return relVal;
+                            }
+                        },
+                        grid: {
+                            top: '25%',
+                            left: '5%',
+                            right: '8%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        legend: {
+                            x:'right',
+                            y:'top',
+                            padding: [20, 30, 0, 0],
+                            itemGap: 34,
+                            data: ['统计', '拆分'],
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '.12rem'
+                            },
+                            itemWidth: 10,
+                            itemHeight: 4
+                        },
+                        xAxis: [
+                            {
+                                type: "category",
+                                axisTick: {
+                                    show: false,
+                                },
+                                axisLine: {
+                                    lineStyle: {
+                                        color: 'rgba(255, 255, 255, .05)'
+                                    }
+                                },
+                                data: nhzlData.year,
+                                axisLabel: {
+                                    margin: 10,
+                                    fontSize: '.12rem',
+                                    formatter: "{value}",
+                                    color: '#fff'
+                                }
+                            },
+                        ],
+                        yAxis: [
+                            {
+                                type: "value",
+                                name: '单位：亿tce',
+                                nameTextStyle: {
+                                    color: "#fff",
+                                    fontSize: "",
+                                    padding: [0, 0, 0, 0],
+                                },
+                                show: true,
+                                axisTick: {
+                                    show: false,
+                                },
+                                axisLine: {
+                                    show: false,
+                                },
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: "rgba(255, 255, 255, .09)"
+                                    }
+                                },
+                                axisLabel: {
+                                    fontSize: '.12rem',
+                                    color: '#fff'
+                                }
+                            },
+                        ],
+                        series: [
+                            {
+                                name: "统计",
+                                type: "bar",
+                                barWidth: 8,
+                                itemStyle: {
+                                    borderWidth: 2,
+                                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                        {
+                                            offset: 0,
+                                            color: "#F5804D",
+                                        },
+                                        {
+                                            offset: 1,
+                                            color: '#FCCB05'
+                                        }
+                                    ]),
+                                    borderRadius: 3
+                                },
+                                data: nhzlData.gonggong,
+                            },
+                            {
+                                name: "拆分",
+                                type: "bar",
+                                barWidth: 8,
+                                barGap: "50%",
+                                label: {
+                                    show: false
+                                },
+                                itemStyle: {
+                                    borderWidth: 2,
+                                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                        {
+                                            offset: 0,
+                                            color: "#6851F1",
+                                        },
+                                        {
+                                            offset: 1,
+                                            color: '#248FF7'
+                                        }
+                                    ]),
+                                    borderRadius: 3
+                                },
+                                data: nhzlData.juzhu,
+                            }
+                        ]
+                    };
+                    myChart.setOption(option)
+                },
+
+                /**
+                 * 绘制用能占比图表
+                 */
+                drawYNZBChart() {
+                    const myChart = echarts.init(document.getElementById('ynzb'));
+                    const option = {
+                        backgroundColor:  'transparent',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            confine: true,
+                            formatter: function(params){
+                                return `
+                                    <div class="cx-tooltip">占比: ${params[0].value}</div>
+                                `
+                            }
+                        },
+                        grid: {
+                            top: '20%',
+                            left: '5%',
+                            right: '8%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, .05)'
+                                }
+                            },
+                            axisLabel: {
+                                margin: 10,
+                                fontSize: '.12rem',
+                                formatter: "{value}",
+                                color: '#fff'
+                            }
+                        },
+                        yAxis: {
+                            type: "value",
+                            name: '单位：%',
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "",
+                                padding: [0, 0, 0, -30],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        },
+                        series: {
+                            data: [820, 932, 901, 934, 1290, 1330, 1320],
+                            type: 'line',
+                            smooth: true,
+                            lineStyle: {
+                                color: '#ffd918'
+                            },
+                            symbolSize: 5,
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: '#ffd918'
+                            }
+                        }
+                    };
+                    myChart.setOption(option)
+                },
+
+                /**
+                 * 绘制用能增速图表
+                 */
+                drawYNZSChart() {
+                    const ynzsData = [
+                        { year: "2021", plan: 2.4, actual: 2.4 },
+                        { year: "2022", plan: 2.5, actual: 2.4 },
+                        { year: "2023", plan: 2.6, actual: 2.5 },
+                        { year: "2024", plan: 2.7, actual: 2.5 },
+                        { year: "2025", plan: 2.7, actual: 2.5 },
+                        { year: "2026", plan: 2.8, actual: 2.5 },
+                        { year: "2027", plan: 2.9, actual: 2.6 },
+                        { year: "2028", plan: 2.9, actual: 2.6 },
+                        { year: "2029", plan: 3.0, actual: 2.6 },
+                        { year: "2030", plan: 3.0, actual: 2.6 }
+                    ]
+                    const yearData = [], tjData = [], cfData = []
+                    ynzsData.forEach(item => {
+                        yearData.push(item.year)
+                        tjData.push(item.plan)
+                        cfData.push(item.actual)
+                    })
+                    const myChart = echarts.init(document.getElementById('ynzs'));
+                    const option = {
+                        backgroundColor:  'transparent',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            confine: true,
+                            formatter: function(params){
+                                return `
+                                    <div class="cx-tooltip">增速率: ${params[0].value}</div>
+                                `
+                            }
+                        },
+                        grid: {
+                            top: '20%',
+                            left: '5%',
+                            right: '8%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        legend: {
+                            top: "0%",
+                            right: '2%',
+                            textStyle: {
+                                color: "#fff",
+                                fontSize: 14
+                            },
+                            itemGap: 26,
+                            itemWidth: 25,
+                            itemHeight: 4,
+                            icon: 'rectangle',
+                            data: ['统计', '拆分']
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: yearData,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, .05)'
+                                }
+                            },
+                            axisLabel: {
+                                margin: 10,
+                                fontSize: '.12rem',
+                                formatter: "{value}年",
+                                color: '#fff'
+                            }
+                        },
+                        yAxis: {
+                            type: "value",
+                            name: '%',
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "",
+                                padding: [0, 0, 0, -20],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        },
+                        series: [
+                            {
+                                name: "统计",
+                                type: "line",
+                                data: tjData,
+                                symbolSize: 5,
+                                symbol: "circle",
+                                smooth: true,
+                                yAxisIndex: 0,
+                                showSymbol: false,
+                                lineStyle: {
+                                    width: 3,
+                                    color: '#D3B15F',
+                                },
+                                itemStyle: {
+                                    color: "rgba(211, 177, 95, 1)",
+                                    borderColor: "rgba(211, 177, 95, 0.8)",
+                                    borderWidth: 5,
+                                }
+                            },
+                            {
+                                name: "拆分",
+                                type: "line",
+                                data: cfData,
+                                symbolSize: 5,
+                                symbol: "circle",
+                                smooth: true,
+                                showSymbol: false,
+                                lineStyle: {
+                                    width: 3,
+                                    color: "#00DCFF",
+                                },
+                                itemStyle: {
+                                    color: "rgba(0, 220, 255, 1)",
+                                    borderColor: "rgba(0, 220, 255, 0.8)",
+                                    borderWidth: 5,
+                                }
+                            }
+                        ]
+                    };
+                    myChart.setOption(option)
+                },
+
+                /**
+                 * 绘制用能结构图表
+                 */
+                drawYNJGChart() {
+                    const myChart = echarts.init(document.getElementById('ynjg'));
+                    const yearData = []
+                    for (let i = 2005; i < new Date().getFullYear() + 1; i++) {
+                        yearData.push(i)
+                    }
+                    const res = {
+                        buildings: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        hot: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        jcss: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        czjj: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        legend: ["城镇居建", "农村居建", "公共建筑", "集中供热", "建筑业", "基础设施"],
+                        public: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        village: yearData.map(item => Math.ceil(Math.random() * 100)),
+                        dw: "万吨标准煤",
+                        memo: "城乡建设领域用能情况"
+                    }
+                    const data = {
+                        legendData: [],
+                        memo: "",
+                        dw: ""
+                    }
+
+                    const {
+                        buildings: jzyyn,
+                        hot: jzgn,
+                        jcss,
+                        public: ggjz,
+                        village: ncjj,
+                        legend,
+                        renjun_neng,
+                        renjun_co2,
+                        czjj,
+                        memo,
+                        dw
+                    } = res
+
+                    data.legendData = legend
+                    data.memo = memo
+                    data.dw = dw
+
+                    const mockData = []
+                    yearData.forEach((year, index) => {
+                        mockData.push({
+                            year,
+                            energyData: {
+                                czjj: czjj && czjj.length ? czjj[index] : '',
+                                ncjj: ncjj && ncjj.length ? ncjj[index] : '',
+                                ggjz: ggjz && ggjz.length ? ggjz[index] :'',
+                                jzgn: jzgn && jzgn.length ? jzgn[index] : '',
+                                jzyyn: jzyyn && jzyyn.length ? jzyyn[index] : '',
+                                jcss: jcss && jcss.length ? jcss[index] : ''
+                            }
+                        })
+                    })
+
+                    const areaData = [],
+                        seriesData = [],
+                        czjjData = [], ncjjData = [], ggjzData = [], jzgnData = [], jzyynData = [], jcssData = []
+
+                    mockData.forEach(item => {
+                        const { areaName, energyData } = item
+                        areaData.push(areaName)
+                        const { czjj, ncjj, ggjz, jzgn, jzyyn, jcss } = energyData
+                        czjjData.push(czjj)
+                        ncjjData.push(ncjj)
+                        ggjzData.push(ggjz)
+                        jzgnData.push(jzgn)
+                        jzyynData.push(jzyyn)
+                        jcssData.push(jcss)
+                    })
+                    const legendKeyMap = {
+                        "城镇居建": czjjData,
+                        "农村居建": ncjjData,
+                        "公共建筑": ggjzData,
+                        "集中供热": jzgnData,
+                        "建筑业": jzyynData,
+                        "基础设施": jcssData
+                    }
+
+                    const XJJJ_COLOR = '#32B7CA'
+                    const XJGJ_COLOR = '#D3B15F'
+                    const JYJJGZ_COLOR = '#8371F0'
+                    const JYGJGZ_COLOR = '#CF4A6F'
+                    const KZSNY_COLOR = '#2477D1'
+                    const JCSS_COLOR = '#20dc47'
+
+                    const colorList = [XJJJ_COLOR, XJGJ_COLOR, JYJJGZ_COLOR,
+                        JYGJGZ_COLOR, KZSNY_COLOR, JCSS_COLOR]
+                    data.legendData.forEach((name, index) => {
+                        seriesData.push({
+                            name,
+                            type:'bar',
+                            barWidth: 11,
+                            stack: data.memo,
+                            data: legendKeyMap[name],
+                            itemStyle: {
+                                color: data.type === 0 ? colorList[index] : colorList[data.type - 1],
+                                areaStyle: {
+                                    color: new echarts.graphic.LinearGradient(
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        [
+                                            {
+                                                offset: 0,
+                                                color: "#000",
+                                            },
+                                            {
+                                                offset: 0.5,
+                                                color: "rgba(0, 149, 216, 0)",
+                                            },
+                                        ],
+                                        false
+                                    ),
+                                }
+                            }
+                        })
+                    })
+
+                    const option = {
+                        backgroundColor: "transparent",
+                        title:{
+                            show: false
+                        },
+                        legend: {
+                            top: "2%",
+                            left: '2%',
+                            textStyle: {
+                                color: "#fff",
+                                fontSize: 12
+                            },
+                            itemWidth: 6,
+                            itemHeight: 6,
+                            icon: "circle",
+                            data: data.legendData
+                        },
+                        tooltip : {//过滤掉统计的series
+                            trigger: 'axis',
+                            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            },
+                            confine: true,
+                            formatter: function (params) {
+                                let relVal = params[0].name;
+                                let prefix
+                                for (let i = 0, l = params.length; i < l; i++) {
+                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value || 0} %`;
+                                }
+                                return relVal;
+                            },
+                        },
+                        grid: {
+                            top: '30%',
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis : [
+                            {
+                                type : 'category',
+                                data : yearData,
+                                axisLabel: {
+                                    margin: 10,
+                                    fontSize: '.12rem',
+                                    formatter: "{value}",
+                                    color: '#fff'
+                                }
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                name: '%',
+                                nameTextStyle: {
+                                    color: "#fff",
+                                    fontSize: ".12rem",
+                                    padding: [0, 0, 0, -50],
+                                },
+                                type : 'value',
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: "rgba(255, 255, 255, .85)"
+                                    }
+                                },
+                                axisLabel: {
+                                    margin: 10,
+                                    fontSize: '.12rem',
+                                    formatter: "{value}",
+                                    color: '#fff'
+                                }
+                            }
+                        ],
+                        series: seriesData
+                    }
+                    myChart.setOption(option)
+                },
+
+                /**
+                 * 绘制电气化率图表
+                 */
+                drawDQHLChart() {
+                    const nhzlData = {
+                        gonggong: ["34", "99", "43", "40"],
+                        juzhu: ["79", "74", "75", "75"],
+                        year: ["2016", "2017", "2018", "2019"]
+                    }
+                    const myChart = echarts.init(document.getElementById('dqhl'));
+                    const option = {
+                        backgroundColor:  'transparent',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            confine: true
+                        },
+                        grid: {
+                            top: '30%',
+                            left: '5%',
+                            right: '5%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        legend: {
+                            left: '5%',
+                            padding: [20, 30, 0, 0],
+                            itemGap: 34,
+                            data: ['电力消耗总量亿kwh', '电气化率'],
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '.12rem'
+                            },
+                            itemWidth: 10,
+                            itemHeight: 4
+                        },
+                        xAxis: [
+                            {
+                                type: "category",
+                                axisTick: {
+                                    show: false,
+                                },
+                                axisLine: {
+                                    lineStyle: {
+                                        color: 'rgba(255, 255, 255, .05)'
+                                    }
+                                },
+                                data: nhzlData.year,
+                                axisLabel: {
+                                    margin: 10,
+                                    fontSize: '.12rem',
+                                    formatter: "{value}年",
+                                    color: '#fff'
+                                }
+                            },
+                        ],
+                        yAxis: [
+                            {
+                                type: "value",
+                                name: '单位：亿kwh',
+                                position: 'left',
+                                nameTextStyle: {
+                                    color: "#fff",
+                                    fontSize: "",
+                                    padding: [0, 0, 0, 0],
+                                },
+                                show: true,
+                                axisTick: {
+                                    show: false,
+                                },
+                                axisLine: {
+                                    show: false,
+                                },
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: "rgba(255, 255, 255, .85)"
+                                    }
+                                },
+                                axisLabel: {
+                                    fontSize: '.12rem',
+                                    color: '#fff'
+                                }
+                            },
+                            {
+                                type: "value",
+                                name: "单位：%",
+                                position: 'right',
+                                axisTick: {
+                                    show: false,
+                                },
+                                axisLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        color: "#fff",
+                                    },
+                                },
+                                axisLabel: {
+                                    margin: 10,
+                                    color: "#A5B0B2",
+                                    fontSize: '.12rem',
+                                    formatter: "{value}"
+                                },
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: "rgba(255, 255, 255, .85)"
+                                    }
+                                }
+                            }
+                        ],
+                        series: [
+                            {
+                                name: "电力消耗总量亿kwh",
+                                type: "bar",
+                                barWidth: 8,
+                                itemStyle: {
+                                    borderWidth: 2,
+                                    color: '#FCA805',
+                                    borderRadius: 3
+                                },
+                                data: nhzlData.gonggong,
+                            },
+                            {
+                                name: "电气化率",
+                                type: 'line',
+                                smooth: true,
+                                symbolSize: 10,
+                                label: {
+                                    show: false
+                                },
+                                itemStyle: {
+                                    borderWidth: 2,
+                                    color: '#812340',
+                                    borderRadius: 3
+                                },
+                                data: nhzlData.juzhu,
+                            }
+                        ]
+                    };
+                    myChart.setOption(option)
+                },
+
+                /**
+                 * 绘制用能强度图表
+                 */
+                drawYNQDChart() {
+                    const nhzlData = {
+                        gonggong: ["34", "99", "43", "40"],
+                        juzhu: ["79", "74", "75", "75"],
+                        year: ["2016", "2017", "2018", "2019"]
+                    }
+                    const myChart = echarts.init(document.getElementById('ynqd'));
+                    const option = {
+                        backgroundColor:  'transparent',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            confine: true
+                        },
+                        grid: {
+                            top: '30%',
+                            left: '5%',
+                            right: '5%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: "category",
+                                axisTick: {
+                                    show: true
+                                },
+                                axisLine: {
+                                    lineStyle: {
+                                        color: 'rgba(255, 255, 255, .05)'
+                                    }
+                                },
+                                data: nhzlData.year,
+                                axisLabel: {
+                                    margin: 10,
+                                    fontSize: '.12rem',
+                                    formatter: "{value}年",
+                                    color: '#fff'
+                                }
+                            },
+                        ],
+                        yAxis: {
+                            type: "value",
+                            name: '单位：kgce/㎡',
+                            position: 'left',
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "",
+                                padding: [0, 0, 0, 0],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .85)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        },
+                        series: {
+                            name: "用能强度",
+                            type: "bar",
+                            barWidth: 8,
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: '#0B7062',
+                                borderColor: '#15FED1'
+                            },
+                            data: nhzlData.gonggong,
+                        }
+                    };
+                    myChart.setOption(option)
+                },
+
+                handleYNQDToggle(yndqActive) {
+                    this.ynqdActive = yndqActive;
+                    this.drawYNQDChart();
+                }
+            },
+            computed: {
+                navLeft() {
+                    return this.navList.slice(0, 4)
+                },
+                navRight() {
+                    return this.navList.slice(4)
+                }
+            },
+            mounted() {
+                this.$nextTick(() => {
+                    this.drawNHZLChart();
+                    this.drawYNZBChart();
+                    this.drawYNZSChart();
+                    this.drawYNJGChart();
+                    this.drawDQHLChart();
+                    this.drawYNQDChart();
+                })
+            }
+        })
+    </script>
+</body>
+</html>

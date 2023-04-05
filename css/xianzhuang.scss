@@ -1,0 +1,334 @@
+/**
+ * 现状
+ */
+$hoverColor: #efe526;
+@mixin transition {
+  transition: all .2s linear;
+}
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
+}
+@mixin bg($img) {
+  background-image: $img;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+@mixin button-style {
+  width: 1.34rem;
+  height: 0.52rem;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 0.52rem;
+  @include bg(url("../assets/images/xianzhuang/btn.png"));
+  &:hover {
+    cursor: pointer;
+  }
+  &:first-child {
+    margin-right: -0.35rem;
+  }
+}
+@mixin button-active-style {
+  background-image: url("../assets/images/xianzhuang/btn-active.png");
+}
+#app {
+  width: 100%;
+  height: 100%;
+  background: url("../assets/images/xianzhuang/bj.png") no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  .sys-title {
+    position: absolute;
+    top: 0.16rem;
+    left: 50%;
+    transform: translateX(-52%);
+    font-size: .34rem;
+    font-weight: bold;
+    color: #DAF9FF;
+    text-align: center;
+  }
+  .sys-header {
+    padding: .11rem .27rem .2rem .17rem;
+    display: flex;
+    .full-screen {
+      height: .64rem;
+      line-height: .64rem;
+      margin-right: .26rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+      }
+    }
+    .home {
+      display: flex;
+      align-items: center;
+      width: .9rem;
+      height: .64rem;
+      margin-right: .25rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+        .home-text {
+          color: $hoverColor !important;
+        }
+      }
+      &-icon {
+        font-size: 0.28rem;
+        margin-right: 0.09rem;
+      }
+      &-text {
+        font-size: .2rem;
+        color: #fff;
+      }
+    }
+    .nav {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      .sys-title-placeholder {
+        width: 5.95rem;
+      }
+    }
+    .nav-left,
+    .nav-right {
+      display: flex;
+      flex: 1;
+      li {
+        flex: 1;
+        height: .64rem;
+        margin-right: .23rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @include transition;
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url("../assets/images/xianzhuang/预测.png") no-repeat center center;
+          background-size: contain;
+        }
+        &:hover {
+          cursor: pointer;
+          color: $hoverColor;
+        }
+        .nav-icon {
+          margin-bottom: .1rem;
+        }
+      }
+    }
+    .header-right-line {
+      width: .1rem;
+      height: .65rem;
+      background: url("../assets/images/xianzhuang/area-split-line.png") no-repeat;
+      background-size: contain;
+      margin-right: .18rem;
+    }
+    .header-right {
+      height: .64rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      &-top {
+        display: flex;
+        align-items: center;
+        .avatar {
+          width: 30px;
+          height: 30px;
+          border: 1px solid #01FAFE;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+        .text {
+          font-size: .12rem;
+          font-weight: bold;
+          color: #ccc;
+          display: flex;
+          align-items: center;
+          a {
+            color: #fff;
+          }
+        }
+      }
+      &-bottom {
+        font-size: .14rem;
+        font-weight: bold;
+        color: #01FAFE;
+      }
+    }
+  }
+  .sys-toggle-area {
+    padding: 0 0.36rem 0 0.3rem;
+    display: flex;
+    .year-group {
+      @include flex-align-center;
+      margin-right: 0.37rem;
+      .label {
+        font-size: 0.2rem;
+        margin-right: 0.1rem;
+      }
+
+    }
+    .energy-group {
+      @include flex-align-center;
+      font-size: 0.18rem;
+      &-item {
+        @include button-style;
+        &--active {
+          @include button-active-style;
+        }
+      }
+    }
+    .area-line {
+      width: 0.04rem;
+      height: 0.56rem;
+      margin: 0 0.17rem;
+      @include bg(url('../assets/images/xianzhuang/area-split-line.png'));
+    }
+    .area-group {
+      @include flex-align-center;
+      font-size: 0.18rem;
+      &-item {
+        @include button-style;
+        &--active {
+          @include button-active-style;
+        }
+      }
+    }
+    .cx-placeholder {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .analyse {
+      @include flex-align-center;
+      font-size: 0.18rem;
+      display: flex;
+      &:hover {
+        cursor: pointer;
+      }
+      &-icon {
+        width: 0.3rem;
+        height: 0.32rem;
+        @include bg(url('../assets/images/xianzhuang/analyse.png'));
+        margin-right: 0.2rem;
+      }
+      &-text {
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff552;
+      }
+    }
+  }
+  .container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    padding: 0.11rem;
+    .layout-ele {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      &:nth-child(2) {
+        flex: none;
+        width: 8rem;
+        overflow: hidden;
+        padding: 0 0.14rem;
+      }
+      .xz-item {
+        flex: 1;
+        margin-bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        &-title {
+          font-size: 0.2rem;
+          font-weight: bold;
+          height: 0.48rem;
+          line-height: 0.48rem;
+          padding-left: 0.35rem;
+        }
+        .chart-container {
+          flex: 1;
+          overflow: hidden;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+        @include bg(url('../assets/images/xianzhuang/xz-item.png'));
+        background-size: 100% 100%;
+        .chart-toggle-group {
+          display: flex;
+          position: absolute;
+          top: 0.6rem;
+          right: 0.2rem;
+          z-index: 1000;
+          .group-item {
+            width: 57px;
+            height: 25px;
+            border: 2px solid #17b9fd;
+            font-size: .16rem;
+            text-align: center;
+            &:hover {
+              cursor: pointer;
+            }
+            &:first-child {
+              margin-right: 8px;
+            }
+            &--active {
+              background: #17b9fd;
+              color: #fff;
+            }
+          }
+        }
+      }
+      .map {
+        flex: 1;
+        overflow: hidden;
+        @include bg(url('../assets/images/xianzhuang/map.png'));
+        background-size: 100% 100%;
+      }
+      .category {
+        display: flex;
+        @include bg(url('../assets/images/xianzhuang/category.png'));
+        background-size: 100% 100%;
+        height: 1.07rem;
+        align-items: center;
+        padding: 0 0.14rem;
+        &-item {
+          font-size: .14rem;
+          font-weight: bold;
+          padding: 0.12rem;
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          @include bg(url('../assets/images/xianzhuang/category-item.png'));
+          background-size: 100% 100%;
+          white-space: nowrap;
+          &--active {
+            @include bg(url('../assets/images/xianzhuang/category-active.png'));
+            background-size: 100% 100%;
+          }
+          &-small {
+            flex: none;
+            font-size: 0.12rem;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+/**
+ * 通用
+ */
+
+// chart tooltip
+.cx-tooltip {
+  padding: 2px 5px;
+  text-align: center;
+  background: rgba(4,71,130,0.92);
+  border: 2px solid #4CADFF;
+  color: #fff;
+  font-size: .16rem;
+}
+
+// select
+.cx-select {
+  position: relative;
+  .cx-select-input {
+    width: 1.06rem;
+    height: 0.4rem;
+    display: flex;
+    align-items: center;
+    background: #044B8C;
+    box-shadow: 0 2px 0 0 #2FDEF4;
+    border-radius: 4px;
+    font-size: .2rem;
+    padding-left: 0.19rem;
+    position: relative;
+    &:hover {
+      cursor: pointer;
+    }
+    .cx-select-suffix {
+      transform: rotate(135deg) translateY(1px);
+      font-size: 0.11rem;
+      position: absolute;
+      right: 0.2rem;
+      color: #05dbde;
+      transition: all .2s linear;
+    }
+  }
+  .cx-option {
+    position: absolute;
+    top: 0.45rem;
+    width: 1.06rem;
+    background: rgba(3,66,126,0.86);
+    border: 1px solid #1380AB;
+    border-radius: 4px;
+    display: none;
+    li {
+      height: 0.32rem;
+      line-height: 0.32rem;
+      padding-left: 0.19rem;
+      transition: all .2s linear;
+      &:hover {
+        cursor: pointer;
+        color: #11caff;
+      }
+      &.year-active {
+        color: #11caff;
+      }
+    }
+  }
+  &.focus {
+    .cx-select-suffix {
+      transform: rotate(315deg) translateY(1px);
+    }
+  }
+}

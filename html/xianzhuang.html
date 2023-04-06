@@ -23,15 +23,19 @@
             <div class="nav">
                 <ul class="nav-left">
                     <li v-for="(item, index) in navLeft" :key="index">
-                        <div class="nav-icon"></div>
+                        <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
                         <div class="nav-name">{{ item.name }}</div>
                     </li>
                 </ul>
                 <div class="sys-title-placeholder"></div>
                 <ul class="nav-right">
                     <li v-for="(item, index) in navRight" :key="index">
-                        <div class="nav-icon"></div>
-                        <div class="nav-name">{{ item.name }}</div>
+                        <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                        <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+                        <dl class="nav-name" v-else>
+                            <dt>{{ item.name.substring(0, 4) }}</dt>
+                            <dd>{{ item.name.substring(4) }}</dd>
+                        </dl>
                     </li>
                 </ul>
             </div>
@@ -44,7 +48,7 @@
                         <a>{{ userName }}</a>
                     </div>
                 </div>
-                <div class="header-right-bottom">2023/03/27 17:00</div>
+                <div class="header-right-bottom">{{ dateTime }}</div>
             </div>
         </div>
 
@@ -138,20 +142,53 @@
     <script src="../js/jquery.min.js"></script>
     <script src="../js/select.js"></script>
     <script src="../js/echarts.min.js"></script>
+    <script src="../js/moment.min.js"></script>
     <script>
         const myApp = new Vue({
             el: "#app",
             data: {
                 userName: "管理员",
                 navList: [
-                    { iconPath: "", name: "现状" },
-                    { iconPath: "", name: "预测" },
-                    { iconPath: "", name: "调度" },
-                    { iconPath: "", name: "考评" },
-                    { iconPath: "", name: "重点建筑监管" },
-                    { iconPath: "", name: "重点行业监管" },
-                    { iconPath: "", name: "技术产品" },
-                    { iconPath: "", name: "数据查询" },
+                    {
+                        iconPath: "../assets/images/xianzhuang/xianzhuang-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                        name: "现状"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/yuce-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/yuce-active-icon.png",
+                        name: "预测"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/diaodu-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/diaodu-active-icon.png",
+                        name: "调度"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/kaoping-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/kaoping-active-icon.png",
+                        name: "考评"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/jianzhu-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/jianzhu-active-icon.png",
+                        name: "重点建筑监管"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/hangye-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/hangye-active-icon.png",
+                        name: "重点行业监管"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/chanpin-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/chanpin-active-icon.png",
+                        name: "技术产品"
+                    },
+                    {
+                        iconPath: "../assets/images/xianzhuang/shuju-icon.png",
+                        iconPathActive: "../assets/images/xianzhuang/shuju-active-icon.png",
+                        name: "数据查询"
+                    }
                 ],
                 year: 2023,
                 yearOptions: [ 2023, 2022, 2021, 2020, 2019 ],
@@ -166,7 +203,10 @@
                     { categoryName: "建筑业", value: 7, size: "medium" },
                     { categoryName: "基础设施", value: 8, size: "medium" }
                 ],
-                ynqdActive: 1
+                // 用能强度
+                ynqdActive: 1,
+                dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+                dateTimer: null
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -245,7 +285,7 @@
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.12rem',
-                                    formatter: "{value}",
+                                    formatter: "{value}年",
                                     color: '#fff'
                                 }
                             },
@@ -356,7 +396,7 @@
                         },
                         xAxis: {
                             type: 'category',
-                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            data: ['2017', '2018', '2019', '2020', '2021', '2022', '2023'],
                             axisTick: {
                                 show: false,
                             },
@@ -368,7 +408,7 @@
                             axisLabel: {
                                 margin: 10,
                                 fontSize: '.12rem',
-                                formatter: "{value}",
+                                formatter: "{value}年",
                                 color: '#fff'
                             }
                         },
@@ -1005,6 +1045,15 @@
                 handleYNQDToggle(yndqActive) {
                     this.ynqdActive = yndqActive;
                     this.drawYNQDChart();
+                },
+
+                getCurrentDateTime() {
+                    if (this.dateTimer) {
+                        clearInterval(this.dateTimer)
+                    }
+                    this.dateTimer = setInterval(() => {
+                        this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+                    }, 1000)
                 }
             },
             computed: {
@@ -1024,6 +1073,7 @@
                     this.drawDQHLChart();
                     this.drawYNQDChart();
                 })
+                this.getCurrentDateTime();
             }
         })
     </script>

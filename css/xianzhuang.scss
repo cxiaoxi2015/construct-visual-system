@@ -321,11 +321,56 @@ $hoverColor: #efe526;
           }
         }
       }
-      .map {
+      .map-wrap {
         flex: 1;
         overflow: hidden;
-        @include bg(url('../assets/images/xianzhuang/map.png'));
+        @include bg(url('../assets/images/xianzhuang/map-container.png'));
         background-size: 100% 100%;
+        position: relative;
+        .energy-consumption {
+          display: flex;
+          align-items: center;
+          height: 0.63rem;
+          position: absolute;
+          top: 0.4rem;
+          left: 0.4rem;
+          z-index: 1000;
+          &-title {
+            font-size: .24rem;
+            font-weight: 600;
+            @include bg(url('../assets/images/xianzhuang/map-nenghao.png'));
+            background-size: 100% 100%;
+            width: 1.15rem;
+            text-align: center;
+          }
+          &-value {
+            font-size: .18rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            .value-item {
+              width: 0.43rem;
+              height: 100%;
+              font-size: 0.32rem;
+              font-weight: bold;
+              padding: 5px 10px;
+              color: #FBF014;
+              @include bg(url('../assets/images/xianzhuang/value-item.png'));
+              background-size: 100% 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+          }
+          &-suffix {
+            font-size: .2rem;
+          }
+        }
+        .map {
+          height: 100%;
+          @include bg(url('../assets/images/xianzhuang/map-grid.png'));
+          background-size: 100% 100%;
+        }
       }
       .category {
         display: flex;
@@ -345,6 +390,11 @@ $hoverColor: #efe526;
           @include bg(url('../assets/images/xianzhuang/category-item.png'));
           background-size: 100% 100%;
           white-space: nowrap;
+          transition: all .2s linear;
+          &:hover {
+            cursor: pointer;
+            color: #D8D335;
+          }
           &--active {
             @include bg(url('../assets/images/xianzhuang/category-active.png'));
             background-size: 100% 100%;

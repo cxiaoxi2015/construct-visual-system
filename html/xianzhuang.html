@@ -72,8 +72,10 @@
             </div>
             <div class="area-line"></div>
             <div class="area-group">
-                <div class="area-group-item area-group-item--active">全国</div>
-                <div class="area-group-item">各地</div>
+                <div class="area-group-item"
+                     :class="mapActive === 'china' && 'area-group-item--active'"
+                     @click="handleMapChina">全国</div>
+                <div class="area-group-item" :class="mapActive === 'province' && 'area-group-item--active'">各地</div>
             </div>
             <div class="cx-placeholder">
                 <div class="analyse">
@@ -100,7 +102,19 @@
                 </div>
             </div>
             <div class="layout-ele">
-                <div class="map"></div>
+                <div class="map-wrap">
+                    <div class="energy-consumption">
+                        <div class="energy-consumption-title">能耗</div>
+                        <div class="energy-consumption-value">
+                            <div class="value-item">1</div>
+                            <div class="value-item">1</div>
+                            <div class="value-item">.</div>
+                            <div class="value-item">8</div>
+                        </div>
+                        <div class="energy-consumption-suffix">亿吨标准煤</div>
+                    </div>
+                    <div class="map" id="mapContainer"></div>
+                </div>
                 <div class="category">
                     <div class="category-item"
                          :class="[
@@ -143,6 +157,7 @@
     <script src="../js/select.js"></script>
     <script src="../js/echarts.min.js"></script>
     <script src="../js/moment.min.js"></script>
+    <script src="../js/china.js"></script>
     <script>
         const myApp = new Vue({
             el: "#app",
@@ -206,7 +221,9 @@
                 // 用能强度
                 ynqdActive: 1,
                 dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-                dateTimer: null
+                dateTimer: null,
+                currentYear: '2023',
+                mapActive: 'china'
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -227,9 +244,14 @@
                  */
                 drawNHZLChart() {
                     const nhzlData = {
-                        gonggong: ["34", "99", "43", "40"],
-                        juzhu: ["79", "74", "75", "75"],
-                        year: ["2016", "2017", "2018", "2019"]
+                        gonggong: [],
+                        juzhu: [],
+                        year: []
+                    }
+                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+                        nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('nhzl'));
                     const option = {
@@ -254,7 +276,7 @@
                             top: '25%',
                             left: '5%',
                             right: '8%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         legend: {
@@ -284,7 +306,7 @@
                                 data: nhzlData.year,
                                 axisLabel: {
                                     margin: 10,
-                                    fontSize: '.12rem',
+                                    fontSize: '.1rem',
                                     formatter: "{value}年",
                                     color: '#fff'
                                 }
@@ -317,6 +339,30 @@
                                     color: '#fff'
                                 }
                             },
+                        ],
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
+                            }
                         ],
                         series: [
                             {
@@ -373,30 +419,40 @@
                  */
                 drawYNZBChart() {
                     const myChart = echarts.init(document.getElementById('ynzb'));
+                    const seriesData = [], yearData = [];
+                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                        yearData.push(year)
+                        seriesData.push((Math.random() * 10).toFixed(1))
+                    }
                     const option = {
-                        backgroundColor:  'transparent',
+                        backgroundColor: 'transparent',
                         tooltip: {
                             trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
-                            },
                             confine: true,
+                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `
-                                    <div class="cx-tooltip">占比: ${params[0].value}</div>
-                                `
+                                return `<div class="cx-tooltip">占比: ${params[0].value}%</div>`
+                            },
+                            axisPointer: {
+                                type: 'cross',
+                                crossStyle: {
+                                    color: '#fff'
+                                },
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
                             }
                         },
                         grid: {
                             top: '20%',
                             left: '5%',
                             right: '8%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         xAxis: {
                             type: 'category',
-                            data: ['2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+                            data: yearData,
                             axisTick: {
                                 show: false,
                             },
@@ -407,7 +463,7 @@
                             },
                             axisLabel: {
                                 margin: 10,
-                                fontSize: '.12rem',
+                                fontSize: '.1rem',
                                 formatter: "{value}年",
                                 color: '#fff'
                             }
@@ -441,8 +497,32 @@
                                 color: '#fff'
                             }
                         },
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
+                            }
+                        ],
                         series: {
-                            data: [820, 932, 901, 934, 1290, 1330, 1320],
+                            data: seriesData,
                             type: 'line',
                             smooth: true,
                             lineStyle: {
@@ -462,18 +542,14 @@
                  * 绘制用能增速图表
                  */
                 drawYNZSChart() {
-                    const ynzsData = [
-                        { year: "2021", plan: 2.4, actual: 2.4 },
-                        { year: "2022", plan: 2.5, actual: 2.4 },
-                        { year: "2023", plan: 2.6, actual: 2.5 },
-                        { year: "2024", plan: 2.7, actual: 2.5 },
-                        { year: "2025", plan: 2.7, actual: 2.5 },
-                        { year: "2026", plan: 2.8, actual: 2.5 },
-                        { year: "2027", plan: 2.9, actual: 2.6 },
-                        { year: "2028", plan: 2.9, actual: 2.6 },
-                        { year: "2029", plan: 3.0, actual: 2.6 },
-                        { year: "2030", plan: 3.0, actual: 2.6 }
-                    ]
+                    const ynzsData = []
+                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                        ynzsData.push({
+                            year,
+                            plan: (Math.random() * 10).toFixed(1),
+                            actual: (Math.random() * 10).toFixed(1)
+                        })
+                    }
                     const yearData = [], tjData = [], cfData = []
                     ynzsData.forEach(item => {
                         yearData.push(item.year)
@@ -485,21 +561,34 @@
                         backgroundColor:  'transparent',
                         tooltip: {
                             trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
-                            },
                             confine: true,
+                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `
-                                    <div class="cx-tooltip">增速率: ${params[0].value}</div>
-                                `
+                                return `<div class="cx-tooltip">增速率: ${params[0].value}%</div>`
+                            },
+                            axisPointer: {
+                                type: 'cross',
+                                crossStyle: {
+                                    axisPointer: {
+                                        type: 'cross',
+                                        crossStyle: {
+                                            color: '#fff'
+                                        },
+                                        lineStyle: {
+                                            type: 'dashed'
+                                        }
+                                    }
+                                },
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
                             }
                         },
                         grid: {
                             top: '20%',
                             left: '5%',
                             right: '8%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         legend: {
@@ -528,7 +617,7 @@
                             },
                             axisLabel: {
                                 margin: 10,
-                                fontSize: '.12rem',
+                                fontSize: '.1rem',
                                 formatter: "{value}年",
                                 color: '#fff'
                             }
@@ -562,6 +651,30 @@
                                 color: '#fff'
                             }
                         },
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
+                            }
+                        ],
                         series: [
                             {
                                 name: "统计",
@@ -766,7 +879,7 @@
                             top: '30%',
                             left: '3%',
                             right: '4%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         xAxis : [
@@ -775,8 +888,8 @@
                                 data : yearData,
                                 axisLabel: {
                                     margin: 10,
-                                    fontSize: '.12rem',
-                                    formatter: "{value}",
+                                    fontSize: '.1rem',
+                                    formatter: "{value}年",
                                     color: '#fff'
                                 }
                             }
@@ -804,6 +917,30 @@
                                 }
                             }
                         ],
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
+                            }
+                        ],
                         series: seriesData
                     }
                     myChart.setOption(option)
@@ -814,25 +951,44 @@
                  */
                 drawDQHLChart() {
                     const nhzlData = {
-                        gonggong: ["34", "99", "43", "40"],
-                        juzhu: ["79", "74", "75", "75"],
-                        year: ["2016", "2017", "2018", "2019"]
+                        gonggong: [],
+                        juzhu: [],
+                        year: []
+                    }
+                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+                        nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('dqhl'));
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
                             trigger: 'axis',
+                            confine: true,
                             axisPointer: {
-                                type: 'shadow'
-                            },
-                            confine: true
+                                type: 'cross',
+                                crossStyle: {
+                                    axisPointer: {
+                                        type: 'cross',
+                                        crossStyle: {
+                                            color: '#fff'
+                                        },
+                                        lineStyle: {
+                                            type: 'dashed'
+                                        }
+                                    }
+                                },
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            }
                         },
                         grid: {
                             top: '30%',
                             left: '5%',
                             right: '5%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         legend: {
@@ -861,7 +1017,7 @@
                                 data: nhzlData.year,
                                 axisLabel: {
                                     margin: 10,
-                                    fontSize: '.12rem',
+                                    fontSize: '.1rem',
                                     formatter: "{value}年",
                                     color: '#fff'
                                 }
@@ -899,6 +1055,11 @@
                                 type: "value",
                                 name: "单位：%",
                                 position: 'right',
+                                nameTextStyle: {
+                                    color: "#fff",
+                                    fontSize: "",
+                                    padding: [0, 30, 0, 0],
+                                },
                                 axisTick: {
                                     show: false,
                                 },
@@ -920,6 +1081,30 @@
                                         color: "rgba(255, 255, 255, .85)"
                                     }
                                 }
+                            }
+                        ],
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
                             }
                         ],
                         series: [
@@ -959,25 +1144,48 @@
                  */
                 drawYNQDChart() {
                     const nhzlData = {
-                        gonggong: ["34", "99", "43", "40"],
-                        juzhu: ["79", "74", "75", "75"],
-                        year: ["2016", "2017", "2018", "2019"]
+                        gonggong: [],
+                        juzhu: [],
+                        year: []
+                    }
+                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+                        nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('ynqd'));
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
                             trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
+                            confine: true,
+                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                            formatter: function(params){
+                                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
                             },
-                            confine: true
+                            axisPointer: {
+                                type: 'cross',
+                                crossStyle: {
+                                    axisPointer: {
+                                        type: 'cross',
+                                        crossStyle: {
+                                            color: '#fff'
+                                        },
+                                        lineStyle: {
+                                            type: 'dashed'
+                                        }
+                                    }
+                                },
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            }
                         },
                         grid: {
                             top: '30%',
                             left: '5%',
                             right: '5%',
-                            bottom: '3%',
+                            bottom: '15%',
                             containLabel: true
                         },
                         xAxis: [
@@ -994,7 +1202,7 @@
                                 data: nhzlData.year,
                                 axisLabel: {
                                     margin: 10,
-                                    fontSize: '.12rem',
+                                    fontSize: '.1rem',
                                     formatter: "{value}年",
                                     color: '#fff'
                                 }
@@ -1027,6 +1235,30 @@
                                 color: '#fff'
                             }
                         },
+                        dataZoom: [
+                            {
+                                type: 'slider',
+                                startValue: 0,
+                                endValue: 7,
+                                bottom: '20',
+                                left: '30',
+                                height: 10,
+                                borderColor: '#1479A1',
+                                textStyle: {
+                                    color: '#05D5FF',
+                                },
+                                backgroundColor: '#032E5C',
+                                dataBackground: {
+                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                                },
+                                moveHandleStyle: {
+                                    color: 'rgba(38, 203, 251, 1)',
+                                    borderColor: 'rgba(38, 203, 251, 1)'
+                                },
+                                fillerColor: 'rgba(250, 84, 28, .1)'
+                            }
+                        ],
                         series: {
                             name: "用能强度",
                             type: "bar",
@@ -1043,8 +1275,8 @@
                 },
 
                 handleYNQDToggle(yndqActive) {
-                    this.ynqdActive = yndqActive;
-                    this.drawYNQDChart();
+                    this.ynqdActive = yndqActive
+                    this.drawYNQDChart()
                 },
 
                 getCurrentDateTime() {
@@ -1054,6 +1286,189 @@
                     this.dateTimer = setInterval(() => {
                         this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
                     }, 1000)
+                },
+
+                /**
+                 * 绘制地图
+                 */
+                drawMapChart() {
+                    const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+                    const currentYear = this.currentYear
+                    const features = echarts.getMap("china").geoJson.features;
+                    const customerBatteryCityData = [
+                        {name: '北京市', value: 309.1},
+                        {name: '天津市', value: 208.4},
+                        {name: '河北省', value: 780.6},
+                        {name: '山西省', value: 406.3},
+                        {name: '内蒙古自治区', value: 4353.6},
+                        {name: '辽宁省', value: 504.4},
+                        {name: '吉林省', value: 261.5},
+                        {name: '黑龙江省', value: 759.8},
+                        {name: '上海市', value: 315.9},
+                        {name: '江苏省', value: 549.5},
+                        {name: '浙江省', value: 543.5},
+                        {name: '安徽省', value: 342.2},
+                        {name: '福建省', value: 323.1},
+                        {name: '江西省', value: 211.7},
+                        {name: '山东省', value: 808.5},
+                        {name: '河南省', value: 608.5},
+                        {name: '湖北省', value: 340.9},
+                        {name: '湖南省', value: 419.4},
+                        {name: '广东省', value: 967.2},
+                        {name: '广西壮族自治区', value: 2467.2},
+                        {name: '海南省', value: 71.4},
+                        {name: '重庆市', value: 210.5},
+                        {name: '四川省', value: 526.6},
+                        {name: '贵州省', value: 271.9},
+                        {name: '云南省', value: 245.5},
+                        {name: '西藏自治区', value: 0},
+                        {name: '陕西省', value: 356.7},
+                        {name: '甘肃省', value: 2172.7},
+                        {name: '青海省', value: 809.3},
+                        {name: '宁夏自治区', value: 1045.4},
+                        {name: '新疆维吾尔自治区', value: 3561.5}
+                    ]
+                    const loadMap = (features, mapData, zoom, provinceName) => {
+                        const geoCoordMap = {}
+                        features.forEach(item => {
+                            const {properties} = item
+                            const {cp, name} = properties
+                            geoCoordMap[name] = cp
+                        })
+                        const option = {
+                            silent: false,
+                            tooltip: {
+                                trigger: "item",
+                                show: true,
+                                textStyle: {
+                                    fontSize: 14,
+                                    color: "#fff",
+                                },
+                                borderWidth: 3,
+                                borderColor: 'rgba(10, 113, 174, 0.8)',
+                                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                extraCssText: "padding: 0;",
+                                formatter: function (params) {
+                                    if (params.data) {
+                                        return `
+                                        <div class="map-tooltip">
+                                            <div class="map-tooltip-header" style="border-bottom: 1px solid #5CB2E3; height: 40px; display: flex;align-items: center; padding: 0 10px;">
+                                                <div class="header-icon" style="width: 5px;height: 5px; border-radius: 50%; background: #1CD5FF; margin-right: 5px;"></div>
+                                                <div class="header-text">${ params.data.name }</div>
+                                            </div>
+                                            <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
+                                                <div class="content-item">年度: ${currentYear}年</div>
+                                                <div class="content-item">能耗: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> 吨标煤</div>
+                                            </div>
+                                        </div>
+                                    `
+                                    } else {
+                                        return 'tooltip'
+                                    }
+                                }
+                            },
+                            geo: {
+                                map: provinceName,
+                                roam: false,
+                                zoom,
+                                itemStyle: {
+                                    borderColor: '#84B2FD',
+                                    color: {
+                                        image: '../assets/images/map/地图背景.jpg'
+                                    },
+                                    borderWidth: 3,
+                                },
+                                emphasis: {
+                                    //当鼠标放上去  地区区域是否显示名称
+                                    label: {
+                                        show: false,
+                                        color: "#fff",
+                                        backgroundColor: "rgba(0, 0, 0, .25)",
+                                    },
+                                    itemStyle: {
+                                        color: '#fcf565'
+                                    },
+                                },
+                                select: {
+                                    label: {
+                                        show: true,
+                                        color: "#fff"
+                                    },
+                                    itemStyle: {
+                                        color: {
+                                            image: '../assets/images/map/地图选中.jpg'
+                                        }
+                                    }
+                                },
+                                label: {
+                                    show: true,
+                                    color: '#fff',
+                                    position: 'top',
+                                    offset: [0, -20],
+                                    fontSize: 12,
+                                    padding: 10,
+                                    backgroundColor: 'rgba(0,0 ,0, .25)'
+                                }
+                            },
+                            visualMap: {
+                                max: 5000,
+                                calculable: true,
+                                inRange: {
+                                    color: ['#115C9E', '#16EB9C']
+                                },
+                                padding: [0, 0, 50, 50],
+                                textStyle: {
+                                    color: '#fff'
+                                },
+                                text: ['高', '低'],
+                            },
+                            series: [{
+                                map: provinceName,
+                                zoom: this.zoom,
+                                geoIndex: 0,
+                                coordinateSystem: 'geo',
+                                selectedMode: 'single',
+                                showLegendSymbol: true,
+                                type: 'map',
+                                roam: false,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        textStyle: {
+                                            color: "#fff",
+                                        }
+                                    },
+                                    emphasis: {
+                                        show: false,
+                                        textStyle: {
+                                            color: "#fff",
+                                        }
+                                    },
+                                },
+                                data: mapData,
+                            }]
+                        }
+                        myChart.setOption(option)
+                    }
+                    loadMap(features, customerBatteryCityData, 1.1, 'china')
+                    myChart.on('click',  params => {
+                        this.mapActive = "province"
+                        const { name: provinceName } = params;
+                        $.get(`../assets/mapJson/${provinceName}.json`, function (data) {
+                            echarts.registerMap(provinceName, data);
+                            loadMap(data.features, data.features.map(item => {
+                                return {
+                                    name: item.properties.name,
+                                    value: parseFloat((Math.random() * 1000).toFixed(2))
+                                }
+                            }), 0.9, provinceName)
+                        })
+                    })
+                },
+
+                handleMapChina() {
+                    this.mapActive = 'china';
+                    this.drawMapChart();
                 }
             },
             computed: {
@@ -1072,6 +1487,7 @@
                     this.drawYNJGChart();
                     this.drawDQHLChart();
                     this.drawYNQDChart();
+                    this.drawMapChart();
                 })
                 this.getCurrentDateTime();
             }

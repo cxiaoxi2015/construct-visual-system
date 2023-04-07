@@ -3,12 +3,14 @@
  * 通用
  */
 .cx-tooltip {
-  padding: 2px 5px;
   text-align: center;
-  background: rgba(4, 71, 130, 0.92);
-  border: 2px solid #4CADFF;
   color: #fff;
   font-size: 0.16rem;
+  background: url("../assets/images/xianzhuang/tooltip.png") no-repeat;
+  background-size: 100% 100%;
+  padding: 0 50px;
+  height: 60px;
+  line-height: 60px;
 }
 
 .cx-select {

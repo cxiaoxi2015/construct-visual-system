@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>城乡建设领域碳排放监测管理平台</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/elementUI.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/page/chanpin.css">
+</head>
+<body>
+<div id="app">
+  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+  <!-- header -->
+  <div class="sys-header">
+    <div class="full-screen iconfont">&#xe607;</div>
+    <div class="home">
+      <div class="home-icon iconfont">&#xe751;</div>
+      <span class="home-text">首页</span>
+    </div>
+    <div class="nav">
+      <ul class="nav-left">
+        <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
+          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name">{{ item.name }}</div>
+        </li>
+      </ul>
+      <div class="sys-title-placeholder"></div>
+      <ul class="nav-right">
+        <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
+          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+          <dl class="nav-name" v-else>
+            <dt>{{ item.name.substring(0, 4) }}</dt>
+            <dd>{{ item.name.substring(4) }}</dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div class="header-right-line"></div>
+    <div class="header-right">
+      <div class="header-right-top">
+        <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+        <div class="text">
+          <span>欢迎您！</span>
+          <a>{{ userName }}</a>
+        </div>
+      </div>
+      <div class="header-right-bottom">{{ dateTime }}</div>
+    </div>
+  </div>
+
+  <!-- 系统内容部分 -->
+  <div class="container">
+    <div class="container-header">
+      <div class="container-header-title">
+        <span>{{ headerTitle }} /</span>
+        <span>{{ headerTitleEN }}</span>
+      </div>
+      <div class="container-header-category">
+        <div class="category-item"
+             :class="{ 'category-item--active': item.type === categoryActive }"
+             v-for="(item, index) in categories"
+             :key="index"
+             @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+      </div>
+    </div>
+    <div class="container-header-line"></div>
+
+    <!-- 系统分类 -->
+    <div class="container-content">
+      <div class="sys-category-wrap">
+        <div class="sys-category" v-for="(item, index) in sysCategories" :key="index">
+          <div class="sys-category-label">{{ item.label }}:</div>
+          <div class="sys-category-content">
+            <div :class="getCategoryItemClass(item, category)"
+                 v-for="(category, categoryIndex) in item.fixed"
+                 :key="categoryIndex"
+                 @click="handleSysCategoryClick(item, category)">{{ category.label }}</div>
+            <div class="category-layout-wrap">
+              <div :class="getCategoryItemClass(item, category)"
+                   v-for="(category, categoryIndex) in item.categories"
+                   :key="categoryIndex"
+                   @click="handleSysCategoryClick(item, category)">{{ category.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 低碳技术 -->
+      <div class="table-detail" v-if="categoryActive === 1">
+        <el-table
+          :data="tableData"
+          :row-class-name="getRowClassName"
+          @selection-change="handleSelectionChange"
+          style="width: 100%">
+          <el-table-column
+            type="selection"
+            width="55"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="buildingName"
+            label="建筑名称"
+            max-width="150"></el-table-column>
+          <el-table-column
+            prop="buildingArea"
+            label="建筑面积(㎡)"
+            sortable
+            max-width="130">
+          </el-table-column>
+          <el-table-column
+            prop="measure"
+            label="措施类别"
+            max-width="110"></el-table-column>
+          <el-table-column
+            prop="planTime"
+            label="计划完成时间"
+            max-width="130"
+            sortable></el-table-column>
+          <el-table-column
+            prop="measureDesc"
+            label="技术措施具体描述"
+            show-overflow-tooltip
+            min-width="200"></el-table-column>
+        </el-table>
+        <div class="table-pagination">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="1000">
+          </el-pagination>
+        </div>
+      </div>
+
+      <!-- 典型案例 -->
+      <div class="classic-case" v-if="categoryActive === 3">
+        <div class="classic-case-box">
+          <div class="classic-case-item" v-for="(item, index) in classicCaseDataList" :key="index" @click="handleCheckDetail(item)">
+            <div class="img-wrap">
+              <img :src="item.imgUrl" />
+            </div>
+            <div class="item-info">
+              <div class="publish-item">{{ item.publishTime }}</div>
+              <div class="case-name">
+                <span>{{ item.caseName }}</span>
+              </div>
+              <div class="info-layout-wrap">
+                <div class="location">
+                  <span class="prefix-icon iconfont">&#xebba;</span>
+                  <span class="info-text">{{ item.location }}</span>
+                </div>
+                <div class="category">
+                  <span class="prefix-icon iconfont">&#xe643;</span>
+                  <span class="info-text">{{ item.category }}</span>
+                </div>
+                <div class="status">
+                  <span class="prefix-icon iconfont">&#xe638;</span>
+                  <span class="info-text">{{ item.status }}</span>
+                </div>
+              </div>
+              <div class="enter iconfont">&#xe615;</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-pagination">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="1000">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/vue.min.js"></script>
+<script src="../js/element.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/select.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/province.js"></script>
+<script>
+  const myApp = new Vue({
+    el: "#app",
+    data: {
+      userName: "管理员",
+      navList: [
+        {
+          iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+          name: "现状",
+          location: 'xianzhuang.html'
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+          name: "预测",
+          location: 'yuce.html'
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+          name: "调度"
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+          name: "考评"
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+          name: "重点建筑监管"
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+          name: "重点行业监管"
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+          name: "技术产品",
+          location: 'chanpin.html',
+          active: true
+        },
+        {
+          iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+          iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+          name: "数据查询"
+        }
+      ],
+      dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+      dateTimer: null,
+      headerTitle: "专题",
+      headerTitleEN: "SPECIAL SUBJECT",
+      categoryActive: 3,
+      categories: [
+        {
+          type: 1,
+          categoryName: "低碳技术"
+        },
+        {
+          type: 2,
+          categoryName: "低碳产品"
+        },
+        {
+          type: 3,
+          categoryName: "典型案例"
+        }
+      ],
+      jzgn: "all",
+      jsfl: "all",
+      sydq: "all",
+      tableData: [
+        {
+          id: "1001",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1002",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1003",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1004",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1005",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1006",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1007",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        },
+        {
+          id: "1008",
+          buildingName: "新郑农商银行港区支行",
+          buildingArea: "2062",
+          measure: "其他",
+          planTime: "2019-09-12",
+          measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+        }
+      ],
+      currentSelection: [],
+      year: 'all',
+      participate: 'all',
+      status: 'all',
+      province: 'all',
+      classicCaseDataList: [
+        {
+          id: "1001",
+          imgUrl: "https://e.thsi.cn/img/6891c161ec6c3b1",
+          publishTime: "2020-12-30 16:30",
+          caseName: "万科松花湖王子酒店空气源热泵应用",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        },
+        {
+          id: "1002",
+          imgUrl: "https://img0.baidu.com/it/u=3014051192,1186335591&fm=253&fmt=auto&app=138&f=JPEG?w=797&h=500",
+          publishTime: "2020-12-30 16:30",
+          caseName: "2023中国（西安）国际碳中和技术展览会",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        },
+        {
+          id: "1003",
+          imgUrl: "https://www.cma.gov.cn/2011xzt/2019zt/20190530/2019053007/201906/W020190606549422919113.jpg",
+          publishTime: "2020-12-30 16:30",
+          caseName: "2022中国（烟台）碳达峰碳中和能源 装备展览会",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        },
+        {
+          id: "1004",
+          imgUrl: "https://www.is-group.com.cn/wp-content/uploads/2019/11/eccbc87e4b5ce2fe2830-1.jpg",
+          publishTime: "2020-12-30 16:30",
+          caseName: "中国（广州）国际低碳科技与装备交易展览会",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        },
+        {
+          id: "1005",
+          imgUrl: "https://pic.rmb.bdstatic.com/bjh/news/1f4356282f95d6bb272399392741f5aa.jpeg@s_0,w_2000%7Cwm_2,t_55m+5a625Y+3L+aKleeov+WciA==,fc_ffffff,ff_U2ltSGVp,sz_50,x_32,y_32",
+          publishTime: "2020-12-30 16:30",
+          caseName: "全国建筑环境与能源应用技术交流大会",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        },
+        {
+          id: "1006",
+          imgUrl: "https://img0.baidu.com/it/u=2643987482,1967376750&fm=253&fmt=auto&app=138&f=JPEG?w=684&h=500",
+          publishTime: "2020-12-30 16:30",
+          caseName: "魏在现场年度节能第二季第五期案列二",
+          location: "陕西省 西安市 市辖区",
+          category: "城市设计与计划",
+          status: "已结束"
+        }
+      ]
+    },
+    methods: {
+      getCurrentDateTime() {
+        if (this.dateTimer) {
+          clearInterval(this.dateTimer)
+        }
+        this.dateTimer = setInterval(() => {
+          this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+        }, 1000)
+      },
+
+      handleNavClick(item) {
+        window.location.href = item.location;
+      },
+
+      /**
+       * 获取分类条目样式
+       * @param category
+       * @param subCategory
+       * @returns {string}
+       */
+      getCategoryItemClass(category, subCategory) {
+        return this[category.field] === subCategory.value
+          ? `category-item category-item--active`
+          : `category-item`
+      },
+
+      /**
+       * 切换系统分类
+       * @param category
+       * @param subCategory
+       */
+      handleSysCategoryClick(category, subCategory) {
+        this[category.field] = subCategory.value;
+      },
+
+      getRowClassName({ row }) {
+        if (this.selectionIdList.includes(row.id)) {
+          return `row-selected`
+        }
+      },
+
+      handleSelectionChange(selection) {
+        this.currentSelection = selection;
+      },
+
+      handleCategoryClick(category) {
+        this.categoryActive = category.type
+      },
+
+      handleCheckDetail(item) {
+        window.location = `chanpin-detail.html?id=${item.id}`
+      }
+    },
+    computed: {
+      navLeft() {
+        return this.navList.slice(0, 4)
+      },
+      navRight() {
+        return this.navList.slice(4)
+      },
+      selectionIdList() {
+        return this.currentSelection.map(item => item.id)
+      },
+      provinceData() {
+        return provinceData
+      },
+      sysCategories() {
+        switch (this.categoryActive) {
+          case 1:
+            return [
+              {
+                label: "建筑功能",
+                field: "jzgn",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "办公建筑", value: "1" },
+                  { label: "商场建筑", value: "2" },
+                  { label: "宾馆饭店", value: "3" },
+                  { label: "文化建筑", value: "4" },
+                  { label: "医疗卫生", value: "5" },
+                  { label: "体育建筑", value: "6" },
+                  { label: "综合建筑", value: "7" },
+                  { label: "教育建筑", value: "8" },
+                  { label: "其他", value: "9" }
+                ]
+              },
+              {
+                label: "技术分类",
+                field: "jsfl",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "采暖通风", value: "1" },
+                  { label: "空调系统", value: "2" },
+                  { label: "生活热水系统", value: "3" },
+                  { label: "配供电系统", value: "4" },
+                  { label: "照明插座系统", value: "5" },
+                  { label: "监测与控制系统", value: "6" }
+                ]
+              },
+              {
+                label: "使用地区",
+                field: "sydq",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "严寒", value: "1" },
+                  { label: "寒冷", value: "2" },
+                  { label: "夏热冬冷", value: "3" },
+                  { label: "温和", value: "4" },
+                  { label: "夏热冬暖", value: "5" }
+                ]
+              }
+            ]
+          case 2:
+            return [
+              {
+                label: "建筑功能",
+                field: "jzgn",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "办公建筑", value: "1" },
+                  { label: "商场建筑", value: "2" },
+                  { label: "宾馆饭店", value: "3" },
+                  { label: "文化建筑", value: "4" },
+                  { label: "医疗卫生", value: "5" },
+                  { label: "体育建筑", value: "6" },
+                  { label: "综合建筑", value: "7" },
+                  { label: "教育建筑", value: "8" },
+                  { label: "其他", value: "9" }
+                ]
+              },
+              {
+                label: "技术分类",
+                field: "jsfl",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "采暖通风", value: "1" },
+                  { label: "空调系统", value: "2" },
+                  { label: "生活热水系统", value: "3" },
+                  { label: "配供电系统", value: "4" },
+                  { label: "照明插座系统", value: "5" },
+                  { label: "监测与控制系统", value: "6" }
+                ]
+              },
+              {
+                label: "使用地区",
+                field: "sydq",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "严寒", value: "1" },
+                  { label: "寒冷", value: "2" },
+                  { label: "夏热冬冷", value: "3" },
+                  { label: "温和", value: "4" },
+                  { label: "夏热冬暖", value: "5" }
+                ]
+              }
+            ]
+          case 3:
+            const provinceData = this.provinceData.map(item => {
+              return {
+                label: item,
+                value: item
+              }
+            })
+            return [
+              {
+                label: "年份",
+                field: "year",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "2023年", value: "2023" },
+                  { label: "2022年", value: "2022" },
+                  { label: "2021年", value: "2021" }
+                ]
+              },
+              {
+                label: "参与方式",
+                field: "participate",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "线上参与", value: "1" },
+                  { label: "线下参与", value: "2" }
+                ]
+              },
+              {
+                label: "状态",
+                field: "status",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: [
+                  { label: "已结束", value: "1" },
+                  { label: "未开始", value: "2" }
+                ]
+              },
+              {
+                label: "省份",
+                field: "province",
+                fixed: [{ label: "全部", value: "all" }],
+                categories: provinceData
+              }
+            ]
+        }
+      }
+    },
+    mounted() {
+      this.getCurrentDateTime();
+    }
+  })
+</script>
+</body>
+</html>

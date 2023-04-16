@@ -1,0 +1,643 @@
+/**
+ * 现状
+ */
+$hoverColor: #efe526;
+@mixin transition {
+  transition: all .2s linear;
+}
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
+}
+@mixin bg($img) {
+  background-image: $img;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+@mixin button-style {
+  width: 1.34rem;
+  height: 0.52rem;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 0.52rem;
+  @include bg(url("../../assets/images/xianzhuang/right-btn.png"));
+  &:hover {
+    cursor: pointer;
+  }
+  &:first-child {
+    margin-right: -0.35rem;
+  }
+}
+@mixin button-active-style {
+  background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
+}
+@mixin zoom-in {
+  background-position: center center;
+  animation: zoomIn .2s linear forwards;
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+@mixin breathing($color: #FFF552) {
+  color: $color;
+  animation: breathing 1s linear infinite alternate-reverse;
+  @keyframes breathing {
+    0% {
+      text-shadow: 0 0 0 $color,
+      0 0 8px $color;
+    }
+    100% {
+      text-shadow: 0 0 0 #fff
+    }
+  }
+}
+
+@mixin icon-title {
+  position: absolute;
+}
+#app {
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/images/xianzhuang/bj.png") no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  .sys-title {
+    position: absolute;
+    top: 0.16rem;
+    left: 50%;
+    transform: translateX(-52%);
+    font-size: .34rem;
+    font-weight: bold;
+    color: #DAF9FF;
+    text-align: center;
+  }
+  .sys-header {
+    padding: .11rem .27rem .2rem .17rem;
+    display: flex;
+    .full-screen {
+      height: .64rem;
+      line-height: .64rem;
+      margin-right: .26rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+      }
+    }
+    .home {
+      display: flex;
+      align-items: center;
+      width: .9rem;
+      height: .64rem;
+      margin-right: .25rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+        .home-text {
+          color: $hoverColor !important;
+        }
+      }
+      &-icon {
+        font-size: 0.28rem;
+        margin-right: 0.09rem;
+      }
+      &-text {
+        font-size: .2rem;
+        color: #fff;
+      }
+    }
+    .nav {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      .sys-title-placeholder {
+        width: 5.95rem;
+      }
+    }
+    .nav-left,
+    .nav-right {
+      display: flex;
+      flex: 1;
+      li {
+        flex: 1;
+        height: .64rem;
+        margin-right: .23rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @include transition;
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url("../../assets/images/xianzhuang/nav.png") no-repeat center center;
+          background-size: 100% 100%;
+        }
+        &:hover {
+          cursor: pointer;
+          color: $hoverColor;
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+          .nav-icon {
+            background-image: var(--bgActive) !important;
+          }
+        }
+        &.nav-active {
+          color: $hoverColor;
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+          .nav-icon {
+            background-image: var(--bgActive) !important;
+          }
+        }
+        .nav-icon {
+          margin-bottom: 3px;
+          width: 0.2rem;
+          height: 0.18rem;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+        .nav-name {
+          text-align: center;
+        }
+      }
+    }
+    .header-right-line {
+      width: .1rem;
+      height: .65rem;
+      background: url("../../assets/images/xianzhuang/area-split-line.png") no-repeat;
+      background-size: contain;
+      margin-right: .18rem;
+    }
+    .header-right {
+      height: .64rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      &-top {
+        display: flex;
+        align-items: center;
+        .avatar {
+          width: 30px;
+          height: 30px;
+          border: 1px solid #01FAFE;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+        .text {
+          font-size: .12rem;
+          font-weight: bold;
+          color: #ccc;
+          display: flex;
+          align-items: center;
+          a {
+            color: #fff;
+          }
+        }
+      }
+      &-bottom {
+        font-size: .14rem;
+        font-weight: bold;
+        color: #01FAFE;
+      }
+    }
+  }
+  .sys-toggle-area {
+    padding: 0 0.36rem 0 0.3rem;
+    display: flex;
+    align-items: center;
+    .area-line {
+      width: 0.04rem;
+      height: 0.56rem;
+      margin: 0 0.17rem;
+      @include bg(url('../../assets/images/xianzhuang/area-split-line.png'));
+    }
+    .area-group {
+      @include flex-align-center;
+      font-size: 0.18rem;
+      &-item {
+        @include button-style;
+        &.area-group-item--active {
+          &:first-child {
+            background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
+          }
+          &:last-child {
+            background-image: url("../../assets/images/xianzhuang/right-btn-active.png");
+          }
+        }
+        &.left-active {
+          background-image: url("../../assets/images/xianzhuang/right-btn.png");
+        }
+        &.right-active {
+          background-image: url("../../assets/images/xianzhuang/left-btn.png");
+        }
+      }
+    }
+    .category {
+      display: flex;
+      background-size: 100% 100%;
+      align-items: center;
+      padding: 0 0.14rem;
+      &-item {
+        font-size: .14rem;
+        font-weight: bold;
+        padding: 0.12rem;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        @include bg(url('../../assets/images/xianzhuang/category-item.png'));
+        background-size: 100% 100%;
+        white-space: nowrap;
+        transition: all .2s linear;
+        margin-right: 0.35rem;
+        &:last-child {
+          margin-right: 0;
+        }
+        &:hover {
+          cursor: pointer;
+          color: #d8d335;
+        }
+        &--active {
+          @include bg(url('../../assets/images/xianzhuang/category-active.png'));
+          background-size: 100% 100%;
+        }
+        &-small {
+          flex: none;
+          font-size: 0.12rem;
+          transform: scale(0.9);
+        }
+      }
+    }
+  }
+  .container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    padding: 0.11rem;
+    .layout-ele {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      &:nth-child(2) {
+        flex: none;
+        width: 8rem;
+        overflow: hidden;
+        padding: 0 0.14rem 0.05rem 0.14rem;
+        display: flex;
+        flex-direction: column;
+        .map-wrap {
+          margin-bottom: 0.1rem;
+          .map-container {
+            flex: 1;
+            overflow: hidden;
+          }
+        }
+        .df-area {
+          width: 100%;
+          overflow: hidden;
+          height: 2.2rem;
+          display: flex;
+          &-item {
+            flex: 1;
+            overflow: hidden;
+            @include bg(url("../../assets/images/yuce/area-item.png"));
+            background-size: 100% 100%;
+            display: flex;
+            flex-direction: column;
+            &:first-child {
+              margin-right: 0.2rem;
+            }
+            .item-title {
+              font-size: 0.14rem;
+              font-weight: bold;
+              height: 0.36rem;
+              line-height: 0.38rem;
+              padding-left: 0.35rem;
+            }
+            .table-wrap {
+              flex: 1;
+              overflow: hidden;
+              padding: 0 0.05rem;
+              .el-table {
+                background-color: transparent;
+                &::before {
+                  background-color: transparent;
+                }
+                tr {
+                  background-color: transparent;
+                }
+                .el-table__cell {
+                  background-color: transparent;
+                  color: #fff;
+                }
+                .el-table__header {
+                  .el-table__cell {
+                    border-bottom-color: #44A7D9;
+                  }
+                }
+                .el-table__body {
+                  .el-table__cell {
+                    border-bottom-style: dashed;
+                    border-bottom-color: #3367A6;
+                  }
+                }
+              }
+              .peak-value {
+                @include breathing;
+              }
+            }
+          }
+        }
+        .scene {
+          width: calc(100% - 5px);
+          transform: translateX(2.5px);
+          overflow: hidden;
+          height: 2.2rem;
+          display: flex;
+          background-color: rgba(31,103,163,0.2);
+          border: 1px solid;
+          border-image: linear-gradient(90deg, #0F9DED, #B3E1FB, #129EED) 1 1;
+          padding: 0.1rem 0.4rem;
+          &-item {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.16rem;
+            @include bg(url('../../assets/images/yuce/scene-item.png'));
+            background-size: 100% 100%;
+            padding: 0.2rem 0.25rem;
+            &:first-child {
+              margin-right: 0.26rem;
+            }
+            &-title {
+              display: flex;
+              align-items: flex-end;
+              color: #FFF552;
+              padding: 0 0.05rem;
+              font-size: 0.16rem;
+              font-weight: bold;
+              margin-bottom: 0.1rem;
+              .title-bg {
+                width: 0.67rem;
+                height: 0.1rem;
+                margin-left: 7px;
+                @include bg(url('../../assets/images/yuce/scene-title.png'));
+              }
+            }
+            &-content {
+              flex: 1;
+              overflow: hidden;
+              display: flex;
+              flex-direction: column;
+              .item {
+                flex: 1;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                font-size: 0.14rem;
+                font-weight: bold;
+                .icon {
+                  width: 50px;
+                  height: 50px;
+                  margin-right: 0.1rem;
+                }
+                &:first-child {
+                  .icon {
+                    @include bg(url('../../assets/images/yuce/df-year.png'));
+                  }
+                }
+                &:last-child {
+                  .icon {
+                    @include bg(url('../../assets/images/yuce/df-value.png'));
+                  }
+                }
+                .value {
+                  margin: 0 0.1rem;
+                  font-size: 0.24rem;
+                  @include breathing;
+                }
+              }
+            }
+          }
+        }
+      }
+      .yc-item {
+        flex: 1;
+        margin-bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        &-title {
+          font-size: 0.2rem;
+          font-weight: bold;
+          height: 0.48rem;
+          line-height: 0.48rem;
+          padding-left: 0.35rem;
+        }
+        .chart-container {
+          flex: 1;
+          overflow: hidden;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+        @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
+        background-size: 100% 100%;
+        .chart-toggle-group {
+          display: flex;
+          position: absolute;
+          top: 0.6rem;
+          right: 0.2rem;
+          z-index: 1000;
+          .group-item {
+            width: 57px;
+            height: 25px;
+            border: 2px solid #17b9fd;
+            font-size: .16rem;
+            text-align: center;
+            &:hover {
+              cursor: pointer;
+            }
+            &:first-child {
+              margin-right: 8px;
+            }
+            &--active {
+              background: #17b9fd;
+              color: #fff;
+            }
+          }
+        }
+      }
+      .map-wrap {
+        flex: 1;
+        overflow: hidden;
+        @include bg(url('../../assets/images/xianzhuang/map-container.png'));
+        background-size: 100% 100%;
+        position: relative;
+        .map {
+          height: 100%;
+          @include bg(url('../../assets/images/xianzhuang/map-grid.png'));
+          background-size: 100% 100%;
+        }
+      }
+    }
+  }
+
+  .yc-item {
+    display: flex;
+    flex-direction: column;
+  }
+  .scene-tab {
+    display: flex;
+    width: 100%;
+    height: 0.4rem;
+    border: 1px solid rgba(7,166,255,0.76);
+    &-item {
+      display: inline-block;
+      height: 0.4rem;
+      text-align: center;
+      line-height: 0.4rem;
+      padding: 0 0.2rem;
+      border: 1px solid #17b9fd;
+      font-size: 0.16rem;
+      font-weight: 600;
+      &:hover {
+        cursor: pointer;
+      }
+      &.active {
+        background: #17b9fd;
+      }
+    }
+  }
+  .scene-tab-panel {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: rgba(6,54,91,0.23);
+    border: 1px solid rgba(7,166,255,0.76);
+    padding-bottom: 0.1rem;
+    .scene-data-container {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      padding: 0 15px;
+      .data-item {
+        flex: 0 0 calc((100% - 0.6rem) / 3);
+        font-size: 0.14rem;
+        position: relative;
+        padding-bottom: 10px;
+        margin-top: 10px;
+        margin-right: 0.3rem;
+        &:nth-child(1),
+        &:nth-child(2),
+        &:nth-child(3) {
+          margin-top: 0;
+        }
+        &:nth-child(3),
+        &:nth-child(6),
+        &:nth-child(9),
+        &:nth-child(12) {
+          margin-right: 0;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: 8.8px;
+          @include bg(url('../../assets/images/yuce/scene-text.png'));
+          background-size: 100% 100%;
+        }
+        &-name {
+          padding-left: 15px;
+          font-weight: 600;
+          font-size: 0.12rem;
+          transform: scale(1.1) translateX(5px)
+        }
+        &-value {
+          padding-left: 10px;
+          font-size: 0.14rem;
+          font-weight: 600;
+          .value {
+            margin: 0 0.05rem;
+            font-size: 0.16rem;
+            @include breathing;
+            &.warning {
+              @include breathing(#ed292a);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .layout-ele-right {
+    .yc-item {
+      background: none !important;
+      &-title {
+        span {
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            margin-top: -4px;
+            left: -15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #0FD7FE;
+            animation: title-icon 1s linear infinite alternate-reverse;
+            @keyframes title-icon {
+              0% {
+                box-shadow: 0 0 5px 2px #0FD7FE
+              }
+              100% {
+                box-shadow: 0 0 8px 2px #0FD7FE;
+              }
+            }
+          }
+        }
+      }
+    }
+    .economic-cost {
+      .data-item {
+        font-size: 0.12rem;
+        transform: scale(1.05);
+        .data-item-value {
+          font-size: 0.12rem;
+          .value {
+            font-size: 0.12rem;
+          }
+        }
+      }
+    }
+  }
+}

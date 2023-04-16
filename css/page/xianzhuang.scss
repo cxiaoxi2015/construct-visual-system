@@ -21,7 +21,7 @@ $hoverColor: #efe526;
   font-size: 18px;
   font-weight: bold;
   line-height: 0.52rem;
-  @include bg(url("../assets/images/xianzhuang/btn.png"));
+  @include bg(url("../../assets/images/xianzhuang/right-btn.png"));
   &:hover {
     cursor: pointer;
   }
@@ -30,7 +30,7 @@ $hoverColor: #efe526;
   }
 }
 @mixin button-active-style {
-  background-image: url("../assets/images/xianzhuang/btn-active.png");
+  background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
 }
 @mixin zoom-in {
   background-position: center center;
@@ -47,7 +47,7 @@ $hoverColor: #efe526;
 #app {
   width: 100%;
   height: 100%;
-  background: url("../assets/images/xianzhuang/bj.png") no-repeat;
+  background: url("../../assets/images/xianzhuang/bj.png") no-repeat;
   background-size: 100% 100%;
   position: relative;
   color: #fff;
@@ -128,7 +128,7 @@ $hoverColor: #efe526;
           left: 0;
           width: 100%;
           height: 100%;
-          background: url("../assets/images/xianzhuang/nav.png") no-repeat center center;
+          background: url("../../assets/images/xianzhuang/nav.png") no-repeat center center;
           background-size: 100% 100%;
         }
         &:hover {
@@ -136,7 +136,17 @@ $hoverColor: #efe526;
           color: $hoverColor;
           &::before {
             @include zoom-in;
-            background-image: url("../assets/images/xianzhuang/nav-active.png");
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+          .nav-icon {
+            background-image: var(--bgActive) !important;
+          }
+        }
+        &.nav-active {
+          color: $hoverColor;
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
           }
           .nav-icon {
             background-image: var(--bgActive) !important;
@@ -157,7 +167,7 @@ $hoverColor: #efe526;
     .header-right-line {
       width: .1rem;
       height: .65rem;
-      background: url("../assets/images/xianzhuang/area-split-line.png") no-repeat;
+      background: url("../../assets/images/xianzhuang/area-split-line.png") no-repeat;
       background-size: contain;
       margin-right: .18rem;
     }
@@ -221,15 +231,26 @@ $hoverColor: #efe526;
       width: 0.04rem;
       height: 0.56rem;
       margin: 0 0.17rem;
-      @include bg(url('../assets/images/xianzhuang/area-split-line.png'));
+      @include bg(url('../../assets/images/xianzhuang/area-split-line.png'));
     }
     .area-group {
       @include flex-align-center;
       font-size: 0.18rem;
       &-item {
         @include button-style;
-        &--active {
-          @include button-active-style;
+        &.area-group-item--active {
+          &:first-child {
+            background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
+          }
+          &:last-child {
+            background-image: url("../../assets/images/xianzhuang/right-btn-active.png");
+          }
+        }
+        &.left-active {
+          background-image: url("../../assets/images/xianzhuang/right-btn.png");
+        }
+        &.right-active {
+          background-image: url("../../assets/images/xianzhuang/left-btn.png");
         }
       }
     }
@@ -248,7 +269,7 @@ $hoverColor: #efe526;
       &-icon {
         width: 0.3rem;
         height: 0.32rem;
-        @include bg(url('../assets/images/xianzhuang/analyse.png'));
+        @include bg(url('../../assets/images/xianzhuang/analyse.png'));
         margin-right: 0.2rem;
       }
       &-text {
@@ -294,7 +315,7 @@ $hoverColor: #efe526;
         &:last-child {
           margin-bottom: 0;
         }
-        @include bg(url('../assets/images/xianzhuang/xz-item.png'));
+        @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
         background-size: 100% 100%;
         .chart-toggle-group {
           display: flex;
@@ -324,7 +345,7 @@ $hoverColor: #efe526;
       .map-wrap {
         flex: 1;
         overflow: hidden;
-        @include bg(url('../assets/images/xianzhuang/map-container.png'));
+        @include bg(url('../../assets/images/xianzhuang/map-container.png'));
         background-size: 100% 100%;
         position: relative;
         .energy-consumption {
@@ -338,7 +359,7 @@ $hoverColor: #efe526;
           &-title {
             font-size: .24rem;
             font-weight: 600;
-            @include bg(url('../assets/images/xianzhuang/map-nenghao.png'));
+            @include bg(url('../../assets/images/xianzhuang/map-nenghao.png'));
             background-size: 100% 100%;
             width: 1.15rem;
             text-align: center;
@@ -355,7 +376,7 @@ $hoverColor: #efe526;
               font-weight: bold;
               padding: 5px 10px;
               color: #FBF014;
-              @include bg(url('../assets/images/xianzhuang/value-item.png'));
+              @include bg(url('../../assets/images/xianzhuang/value-item.png'));
               background-size: 100% 100%;
               display: flex;
               align-items: center;
@@ -368,13 +389,13 @@ $hoverColor: #efe526;
         }
         .map {
           height: 100%;
-          @include bg(url('../assets/images/xianzhuang/map-grid.png'));
+          @include bg(url('../../assets/images/xianzhuang/map-grid.png'));
           background-size: 100% 100%;
         }
       }
       .category {
         display: flex;
-        @include bg(url('../assets/images/xianzhuang/category.png'));
+        @include bg(url('../../assets/images/xianzhuang/category.png'));
         background-size: 100% 100%;
         height: 1.07rem;
         align-items: center;
@@ -387,16 +408,16 @@ $hoverColor: #efe526;
           display: flex;
           justify-content: center;
           align-items: center;
-          @include bg(url('../assets/images/xianzhuang/category-item.png'));
+          @include bg(url('../../assets/images/xianzhuang/category-item.png'));
           background-size: 100% 100%;
           white-space: nowrap;
           transition: all .2s linear;
           &:hover {
             cursor: pointer;
-            color: #D8D335;
+            color: #d8d335;
           }
           &--active {
-            @include bg(url('../assets/images/xianzhuang/category-active.png'));
+            @include bg(url('../../assets/images/xianzhuang/category-active.png'));
             background-size: 100% 100%;
           }
           &-small {

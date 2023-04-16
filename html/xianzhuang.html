@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../css/iconfont.css">
     <link rel="stylesheet" href="../css/elementUI.css">
     <link rel="stylesheet" href="../css/index.css">
-    <link rel="stylesheet" href="../css/xianzhuang.css">
+    <link rel="stylesheet" href="../css/page/xianzhuang.css">
 </head>
 <body>
     <div id="app">
@@ -22,14 +22,14 @@
             </div>
             <div class="nav">
                 <ul class="nav-left">
-                    <li v-for="(item, index) in navLeft" :key="index">
+                    <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
                         <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
                         <div class="nav-name">{{ item.name }}</div>
                     </li>
                 </ul>
                 <div class="sys-title-placeholder"></div>
                 <ul class="nav-right">
-                    <li v-for="(item, index) in navRight" :key="index">
+                    <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
                         <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
                         <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
                         <dl class="nav-name" v-else>
@@ -72,13 +72,12 @@
             </div>
             <div class="area-line"></div>
             <div class="area-group">
-                <div class="area-group-item"
-                     :class="mapActive === 'china' && 'area-group-item--active'"
+                <div :class="leftBtnClass"
                      @click="handleMapChina">全国</div>
-                <div class="area-group-item" :class="mapActive === 'province' && 'area-group-item--active'">各地</div>
+                <div :class="rightBtnClass">各地</div>
             </div>
             <div class="cx-placeholder">
-                <div class="analyse">
+                <div class="analyse" @click="handleCompareAnalysisClick">
                     <div class="analyse-icon"></div>
                     <div class="analyse-text">对比分析</div>
                 </div>
@@ -165,43 +164,47 @@
                 userName: "管理员",
                 navList: [
                     {
-                        iconPath: "../assets/images/xianzhuang/xianzhuang-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/xianzhuang-active-icon.png",
-                        name: "现状"
+                        iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                        name: "现状",
+                        location: 'xianzhuang.html',
+                        active: true,
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/yuce-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/yuce-active-icon.png",
-                        name: "预测"
+                        iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                        name: "预测",
+                        location: 'yuce.html'
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/diaodu-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/diaodu-active-icon.png",
+                        iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
                         name: "调度"
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/kaoping-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/kaoping-active-icon.png",
+                        iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
                         name: "考评"
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/jianzhu-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/jianzhu-active-icon.png",
+                        iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
                         name: "重点建筑监管"
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/hangye-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/hangye-active-icon.png",
+                        iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
                         name: "重点行业监管"
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/chanpin-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/chanpin-active-icon.png",
-                        name: "技术产品"
+                        iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                        name: "技术产品",
+                        location: 'chanpin.html'
                     },
                     {
-                        iconPath: "../assets/images/xianzhuang/shuju-icon.png",
-                        iconPathActive: "../assets/images/xianzhuang/shuju-active-icon.png",
+                        iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
                         name: "数据查询"
                     }
                 ],
@@ -223,7 +226,9 @@
                 dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
                 dateTimer: null,
                 currentYear: '2023',
-                mapActive: 'china'
+                mapActive: 'china',
+                leftBtnClass: '',
+                rightBtnClass: ''
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -529,9 +534,11 @@
                                 color: '#ffd918'
                             },
                             symbolSize: 5,
+                            symbol: 'circle',
                             itemStyle: {
                                 barBorderRadius: [30, 30, 0, 0],
-                                color: '#ffd918'
+                                color: '#ffd918',
+                                borderColor: '#fff'
                             }
                         }
                     };
@@ -1123,14 +1130,15 @@
                                 name: "电气化率",
                                 type: 'line',
                                 smooth: true,
-                                symbolSize: 10,
+                                symbolSize: 5,
+                                symbol: 'circle',
                                 label: {
                                     show: false
                                 },
                                 itemStyle: {
                                     borderWidth: 2,
                                     color: '#812340',
-                                    borderRadius: 3
+                                    borderColor: '#fff'
                                 },
                                 data: nhzlData.juzhu,
                             }
@@ -1264,7 +1272,7 @@
                             type: "bar",
                             barWidth: 8,
                             itemStyle: {
-                                borderWidth: 2,
+                                borderWidth: 1,
                                 color: '#0B7062',
                                 borderColor: '#15FED1'
                             },
@@ -1294,7 +1302,6 @@
                 drawMapChart() {
                     const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
                     const currentYear = this.currentYear
-                    const features = echarts.getMap("china").geoJson.features;
                     const customerBatteryCityData = [
                         {name: '北京市', value: 309.1},
                         {name: '天津市', value: 208.4},
@@ -1373,9 +1380,7 @@
                                 zoom,
                                 itemStyle: {
                                     borderColor: '#84B2FD',
-                                    color: {
-                                        image: '../assets/images/map/地图背景.jpg'
-                                    },
+                                    color: 'transparent',
                                     borderWidth: 3,
                                 },
                                 emphasis: {
@@ -1393,11 +1398,6 @@
                                     label: {
                                         show: true,
                                         color: "#fff"
-                                    },
-                                    itemStyle: {
-                                        color: {
-                                            image: '../assets/images/map/地图选中.jpg'
-                                        }
                                     }
                                 },
                                 label: {
@@ -1445,12 +1445,21 @@
                                         }
                                     },
                                 },
-                                data: mapData,
+                                data: mapData
                             }]
                         }
                         myChart.setOption(option)
                     }
-                    loadMap(features, customerBatteryCityData, 1.1, 'china')
+                    $.get(`../assets/mapJson/全国.json`, function (data) {
+                        echarts.registerMap('china', data);
+                        loadMap(data.features, data.features.map(item => {
+                            return {
+                                name: item.properties.name,
+                                value: parseFloat((Math.random() * 1000).toFixed(2))
+                            }
+                        }), 1.1, 'china')
+                    })
+
                     myChart.on('click',  params => {
                         this.mapActive = "province"
                         const { name: provinceName } = params;
@@ -1469,6 +1478,14 @@
                 handleMapChina() {
                     this.mapActive = 'china';
                     this.drawMapChart();
+                },
+
+                handleNavClick(item) {
+                    window.location.href = item.location;
+                },
+
+                handleCompareAnalysisClick() {
+                    window.location.href = `compare-analysis.html?type=${this.mapActive}`
                 }
             },
             computed: {
@@ -1477,6 +1494,20 @@
                 },
                 navRight() {
                     return this.navList.slice(4)
+                }
+            },
+            watch: {
+                mapActive: {
+                    immediate: true,
+                    handler(mapActive) {
+                        if (mapActive === 'china') {
+                            this.leftBtnClass = 'area-group-item area-group-item--active'
+                            this.rightBtnClass = 'area-group-item left-active'
+                        } else {
+                            this.leftBtnClass = 'area-group-item right-active'
+                            this.rightBtnClass = 'area-group-item area-group-item--active'
+                        }
+                    }
                 }
             },
             mounted() {

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>城乡建设领域碳排放监测管理平台</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/iconfont.css">
+    <link rel="stylesheet" href="../css/elementUI.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/page/compare-analysis.css">
+</head>
+<body>
+<div id="app">
+    <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+    <!-- header -->
+    <div class="sys-header">
+        <div class="full-screen iconfont">&#xe607;</div>
+        <div class="home">
+            <div class="home-icon iconfont">&#xe751;</div>
+            <span class="home-text">首页</span>
+        </div>
+        <div class="nav">
+            <ul class="nav-left">
+                <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
+                    <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name">{{ item.name }}</div>
+                </li>
+            </ul>
+            <div class="sys-title-placeholder"></div>
+            <ul class="nav-right">
+                <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
+                    <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+                    <dl class="nav-name" v-else>
+                        <dt>{{ item.name.substring(0, 4) }}</dt>
+                        <dd>{{ item.name.substring(4) }}</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="header-right-line"></div>
+        <div class="header-right">
+            <div class="header-right-top">
+                <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+                <div class="text">
+                    <span>欢迎您！</span>
+                    <a>{{ userName }}</a>
+                </div>
+            </div>
+            <div class="header-right-bottom">{{ dateTime }}</div>
+        </div>
+    </div>
+
+    <!-- 对比分析 -->
+    <div class="compare-analysis-container">
+        <div class="container-title">
+            <span class="title-text">对比分析</span>
+        </div>
+        <div class="container-content">
+            <div class="layout-wrap">
+                <div class="container-content-range">
+                    <div class="title">对比范围</div>
+                    <div class="item-box">
+                        <div class="category padding">
+                            <div class="category-title">
+                                <span class="prefix-icon"></span>
+                                <span class="label">运行能耗</span>
+                            </div>
+                            <div class="sub-category">
+                                <div class="sub-category-layout">
+                                    <div class="sub-category-item"
+                                         :class="{ 'sub-category-item--active': item.value === subCategoryActive }"
+                                         v-for="(item, index) in subCategoriesTop"
+                                         :key="index">
+                                        <span class="prefix-icon"></span>
+                                        <span class="label">{{ item.label }}</span>
+                                    </div>
+                                </div>
+                                <div class="sub-category-layout">
+                                    <div class="sub-category-item"
+                                         :class="{ 'sub-category-item--active': item.value === subCategoryActive }"
+                                         v-for="(item, index) in subCategoriesBottom"
+                                         :key="index">
+                                        <span class="prefix-icon"></span>
+                                        <span class="label">{{ item.label }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="category-layout-wrap">
+                            <div class="category">
+                                <span class="prefix-icon"></span>
+                                <span class="label">建筑业能耗</span>
+                            </div>
+                            <div class="category">
+                                <span class="prefix-icon"></span>
+                                <span class="label">基础设施能耗</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-content-index">
+                    <div class="title">对比指标</div>
+                    <div class="item-box">
+                        <div class="item-box-layout">
+                            <div class="index-item"
+                                 v-for="(item, index) in compareIndexDataListTop"
+                                 :style="getIndexItemStyle(index)"
+                                 :key="index">{{ item.label }}</div>
+                        </div>
+                        <div class="item-box-layout">
+                            <div class="index-item"
+                                 v-for="(item, index) in compareIndexDataListMid"
+                                 :style="getIndexItemStyle(index + 5)"
+                                 :key="index">{{ item.label }}</div>
+                        </div>
+                        <div class="item-box-layout">
+                            <div class="index-item"
+                                 v-for="(item, index) in compareIndexDataListBottom"
+                                 :style="getIndexItemStyle(index + 10)"
+                                 :key="index">{{ item.label }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-wrap">
+                <div class="container-content-compare">
+                    <div class="header-fixed-wrap" :style="opacityStyle" v-if="headerFixed">
+                        <div class="title header-fixed">
+                            <span :class="{ 'active': compare === 1 }" @click="handleCompareButtonClick(1)">按省对比</span>
+                            <span :class="{ 'active': compare === 2 }" @click="handleCompareButtonClick(2)">按城市对比</span>
+                        </div>
+                    </div>
+                    <div class="title" v-else>
+                        <span :class="{ 'active': compare === 1 }" @click="handleCompareButtonClick(1)">按省对比</span>
+                        <span :class="{ 'active': compare === 2 }" @click="handleCompareButtonClick(2)">按城市对比</span>
+                    </div>
+                    <!-- 按省对比 -->
+                    <div class="compare-box province" v-if="compare === 1">
+                        <div class="province-item"
+                             :class="{ 'province-item--active': item === provinceActive }"
+                             v-for="item in provinceData"
+                             :key="item"
+                             @click="handleProvinceClick(item)">
+                            <div class="prefix-icon"></div>
+                            <div class="label">{{ item }}</div>
+                        </div>
+                    </div>
+                    <!-- 按城市对比 -->
+                    <div class="compare-box" v-else>
+                        <div class="compare-box-item" v-for="item in cityData" :key="item.title">
+                            <div class="pinyin">{{ item.title }}</div>
+                            <div class="city-container">
+                                <div class="city"
+                                     :class="{ 'active': city.city === cityActive }"
+                                     v-for="city in item.lists"
+                                     :key="city.code"
+                                     @click="handleCityClick(city)">{{ city.city }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-wrap-range">
+                <div class="year-range">
+                    <div class="title">年度范围</div>
+                    <div class="item-content">
+                        <el-date-picker
+                            v-model="yearStart"
+                            type="year"
+                            placeholder="选择年">
+                        </el-date-picker>
+                        <div class="range-line"></div>
+                        <el-date-picker
+                            v-model="yearEnd"
+                            type="year"
+                            placeholder="选择年"
+                            :disabled="!yearStart"
+                            @click.native="onYearEndClick">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="computed-method">
+                    <div class="title">计算方法</div>
+                    <div class="item-content">
+                        <div class="method-item-wrap"
+                            v-for="item in methodList"
+                            :key="item.value">
+                            <div class="method-item"
+                                 :class="{ 'method-item--active': item.value === computedMethod }"
+                                 @click="handleComputedMethodClick(item.value)">
+                                <div class="prefix-icon"></div>
+                                <div class="label">{{ item.label }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-wrap-operation">
+                <div class="computed-btn">计 算</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/vue.min.js"></script>
+<script src="../js/element.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/select.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/province.js"></script>
+<script src="../js/cityData.js"></script>
+<script>
+    const myApp = new Vue({
+        el: "#app",
+        data: {
+            userName: "管理员",
+            navList: [
+                {
+                    iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                    name: "现状",
+                    location: 'xianzhuang.html',
+                    active: true
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                    name: "预测",
+                    location: 'yuce.html'
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+                    name: "调度"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+                    name: "考评"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+                    name: "重点建筑监管"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+                    name: "重点行业监管"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                    name: "技术产品",
+                    location: 'chanpin.html'
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+                    name: "数据查询"
+                }
+            ],
+            dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+            dateTimer: null,
+            subCategoryActive: 1,
+            subCategories: [
+                { label: "城镇居住建筑", value: 1 },
+                { label: "公共建筑", value: 2 },
+                { label: "教育建筑", value: 3 },
+                { label: "体育建筑", value: 4 },
+                { label: "综合建筑", value: 5 },
+                { label: "办公建筑", value: 6 },
+                { label: "商场建筑", value: 7 },
+                { label: "文化建筑", value: 8 },
+                { label: "其他建筑", value: 9 },
+                { label: "医疗卫生", value: 10 },
+                { label: "集中供暖", value: 11 },
+                { label: "农村住宅", value: 12 },
+            ],
+            compareIndexDataList: [
+                { label: "单位面积用能强度", value: 1 },
+                { label: "人均用能强度", value: 2 },
+                { label: "电气化率", value: 3 },
+                { label: "单位面积碳排放强度", value: 4 },
+                { label: "GDP产值", value: 5 },
+                { label: "人均用电量", value: 6 },
+                { label: "单位GDP排放", value: 7 },
+                { label: "综合碳排放因子", value: 8 },
+                { label: "绿化率", value: 9 },
+                { label: "人均碳排放强度", value: 10 },
+                { label: "单位GDP能耗", value: 11 },
+                { label: "建筑总面积", value: 12 },
+                { label: "人均建筑面积", value: 13 },
+                { label: "单位面积用电量", value: 14 },
+                { label: "人均用水量", value: 15 }
+            ],
+            compare: 1,
+            headerFixed: false,
+            opacityStyle: {},
+            yearStart: "",
+            yearEnd: "",
+            computedMethod: 1,
+            methodList: [
+                { label: "平均值", value: 1 },
+                { label: "1/4分位", value: 2 },
+                { label: "中位数", value: 3 },
+                { label: "高位数", value: 4 }
+            ],
+            cityActive: "",
+            provinceActive: ""
+        },
+        methods: {
+            getCurrentDateTime() {
+                if (this.dateTimer) {
+                    clearInterval(this.dateTimer)
+                }
+                this.dateTimer = setInterval(() => {
+                    this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+                }, 1000)
+            },
+
+            handleNavClick(item) {
+                window.location.href = item.location;
+            },
+
+            getIndexItemStyle(index) {
+                if ([1, 3, 5, 6, 7, 9, 13, 15].includes(index + 1)) {
+                    return {
+                        background: '#107acc'
+                    }
+                } else if ([2, 10, 12].includes(index + 1)) {
+                    return {
+                        background: '#999999'
+                    }
+                } else {
+                    return {
+                        border: '2px solid #107ACC'
+                    }
+                }
+            },
+
+            handleCompareButtonClick(compare) {
+                this.compare = compare;
+                this.headerFixed = false;
+            },
+
+            onYearEndClick() {
+                if (!this.yearStart) {
+                    this.$message.warning("请先选择开始年")
+                }
+            },
+
+            /**
+             * 切换省份
+             */
+            handleProvinceClick(province) {
+                this.provinceActive = province;
+            },
+
+            /**
+             * 切换城市
+             */
+            handleCityClick({ city }) {
+                this.cityActive = city;
+            },
+
+            /**
+             * 切换计算方法
+             */
+            handleComputedMethodClick(computeMethod) {
+                this.computedMethod = computeMethod;
+            }
+        },
+        computed: {
+            navLeft() {
+                return this.navList.slice(0, 4)
+            },
+            navRight() {
+                return this.navList.slice(4)
+            },
+            subCategoriesTop() {
+                return this.subCategories.slice(0, 6)
+            },
+            subCategoriesBottom() {
+                return this.subCategories.slice(6)
+            },
+            compareIndexDataListTop() {
+                return this.compareIndexDataList.slice(0, 5)
+            },
+            compareIndexDataListMid() {
+                return this.compareIndexDataList.slice(5, 10)
+            },
+            compareIndexDataListBottom() {
+                return this.compareIndexDataList.slice(10)
+            },
+            cityData() {
+                return cityData
+            }
+        },
+        mounted() {
+            this.getCurrentDateTime();
+
+            this.$nextTick(() => {
+                $('.city').hover(function () {
+                    $('.pinyin-hover').removeClass('pinyin-hover');
+                    $(this)
+                        .parent('.city-container')
+                        .prev('.pinyin')
+                        .addClass('pinyin-hover')
+                })
+                const _this = this;
+                $('.container-content').scroll(function() {
+                    const scrollTop = $(this).scrollTop()
+                    if (scrollTop > 140) {
+                        _this.headerFixed = true
+                        let opacity = scrollTop / 320
+                        opacity = opacity > 1 ? 1 : opacity
+                        _this.opacityStyle = { opacity }
+                    } else if (scrollTop === 0) {
+                        _this.opacityStyle = { opacity: 1 }
+                    } else {
+                        _this.headerFixed = false
+                    }
+                })
+            })
+        }
+    })
+</script>
+</body>
+</html>

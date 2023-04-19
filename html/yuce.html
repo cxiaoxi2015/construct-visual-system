@@ -1,258 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>城乡建设领域碳排放监测管理平台</title>
-  <link rel="stylesheet" href="../css/reset.css">
-  <link rel="stylesheet" href="../css/iconfont.css">
-  <link rel="stylesheet" href="../css/elementUI.css">
-  <link rel="stylesheet" href="../css/index.css">
-  <link rel="stylesheet" href="../css/page/yuce.css">
+    <meta charset="UTF-8">
+    <title>城乡建设领域碳排放监测管理平台</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/iconfont.css">
+    <link rel="stylesheet" href="../css/elementUI.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/page/yuce.css">
 </head>
 <body>
 <div id="app">
-  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+    <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
 
-  <!-- header -->
-  <div class="sys-header">
-    <div class="full-screen iconfont">&#xe607;</div>
-    <div class="home">
-      <div class="home-icon iconfont">&#xe751;</div>
-      <span class="home-text">首页</span>
-    </div>
-    <div class="nav">
-      <ul class="nav-left">
-        <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
-          <div class="nav-name">{{ item.name }}</div>
-        </li>
-      </ul>
-      <div class="sys-title-placeholder"></div>
-      <ul class="nav-right">
-        <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
-          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
-          <dl class="nav-name" v-else>
-            <dt>{{ item.name.substring(0, 4) }}</dt>
-            <dd>{{ item.name.substring(4) }}</dd>
-          </dl>
-        </li>
-      </ul>
-    </div>
-    <div class="header-right-line"></div>
-    <div class="header-right">
-      <div class="header-right-top">
-        <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
-        <div class="text">
-          <span>欢迎您！</span>
-          <a>{{ userName }}</a>
+    <!-- header -->
+    <div class="sys-header">
+        <div class="full-screen iconfont">&#xe607;</div>
+        <div class="home">
+            <div class="home-icon iconfont">&#xe751;</div>
+            <span class="home-text">首页</span>
         </div>
-      </div>
-      <div class="header-right-bottom">{{ dateTime }}</div>
+        <div class="nav">
+            <ul class="nav-left">
+                <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index"
+                    @click="handleNavClick(item)">
+                    <div class="nav-icon"
+                         :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name">{{ item.name }}</div>
+                </li>
+            </ul>
+            <div class="sys-title-placeholder"></div>
+            <ul class="nav-right">
+                <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index"
+                    @click="handleNavClick(item)">
+                    <div class="nav-icon"
+                         :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+                    <dl class="nav-name" v-else>
+                        <dt>{{ item.name.substring(0, 4) }}</dt>
+                        <dd>{{ item.name.substring(4) }}</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="header-right-line"></div>
+        <div class="header-right">
+            <div class="header-right-top">
+                <img class="avatar"
+                     src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+                <div class="text">
+                    <span>欢迎您！</span>
+                    <a>{{ userName }}</a>
+                </div>
+            </div>
+            <div class="header-right-bottom">{{ dateTime }}</div>
+        </div>
     </div>
-  </div>
 
-  <!-- 地区切换 -->
-  <div class="sys-toggle-area">
-    <div class="area-group">
-      <div :class="leftBtnClass"
-           @click="handleMapChina">全国</div>
-      <div :class="rightBtnClass">各地</div>
-    </div>
-    <div class="area-line"></div>
-    <div class="category">
-      <div class="category-item"
-           :class="[
+    <!-- 地区切换 -->
+    <div class="sys-toggle-area">
+        <div class="area-group">
+            <div :class="leftBtnClass"
+                 @click="handleMapChina">全国
+            </div>
+            <div :class="rightBtnClass">各地</div>
+        </div>
+        <div class="area-line"></div>
+        <div class="category">
+            <div class="category-item"
+                 :class="[
               item.value === category && 'category-item--active',
               item.size === 'small' && 'category-item-small'
            ]"
-           v-for="(item, index) in categories"
-           :key="index"
-           @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+                 v-for="(item, index) in categories"
+                 :key="index"
+                 @click="handleCategoryClick(item)">{{ item.categoryName }}
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- 系统内容部分 -->
-  <div class="container">
-    <div class="layout-ele">
-      <div class="yc-item">
-        <div class="yc-item-title">各情景能源消费总量</div>
-        <div class="chart-container" id="xfzl"></div>
-      </div>
-      <div class="yc-item">
-        <div class="yc-item-title">各情景碳排放总量</div>
-        <div class="chart-container" id="pfzl"></div>
-      </div>
-      <div class="yc-item">
-        <div class="yc-item-title">城乡建设领域碳排放强度</div>
-        <div class="chart-toggle-group">
-          <div class="group-item"
-               :class="[pfqdActive === 1 && 'group-item--active']"
-               @click="handlePFQDToggle(1)">用能</div>
-          <div class="group-item"
-               :class="[pfqdActive === 2 && 'group-item--active']"
-               @click="handlePFQDToggle(2)">排放</div>
-        </div>
-        <div class="chart-container" id="pfqd"></div>
-      </div>
-    </div>
-    <div class="layout-ele">
-      <div class="map-wrap">
-        <div class="map" id="mapContainer"></div>
-      </div>
-      <div class="df-area" v-if="mapActive === 'china'">
-        <div class="df-area-item">
-          <div class="item-title">已达峰地区</div>
-          <div class="table-wrap">
-            <el-table
-              :data="alreadyAreaData"
-              :height="areaTableHeight"
-              style="width: 100%">
-              <el-table-column
-                prop="area"
-                label="省（市）"
-                align="center">
-              </el-table-column>
-              <el-table-column
-                prop="value"
-                label="峰值"
-                align="center">
-                <template #default="{ row }">
-                  <span class="peak-value">{{ row.value }}万吨</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="year"
-                label="达峰年度"
-                align="center">
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-        <div class="df-area-item">
-          <div class="item-title">未达峰地区</div>
-          <div class="table-wrap">
-            <el-table
-              :data="notReachedAreaData"
-              :height="areaTableHeight"
-              style="width: 100%">
-              <el-table-column
-                prop="area"
-                label="省（市）"
-                align="center">
-              </el-table-column>
-              <el-table-column
-                prop="value"
-                label="峰值"
-                align="center">
-                <template #default="{ row }">
-                  <span class="peak-value">{{ row.value }}亿吨</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="year"
-                label="达峰年度"
-                align="center">
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </div>
-      <div class="scene" v-else>
-        <div class="scene-item">
-          <div class="scene-item-title">
-            无政策情景
-            <div class="title-bg"></div>
-          </div>
-          <div class="scene-item-content">
-            <div class="item">
-              <div class="icon"></div>
-              <span>达峰年度</span>
-              <span class="value">2025</span>
-              <span>年</span>
+    <!-- 系统内容部分 -->
+    <div class="container">
+        <div class="layout-ele">
+            <div class="yc-item">
+                <div class="yc-item-title">各情景能源消费总量</div>
+                <div class="chart-container" id="xfzl"></div>
             </div>
-            <div class="item">
-              <div class="icon"></div>
-              <span>达峰峰值</span>
-              <span class="value">3.50</span>
-              <span>亿吨CO₂</span>
+            <div class="yc-item">
+                <div class="yc-item-title">各情景碳排放总量</div>
+                <div class="chart-container" id="pfzl"></div>
             </div>
-          </div>
-        </div>
-        <div class="scene-item">
-          <div class="scene-item-title">
-            省级达峰方案情景
-            <div class="title-bg"></div>
-          </div>
-          <div class="scene-item-content">
-            <div class="item">
-              <div class="icon"></div>
-              <span>达峰年度</span>
-              <span class="value">2025</span>
-              <span>年</span>
+            <div class="yc-item">
+                <div class="yc-item-title">城乡建设领域碳排放强度</div>
+                <div class="chart-toggle-group">
+                    <div class="group-item"
+                         :class="[pfqdActive === 1 && 'group-item--active']"
+                         @click="handlePFQDToggle(1)">用能
+                    </div>
+                    <div class="group-item"
+                         :class="[pfqdActive === 2 && 'group-item--active']"
+                         @click="handlePFQDToggle(2)">排放
+                    </div>
+                </div>
+                <div class="chart-container" id="pfqd"></div>
             </div>
-            <div class="item">
-              <div class="icon"></div>
-              <span>达峰峰值</span>
-              <span class="value">3.50</span>
-              <span>亿吨CO₂</span>
+        </div>
+        <div class="layout-ele">
+            <div class="map-wrap">
+                <div class="map" id="mapContainer"></div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="layout-ele layout-ele-right">
-      <div class="yc-item">
-        <div class="scene-tab">
-          <div class="scene-tab-item"
-               :class="{ 'active': activeSceneType === item.typeValue }"
-               v-for="(item, index) in sceneTypeList"
-               :key="index"
-               @click="handleToggleSceneData(item.typeValue)">{{ item.typeName }}</div>
-        </div>
-        <div class="scene-tab-panel">
-          <div class="yc-item-title">
-            <span>碳达峰任务需求</span>
-          </div>
-          <div class="scene-data-container">
-            <div class="data-item" v-for="(item, index) in sceneDataList" :key="index">
-              <div class="data-item-name">{{ item.name }}</div>
-              <div class="data-item-value">
-                <span class="value">{{ item.value }}</span>
-                <span class="unit">{{ item.unit }}</span>
-              </div>
+            <div class="df-area" v-if="mapActive === 'china'">
+                <div class="df-area-item">
+                    <div class="item-title">已达峰地区</div>
+                    <div class="table-wrap">
+                        <el-table
+                                :data="alreadyAreaData"
+                                :height="areaTableHeight"
+                                style="width: 100%">
+                            <el-table-column
+                                    prop="area"
+                                    label="省（市）"
+                                    align="center">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="value"
+                                    label="峰值"
+                                    align="center">
+                                <template #default="{ row }">
+                                    <span class="peak-value">{{ row.value }}万吨</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="year"
+                                    label="达峰年度"
+                                    align="center">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+                <div class="df-area-item">
+                    <div class="item-title">未达峰地区</div>
+                    <div class="table-wrap">
+                        <el-table
+                                :data="notReachedAreaData"
+                                :height="areaTableHeight"
+                                style="width: 100%">
+                            <el-table-column
+                                    prop="area"
+                                    label="省（市）"
+                                    align="center">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="value"
+                                    label="峰值"
+                                    align="center">
+                                <template #default="{ row }">
+                                    <span class="peak-value">{{ row.value }}亿吨</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="year"
+                                    label="达峰年度"
+                                    align="center">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="scene" v-else>
+                <div class="scene-item">
+                    <div class="scene-item-title">
+                        无政策情景
+                        <div class="title-bg"></div>
+                    </div>
+                    <div class="scene-item-content">
+                        <div class="item">
+                            <div class="icon"></div>
+                            <span>达峰年度</span>
+                            <span class="value">2025</span>
+                            <span>年</span>
+                        </div>
+                        <div class="item">
+                            <div class="icon"></div>
+                            <span>达峰峰值</span>
+                            <span class="value">3.50</span>
+                            <span>亿吨CO₂</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-item-title">
+                        省级达峰方案情景
+                        <div class="title-bg"></div>
+                    </div>
+                    <div class="scene-item-content">
+                        <div class="item">
+                            <div class="icon"></div>
+                            <span>达峰年度</span>
+                            <span class="value">2025</span>
+                            <span>年</span>
+                        </div>
+                        <div class="item">
+                            <div class="icon"></div>
+                            <span>达峰峰值</span>
+                            <span class="value">3.50</span>
+                            <span>亿吨CO₂</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="yc-item">
-        <div class="scene-tab-panel">
-          <div class="yc-item-title">
-            <span>碳达峰任务贡献率</span>
-          </div>
-          <div id="contributionRate" class="chart-container">
+        <div class="layout-ele layout-ele-right">
+            <div class="yc-item">
+                <div class="scene-tab">
+                    <div class="scene-tab-item"
+                         :class="{ 'active': activeSceneType === item.typeValue }"
+                         v-for="(item, index) in sceneTypeList"
+                         :key="index"
+                         @click="handleToggleSceneData(item.typeValue)">{{ item.typeName }}
+                    </div>
+                </div>
+                <div class="scene-tab-panel">
+                    <div class="yc-item-title">
+                        <span>碳达峰任务需求</span>
+                    </div>
+                    <div class="scene-data-container">
+                        <div class="data-item" v-for="(item, index) in sceneDataList" :key="index">
+                            <div class="data-item-name">{{ item.name }}</div>
+                            <div class="data-item-value">
+                                <span class="value">{{ item.value }}</span>
+                                <span class="unit">{{ item.unit }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="yc-item">
+                <div class="scene-tab-panel">
+                    <div class="yc-item-title">
+                        <span>碳达峰任务贡献率</span>
+                    </div>
+                    <div id="contributionRate" class="chart-container">
 
-          </div>
-        </div>
-      </div>
-      <div class="yc-item economic-cost">
-        <div class="scene-tab-panel">
-          <div class="yc-item-title">
-            <span>碳达峰经济成本</span>
-          </div>
-          <div class="scene-data-container">
-            <div class="data-item" v-for="(item, index) in economicCostDataList" :key="index">
-              <div class="data-item-name">{{ item.name }}</div>
-              <div class="data-item-value">
-                <span class="value" :class="{ 'warning': item.value > 90000 }">{{ item.value }}</span>
-                <span class="unit">{{ item.unit }}</span>
-              </div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="yc-item economic-cost">
+                <div class="scene-tab-panel">
+                    <div class="yc-item-title">
+                        <span>碳达峰经济成本</span>
+                    </div>
+                    <div class="scene-data-container">
+                        <div class="data-item" v-for="(item, index) in economicCostDataList" :key="index">
+                            <div class="data-item-name">{{ item.name }}</div>
+                            <div class="data-item-value">
+                                <span class="value" :class="{ 'warning': item.value > 90000 }">{{ item.value }}</span>
+                                <span class="unit">{{ item.unit }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <script src="../js/vue.min.js"></script>
@@ -264,847 +274,847 @@
 <script src="../js/china.js"></script>
 <script src="../js/province.js"></script>
 <script>
-  const myApp = new Vue({
-    el: "#app",
-    data: {
-      userName: "管理员",
-      navList: [
-        {
-          iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
-          name: "现状",
-          location: 'xianzhuang.html'
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
-          name: "预测",
-          location: 'yuce.html',
-          active: true
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
-          name: "调度"
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
-          name: "考评"
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
-          name: "重点建筑监管"
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
-          name: "重点行业监管"
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
-          name: "技术产品",
-          location: 'chanpin.html'
-        },
-        {
-          iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
-          name: "数据查询"
-        }
-      ],
-      year: 2023,
-      yearOptions: [ 2023, 2022, 2021, 2020, 2019 ],
-      category: 1,
-      categories: [
-        { categoryName: "城乡建设领域", value: 1, size: "medium" },
-        { categoryName: "建筑运行", value: 2, size: "medium" },
-        { categoryName: "城镇居建", value: 3, size: "small" },
-        { categoryName: "公共建筑", value: 4, size: "small" },
-        { categoryName: "农村居建", value: 5, size: "small" },
-        { categoryName: "集中供暖", value: 6, size: "small" },
-        { categoryName: "建筑业", value: 7, size: "medium" },
-        { categoryName: "基础设施", value: 8, size: "medium" }
-      ],
-      // 排放强度
-      pfqdActive: 1,
-      dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-      dateTimer: null,
-      currentYear: '2023',
-      mapActive: 'china',
-      leftBtnClass: '',
-      rightBtnClass: '',
-      alreadyAreaData: [],
-      notReachedAreaData: [],
-      areaTableHeight: 0,
-      activeSceneType: 0,
-      sceneTypeList: [
-        {
-          typeName: "无政策情景",
-          typeValue: 0
-        },
-        {
-          typeName: "2030年达峰情景",
-          typeValue: 1
-        }
-      ],
-      sceneDataList: [
-        {
-          name: "新建居住建筑",
-          value: 146,
-          unit: "亿平方米"
-        },
-        {
-          name: "新建公共建筑",
-          value: 82,
-          unit: "亿平方米"
-        },
-        {
-          name: "即有公共建筑改造",
-          value: 22,
-          unit: "亿平方米"
-        },
-        {
-          name: "即有居住建筑改造",
-          value: 20,
-          unit: "亿平方米"
-        },
-        {
-          name: "农村住宅",
-          value: 10,
-          unit: "亿平方米"
-        },
-        {
-          name: "浅层地热能",
-          value: 11,
-          unit: "亿平方米"
-        },
-        {
-          name: "空气热源",
-          value: 0.5,
-          unit: "亿平方米"
-        },
-        {
-          name: "太阳能光热",
-          value: 78,
-          unit: "亿平方米"
-        },
-        {
-          name: "太阳能光伏",
-          value: 12,
-          unit: "亿平方米"
-        },
-        {
-          name: "建筑工业化",
-          value: 0.6,
-          unit: "亿平方米"
-        },
-        {
-          name: "给排水及污水处理",
-          value: 23,
-          unit: "亿平方米"
-        },
-        {
-          name: "园林绿化",
-          value: 10,
-          unit: "亿平方米"
-        }
-      ],
-      economicCostDataList: [
-        {
-          name: "合计成本",
-          value: 94805,
-          unit: "亿平方米"
-        },
-        {
-          name: "新建公共建筑",
-          value: 29244,
-          unit: "亿平方米"
-        },
-        {
-          name: "即有公共建筑改造",
-          value: 1700,
-          unit: "亿平方米"
-        },
-        {
-          name: "即有居住建筑改造",
-          value: 3110,
-          unit: "亿平方米"
-        },
-        {
-          name: "农村住宅",
-          value: 6000,
-          unit: "亿平方米"
-        },
-        {
-          name: "浅层地热能",
-          value: 2000,
-          unit: "亿平方米"
-        },
-        {
-          name: "空气热源",
-          value: 15,
-          unit: "亿平方米"
-        },
-        {
-          name: "太阳能光热",
-          value: 2160,
-          unit: "亿平方米"
-        },
-        {
-          name: "太阳能光伏",
-          value: 3300,
-          unit: "亿平方米"
-        },
-        {
-          name: "新建居住建筑",
-          value: 47291,
-          unit: "亿平方米"
-        },
-        {
-          name: "建筑工业化",
-          value: 23546,
-          unit: "亿平方米"
-        },
-        {
-          name: "园林绿化",
-          value: 23546,
-          unit: "亿平方米"
-        },
-        {
-          name: "给排水及污水处理",
-          value: 49291,
-          unit: "亿平方米"
-        },
-      ]
-    },
-    methods: {
-      handleYearClick(yearDate) {
-        this.year = yearDate;
-        const ele = $('.cx-select');
-        ele.find('.cx-option').slideUp();
-        ele.hasClass('focus')
-                ? ele.removeClass('focus')
-                : ele.addClass('focus')
-      },
-
-      handleCategoryClick({ value }) {
-        this.category = value;
-      },
-
-      /**
-       * 绘制消费总量图表
-       */
-      drawXFZLChart() {
-        const myChart = echarts.init(document.getElementById('xfzl'));
-        const wzcSeriesData = [], sjgzSeriesData = [], dfqjSeriesData = [], yearData = [];
-        for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-          yearData.push(year)
-          wzcSeriesData.push((Math.random() * 10).toFixed(1))
-          sjgzSeriesData.push((Math.random() * 10).toFixed(1))
-          dfqjSeriesData.push((Math.random() * 10).toFixed(1))
-        }
-        const option = {
-          backgroundColor: 'transparent',
-          tooltip: {
-            trigger: 'axis',
-            confine: true,
-            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-            formatter: function (params) {
-              return `<div class="cx-tooltip">占比: ${params[0].value}%</div>`
-            },
-            axisPointer: {
-              type: 'cross',
-              crossStyle: {
-                color: '#fff'
-              },
-              lineStyle: {
-                type: 'dashed'
-              }
-            }
-          },
-          legend: {
-            x:'right',
-            y:'top',
-            itemGap: 5,
-            padding: [15, 15, 0, 0],
-            data: ['无政策情景', '实际工作进展情景', '2030达峰情景'],
-            textStyle: {
-              color: '#fff',
-              fontSize: '.12rem'
-            },
-            itemWidth: 10,
-            itemHeight: 4
-          },
-          grid: {
-            top: '20%',
-            left: '5%',
-            right: '8%',
-            bottom: '15%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            data: yearData,
-            axisTick: {
-              show: false,
-            },
-            axisLine: {
-              lineStyle: {
-                color: 'rgba(255, 255, 255, .05)'
-              }
-            },
-            axisLabel: {
-              margin: 10,
-              fontSize: '.1rem',
-              formatter: "{value}年",
-              color: '#fff'
-            }
-          },
-          yAxis: {
-            type: "value",
-            name: '单位：亿吨标煤',
-            nameTextStyle: {
-              color: "#fff",
-              fontSize: "",
-              padding: [-15, 0, 0, 25],
-            },
-            show: true,
-            axisTick: {
-              show: false,
-            },
-            axisLine: {
-              show: false,
-              lineStyle: {
-                color: "rgba(255, 255, 255, .09)"
-              }
-            },
-            splitLine: {
-              show: true,
-              lineStyle: {
-                color: "rgba(255, 255, 255, .09)"
-              }
-            },
-            axisLabel: {
-              fontSize: '.12rem',
-              color: '#fff'
-            }
-          },
-          series: [
-            {
-              name: "无政策情景",
-              data: wzcSeriesData,
-              type: 'line',
-              smooth: true,
-              lineStyle: {
-                color: '#F3B330'
-              },
-              symbolSize: 5,
-              symbol: 'circle',
-              itemStyle: {
-                barBorderRadius: [30, 30, 0, 0],
-                color: '#F3B330',
-                borderColor: '#fff'
-              }
-            },
-            {
-              name: "实际工作进展情景",
-              data: sjgzSeriesData,
-              type: 'line',
-              smooth: true,
-              lineStyle: {
-                color: '#D35700'
-              },
-              symbolSize: 5,
-              symbol: 'circle',
-              itemStyle: {
-                barBorderRadius: [30, 30, 0, 0],
-                color: '#D35700',
-                borderColor: '#fff'
-              }
-            },
-            {
-              name: "2030达峰情景",
-              data: dfqjSeriesData,
-              type: 'line',
-              smooth: true,
-              lineStyle: {
-                color: '#00C900'
-              },
-              symbolSize: 5,
-              symbol: 'circle',
-              itemStyle: {
-                barBorderRadius: [30, 30, 0, 0],
-                color: '#00C900',
-                borderColor: '#fff'
-              }
-            }
-          ]
-        }
-        myChart.setOption(option)
-      },
-
-      /**
-       * 绘制排放总量图表
-       */
-      drawPFZLChart() {
-        const pfzlData = {
-          yewu1: [],
-          yewu2: [],
-          yewu3: [],
-          year: []
-        }
-        for (let year = 2020; year <= 2035; year++) {
-          pfzlData.yewu1.push((Math.random() * 100).toFixed(2))
-          pfzlData.yewu2.push((Math.random() * 100).toFixed(2))
-          pfzlData.yewu3.push((Math.random() * 100).toFixed(2))
-          pfzlData.year.push(year)
-        }
-        const myChart = echarts.init(document.getElementById('pfzl'));
-        const option = {
-          backgroundColor:  'transparent',
-          tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              type: 'shadow'
-            },
-            confine: true,
-            formatter: function(params){
-              let relVal = `${params[0].name}年`;
-              let prefix
-              for (let i = 0, l = params.length; i < l; i++) {
-                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
-                relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} 亿tce`;
-              }
-              return relVal;
-            }
-          },
-          grid: {
-            top: '25%',
-            left: '5%',
-            right: '8%',
-            bottom: '15%',
-            containLabel: true
-          },
-          legend: {
-            x:'right',
-            y:'top',
-            padding: [20, 30, 0, 0],
-            itemGap: 34,
-            data: ['业务一', '业务二', '业务三'],
-            textStyle: {
-              color: '#fff',
-              fontSize: '.12rem'
-            },
-            itemWidth: 10,
-            itemHeight: 4
-          },
-          xAxis: [
-            {
-              type: "category",
-              axisTick: {
-                show: false,
-              },
-              axisLine: {
-                lineStyle: {
-                  color: 'rgba(255, 255, 255, .05)'
-                }
-              },
-              data: pfzlData.year,
-              axisLabel: {
-                margin: 10,
-                fontSize: '.1rem',
-                formatter: "{value}年",
-                color: '#fff'
-              }
-            },
-          ],
-          yAxis: [
-            {
-              type: "value",
-              name: '单位：亿吨',
-              nameTextStyle: {
-                color: "#fff",
-                fontSize: "",
-                padding: [0, 0, 0, 0],
-              },
-              show: true,
-              axisTick: {
-                show: false,
-              },
-              axisLine: {
-                show: false,
-              },
-              splitLine: {
-                show: true,
-                lineStyle: {
-                  color: "rgba(255, 255, 255, .09)"
-                }
-              },
-              axisLabel: {
-                fontSize: '.12rem',
-                color: '#fff'
-              }
-            },
-          ],
-          series: [
-            {
-              name: "业务一",
-              type: "bar",
-              barWidth: 2,
-              itemStyle: {
-                borderWidth: 2,
-                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                  {
-                    offset: 0,
-                    color: "#F5804D",
-                  },
-                  {
-                    offset: 1,
-                    color: '#FCCB05'
-                  }
-                ]),
-                borderRadius: 3
-              },
-              data: pfzlData.yewu1,
-            },
-            {
-              name: "业务二",
-              type: "bar",
-              barWidth: 2,
-              barGap: "50%",
-              label: {
-                show: false
-              },
-              itemStyle: {
-                borderWidth: 2,
-                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                  {
-                    offset: 0,
-                    color: "#09BCB7",
-                  },
-                  {
-                    offset: 1,
-                    color: '#8BD46E'
-                  }
-                ]),
-                borderRadius: 3
-              },
-              data: pfzlData.yewu2,
-            },
-            {
-              name: "业务三",
-              type: "bar",
-              barWidth: 2,
-              barGap: "50%",
-              label: {
-                show: false
-              },
-              itemStyle: {
-                borderWidth: 2,
-                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                  {
-                    offset: 0,
-                    color: "#6851F1",
-                  },
-                  {
-                    offset: 1,
-                    color: '#248FF7'
-                  }
-                ]),
-                borderRadius: 3
-              },
-              data: pfzlData.yewu3,
-            }
-          ]
-        };
-        myChart.setOption(option)
-      },
-
-      /**
-       * 绘制用能增速图表
-       */
-      drawPFQDChart() {
-        const nhzlData = {
-          gonggong: [],
-          juzhu: [],
-          year: []
-        }
-        for (let year = 2020; year <= 2035; year++) {
-          nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
-          nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
-          nhzlData.year.push(year)
-        }
-        const myChart = echarts.init(document.getElementById('pfqd'));
-        const option = {
-          backgroundColor:  'transparent',
-          tooltip: {
-            trigger: 'axis',
-            confine: true,
-            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-            formatter: function(params){
-              return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
-            },
-            axisPointer: {
-              type: 'cross',
-              crossStyle: {
-                axisPointer: {
-                  type: 'cross',
-                  crossStyle: {
-                    color: '#fff'
-                  },
-                  lineStyle: {
-                    type: 'dashed'
-                  }
-                }
-              },
-              lineStyle: {
-                type: 'dashed'
-              }
-            }
-          },
-          grid: {
-            top: '30%',
-            left: '5%',
-            right: '5%',
-            bottom: '15%',
-            containLabel: true
-          },
-          xAxis: [
-            {
-              type: "category",
-              axisTick: {
-                show: true
-              },
-              axisLine: {
-                lineStyle: {
-                  color: 'rgba(255, 255, 255, .05)'
-                }
-              },
-              data: nhzlData.year,
-              axisLabel: {
-                margin: 10,
-                fontSize: '.1rem',
-                formatter: "{value}年",
-                color: '#fff'
-              }
-            },
-          ],
-          yAxis: {
-            type: "value",
-            name: '单位：kgce/㎡',
-            position: 'left',
-            nameTextStyle: {
-              color: "#fff",
-              fontSize: "",
-              padding: [0, 0, 0, 0],
-            },
-            show: true,
-            axisTick: {
-              show: false,
-            },
-            axisLine: {
-              show: false,
-            },
-            splitLine: {
-              show: true,
-              lineStyle: {
-                color: "rgba(255, 255, 255, .85)"
-              }
-            },
-            axisLabel: {
-              fontSize: '.12rem',
-              color: '#fff'
-            }
-          },
-          series: {
-            name: "用能强度",
-            type: "bar",
-            barWidth: 8,
-            itemStyle: {
-              borderWidth: 1,
-              color: '#0B7062',
-              borderColor: '#15FED1'
-            },
-            data: nhzlData.gonggong,
-          }
-        };
-        myChart.setOption(option)
-      },
-
-      /**
-       * 无政策情景/2030年达峰情景
-       */
-      fetchDataScene() {
-
-      },
-
-      /**
-       * 碳达峰任务贡献率
-       */
-      fetchDataTaskGXL() {
-        const myChart = echarts.init(document.getElementById('contributionRate'));
-        const colors = ['#62FFF9', '#01FAFE', '#ED292A', '#5C7BD9', '#5390FF', '#FFF552', '#87C98B', '#0576FE', '#FFA176', '#BD6CFF', '#FF6023', '#F5936E']
-        let richColor = {}
-        colors.forEach((item, idx) => {
-          richColor[`color${idx}`] = {
-            fontSize: 12,
-            color: item
-          }
-        })
-        const seriesData = [
-          { value: 335, name: '太阳能光伏' },
-          { value: 310, name: '即有居住建筑改造' },
-          { value: 274, name: '新建公共建筑' },
-          { value: 235, name: '新建居住建筑' },
-          { value: 400, name: '空气热源' },
-          { value: 432, name: '农村住宅' },
-          { value: 232, name: '建筑工业化' },
-          { value: 178, name: '即有公共建筑改造' },
-          { value: 128, name: '给排水及污水处理' },
-          { value: 199, name: '太阳能光热' },
-          { value: 274, name: '浅层地热能' },
-          { value: 136, name: '园林绿化' }
-        ]
-        const option = {
-          backgroundColor: 'transparent',
-          tooltip: {
-            trigger: 'item'
-          },
-          visualMap: {
-            show: false,
-            min: 80,
-            max: 600,
-            inRange: {
-              colorLightness: [0, 1]
-            }
-          },
-          series: [
-            {
-              name: "工作碳排放构成占比",
-              type: "pie",
-              radius: "78%",
-              center: ["50%", "50%"],
-              data: seriesData.sort(function (a, b) {
-                return b.value - a.value;
-              }),
-              roseType: "radius",
-              label: {
-                formatter: params => {
-                  return `{color${params.dataIndex}|${params.name}(${params.value})}`
+    const myApp = new Vue({
+        el: "#app",
+        data: {
+            userName: "管理员",
+            navList: [
+                {
+                    iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                    name: "现状",
+                    location: 'xianzhuang.html'
                 },
-                rich: richColor
-              },
-              labelLine: {
-                lineStyle: {
-                  color: "rgb(98,137,169)",
+                {
+                    iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                    name: "预测",
+                    location: 'yuce.html',
+                    active: true
                 },
-                smooth: 0.2,
-                length: 10,
-                length2: 20,
-              },
-              itemStyle: {
-                color: item => {
-                  return colors[item.dataIndex]
+                {
+                    iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+                    name: "调度"
                 },
-                shadowColor: "rgba(0, 0, 0, 0.8)",
-                shadowBlur: 50
-              }
-            }
-          ]
-        }
-        myChart.setOption(option)
-      },
+                {
+                    iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+                    name: "考评"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+                    name: "重点建筑监管"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+                    name: "重点行业监管"
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                    name: "技术产品",
+                    location: 'chanpin.html'
+                },
+                {
+                    iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+                    iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+                    name: "数据查询"
+                }
+            ],
+            year: 2023,
+            yearOptions: [2023, 2022, 2021, 2020, 2019],
+            category: 1,
+            categories: [
+                {categoryName: "城乡建设领域", value: 1, size: "medium"},
+                {categoryName: "建筑运行", value: 2, size: "medium"},
+                {categoryName: "城镇居建", value: 3, size: "small"},
+                {categoryName: "公共建筑", value: 4, size: "small"},
+                {categoryName: "农村居建", value: 5, size: "small"},
+                {categoryName: "集中供暖", value: 6, size: "small"},
+                {categoryName: "建筑业", value: 7, size: "medium"},
+                {categoryName: "基础设施", value: 8, size: "medium"}
+            ],
+            // 排放强度
+            pfqdActive: 1,
+            dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+            dateTimer: null,
+            currentYear: '2023',
+            mapActive: 'china',
+            leftBtnClass: '',
+            rightBtnClass: '',
+            alreadyAreaData: [],
+            notReachedAreaData: [],
+            areaTableHeight: 0,
+            activeSceneType: 0,
+            sceneTypeList: [
+                {
+                    typeName: "无政策情景",
+                    typeValue: 0
+                },
+                {
+                    typeName: "2030年达峰情景",
+                    typeValue: 1
+                }
+            ],
+            sceneDataList: [
+                {
+                    name: "新建居住建筑",
+                    value: 146,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "新建公共建筑",
+                    value: 82,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "即有公共建筑改造",
+                    value: 22,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "即有居住建筑改造",
+                    value: 20,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "农村住宅",
+                    value: 10,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "浅层地热能",
+                    value: 11,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "空气热源",
+                    value: 0.5,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "太阳能光热",
+                    value: 78,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "太阳能光伏",
+                    value: 12,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "建筑工业化",
+                    value: 0.6,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "给排水及污水处理",
+                    value: 23,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "园林绿化",
+                    value: 10,
+                    unit: "亿平方米"
+                }
+            ],
+            economicCostDataList: [
+                {
+                    name: "合计成本",
+                    value: 94805,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "新建公共建筑",
+                    value: 29244,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "即有公共建筑改造",
+                    value: 1700,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "即有居住建筑改造",
+                    value: 3110,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "农村住宅",
+                    value: 6000,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "浅层地热能",
+                    value: 2000,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "空气热源",
+                    value: 15,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "太阳能光热",
+                    value: 2160,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "太阳能光伏",
+                    value: 3300,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "新建居住建筑",
+                    value: 47291,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "建筑工业化",
+                    value: 23546,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "园林绿化",
+                    value: 23546,
+                    unit: "亿平方米"
+                },
+                {
+                    name: "给排水及污水处理",
+                    value: 49291,
+                    unit: "亿平方米"
+                },
+            ]
+        },
+        methods: {
+            handleYearClick(yearDate) {
+                this.year = yearDate;
+                const ele = $('.cx-select');
+                ele.find('.cx-option').slideUp();
+                ele.hasClass('focus')
+                    ? ele.removeClass('focus')
+                    : ele.addClass('focus')
+            },
 
-      /**
-       * 碳达峰经济成本
-       */
-      fetchDataJJCB() {
+            handleCategoryClick({value}) {
+                this.category = value;
+            },
 
-      },
+            /**
+             * 绘制消费总量图表
+             */
+            drawXFZLChart() {
+                const myChart = echarts.init(document.getElementById('xfzl'));
+                const wzcSeriesData = [], sjgzSeriesData = [], dfqjSeriesData = [], yearData = [];
+                for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+                    yearData.push(year)
+                    wzcSeriesData.push((Math.random() * 10).toFixed(1))
+                    sjgzSeriesData.push((Math.random() * 10).toFixed(1))
+                    dfqjSeriesData.push((Math.random() * 10).toFixed(1))
+                }
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        confine: true,
+                        extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                        formatter: function (params) {
+                            return `<div class="cx-tooltip">占比: ${params[0].value}%</div>`
+                        },
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#fff'
+                            },
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        }
+                    },
+                    legend: {
+                        x: 'right',
+                        y: 'top',
+                        itemGap: 5,
+                        padding: [15, 15, 0, 0],
+                        data: ['无政策情景', '实际工作进展情景', '2030达峰情景'],
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: '.12rem'
+                        },
+                        itemWidth: 10,
+                        itemHeight: 4
+                    },
+                    grid: {
+                        top: '20%',
+                        left: '5%',
+                        right: '8%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: yearData,
+                        axisTick: {
+                            show: false,
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255, 255, 255, .05)'
+                            }
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            fontSize: '.1rem',
+                            formatter: "{value}年",
+                            color: '#fff'
+                        }
+                    },
+                    yAxis: {
+                        type: "value",
+                        name: '单位：亿吨标煤',
+                        nameTextStyle: {
+                            color: "#fff",
+                            fontSize: "",
+                            padding: [-15, 0, 0, 25],
+                        },
+                        show: true,
+                        axisTick: {
+                            show: false,
+                        },
+                        axisLine: {
+                            show: false,
+                            lineStyle: {
+                                color: "rgba(255, 255, 255, .09)"
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: "rgba(255, 255, 255, .09)"
+                            }
+                        },
+                        axisLabel: {
+                            fontSize: '.12rem',
+                            color: '#fff'
+                        }
+                    },
+                    series: [
+                        {
+                            name: "无政策情景",
+                            data: wzcSeriesData,
+                            type: 'line',
+                            smooth: true,
+                            lineStyle: {
+                                color: '#F3B330'
+                            },
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: '#F3B330',
+                                borderColor: '#fff'
+                            }
+                        },
+                        {
+                            name: "实际工作进展情景",
+                            data: sjgzSeriesData,
+                            type: 'line',
+                            smooth: true,
+                            lineStyle: {
+                                color: '#D35700'
+                            },
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: '#D35700',
+                                borderColor: '#fff'
+                            }
+                        },
+                        {
+                            name: "2030达峰情景",
+                            data: dfqjSeriesData,
+                            type: 'line',
+                            smooth: true,
+                            lineStyle: {
+                                color: '#00C900'
+                            },
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: '#00C900',
+                                borderColor: '#fff'
+                            }
+                        }
+                    ]
+                }
+                myChart.setOption(option)
+            },
 
-      handlePFQDToggle(yndqActive) {
-        this.pfqdActive = yndqActive
-        this.drawYNQDChart()
-      },
+            /**
+             * 绘制排放总量图表
+             */
+            drawPFZLChart() {
+                const pfzlData = {
+                    yewu1: [],
+                    yewu2: [],
+                    yewu3: [],
+                    year: []
+                }
+                for (let year = 2020; year <= 2035; year++) {
+                    pfzlData.yewu1.push((Math.random() * 100).toFixed(2))
+                    pfzlData.yewu2.push((Math.random() * 100).toFixed(2))
+                    pfzlData.yewu3.push((Math.random() * 100).toFixed(2))
+                    pfzlData.year.push(year)
+                }
+                const myChart = echarts.init(document.getElementById('pfzl'));
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        confine: true,
+                        formatter: function (params) {
+                            let relVal = `${params[0].name}年`;
+                            let prefix
+                            for (let i = 0, l = params.length; i < l; i++) {
+                                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
+                                relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} 亿tce`;
+                            }
+                            return relVal;
+                        }
+                    },
+                    grid: {
+                        top: '25%',
+                        left: '5%',
+                        right: '8%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    legend: {
+                        x: 'right',
+                        y: 'top',
+                        padding: [20, 30, 0, 0],
+                        itemGap: 34,
+                        data: ['业务一', '业务二', '业务三'],
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: '.12rem'
+                        },
+                        itemWidth: 10,
+                        itemHeight: 4
+                    },
+                    xAxis: [
+                        {
+                            type: "category",
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, .05)'
+                                }
+                            },
+                            data: pfzlData.year,
+                            axisLabel: {
+                                margin: 10,
+                                fontSize: '.1rem',
+                                formatter: "{value}年",
+                                color: '#fff'
+                            }
+                        },
+                    ],
+                    yAxis: [
+                        {
+                            type: "value",
+                            name: '单位：亿吨',
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "",
+                                padding: [0, 0, 0, 0],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        },
+                    ],
+                    series: [
+                        {
+                            name: "业务一",
+                            type: "bar",
+                            barWidth: 2,
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                    {
+                                        offset: 0,
+                                        color: "#F5804D",
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: '#FCCB05'
+                                    }
+                                ]),
+                                borderRadius: 3
+                            },
+                            data: pfzlData.yewu1,
+                        },
+                        {
+                            name: "业务二",
+                            type: "bar",
+                            barWidth: 2,
+                            barGap: "50%",
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                    {
+                                        offset: 0,
+                                        color: "#09BCB7",
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: '#8BD46E'
+                                    }
+                                ]),
+                                borderRadius: 3
+                            },
+                            data: pfzlData.yewu2,
+                        },
+                        {
+                            name: "业务三",
+                            type: "bar",
+                            barWidth: 2,
+                            barGap: "50%",
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                    {
+                                        offset: 0,
+                                        color: "#6851F1",
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: '#248FF7'
+                                    }
+                                ]),
+                                borderRadius: 3
+                            },
+                            data: pfzlData.yewu3,
+                        }
+                    ]
+                };
+                myChart.setOption(option)
+            },
 
-      getCurrentDateTime() {
-        if (this.dateTimer) {
-          clearInterval(this.dateTimer)
-        }
-        this.dateTimer = setInterval(() => {
-          this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
-        }, 1000)
-      },
+            /**
+             * 绘制用能增速图表
+             */
+            drawPFQDChart() {
+                const nhzlData = {
+                    gonggong: [],
+                    juzhu: [],
+                    year: []
+                }
+                for (let year = 2020; year <= 2035; year++) {
+                    nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+                    nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+                    nhzlData.year.push(year)
+                }
+                const myChart = echarts.init(document.getElementById('pfqd'));
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        confine: true,
+                        extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                        formatter: function (params) {
+                            return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
+                        },
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#fff'
+                                    },
+                                    lineStyle: {
+                                        type: 'dashed'
+                                    }
+                                }
+                            },
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        }
+                    },
+                    grid: {
+                        top: '30%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: "category",
+                            axisTick: {
+                                show: true
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, .05)'
+                                }
+                            },
+                            data: nhzlData.year,
+                            axisLabel: {
+                                margin: 10,
+                                fontSize: '.1rem',
+                                formatter: "{value}年",
+                                color: '#fff'
+                            }
+                        },
+                    ],
+                    yAxis: {
+                        type: "value",
+                        name: '单位：kgce/㎡',
+                        position: 'left',
+                        nameTextStyle: {
+                            color: "#fff",
+                            fontSize: "",
+                            padding: [0, 0, 0, 0],
+                        },
+                        show: true,
+                        axisTick: {
+                            show: false,
+                        },
+                        axisLine: {
+                            show: false,
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: "rgba(255, 255, 255, .85)"
+                            }
+                        },
+                        axisLabel: {
+                            fontSize: '.12rem',
+                            color: '#fff'
+                        }
+                    },
+                    series: {
+                        name: "用能强度",
+                        type: "bar",
+                        barWidth: 8,
+                        itemStyle: {
+                            borderWidth: 1,
+                            color: '#0B7062',
+                            borderColor: '#15FED1'
+                        },
+                        data: nhzlData.gonggong,
+                    }
+                };
+                myChart.setOption(option)
+            },
 
-      /**
-       * 绘制地图
-       */
-      drawMapChart() {
-        const that = this;
-        const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
-        const currentYear = this.currentYear
-        const customerBatteryCityData = [
-          {name: '北京市', value: 309.1},
-          {name: '天津市', value: 208.4},
-          {name: '河北省', value: 780.6},
-          {name: '山西省', value: 406.3},
-          {name: '内蒙古自治区', value: 4353.6},
-          {name: '辽宁省', value: 504.4},
-          {name: '吉林省', value: 261.5},
-          {name: '黑龙江省', value: 759.8},
-          {name: '上海市', value: 315.9},
-          {name: '江苏省', value: 549.5},
-          {name: '浙江省', value: 543.5},
-          {name: '安徽省', value: 342.2},
-          {name: '福建省', value: 323.1},
-          {name: '江西省', value: 211.7},
-          {name: '山东省', value: 808.5},
-          {name: '河南省', value: 608.5},
-          {name: '湖北省', value: 340.9},
-          {name: '湖南省', value: 419.4},
-          {name: '广东省', value: 967.2},
-          {name: '广西壮族自治区', value: 2467.2},
-          {name: '海南省', value: 71.4},
-          {name: '重庆市', value: 210.5},
-          {name: '四川省', value: 526.6},
-          {name: '贵州省', value: 271.9},
-          {name: '云南省', value: 245.5},
-          {name: '西藏自治区', value: 0},
-          {name: '陕西省', value: 356.7},
-          {name: '甘肃省', value: 2172.7},
-          {name: '青海省', value: 809.3},
-          {name: '宁夏自治区', value: 1045.4},
-          {name: '新疆维吾尔自治区', value: 3561.5}
-        ]
-        const loadMap = (features, mapData, zoom, provinceName) => {
-          const geoCoordMap = {}
-          features.forEach(item => {
-            const {properties} = item
-            const {cp, name} = properties
-            geoCoordMap[name] = cp
-          })
-          const option = {
-            silent: false,
-            tooltip: {
-              trigger: "item",
-              show: true,
-              textStyle: {
-                fontSize: 14,
-                color: "#fff",
-              },
-              borderWidth: 3,
-              borderColor: 'rgba(10, 113, 174, 0.8)',
-              backgroundColor: "rgba(0, 0, 0, 0.8)",
-              extraCssText: "padding: 0;",
-              formatter: function (params) {
-                if (params.data) {
-                  return `
+            /**
+             * 无政策情景/2030年达峰情景
+             */
+            fetchDataScene() {
+
+            },
+
+            /**
+             * 碳达峰任务贡献率
+             */
+            fetchDataTaskGXL() {
+                const myChart = echarts.init(document.getElementById('contributionRate'));
+                const colors = ['#62FFF9', '#01FAFE', '#ED292A', '#5C7BD9', '#5390FF', '#FFF552', '#87C98B', '#0576FE', '#FFA176', '#BD6CFF', '#FF6023', '#F5936E']
+                let richColor = {}
+                colors.forEach((item, idx) => {
+                    richColor[`color${idx}`] = {
+                        fontSize: 12,
+                        color: item
+                    }
+                })
+                const seriesData = [
+                    {value: 335, name: '太阳能光伏'},
+                    {value: 310, name: '即有居住建筑改造'},
+                    {value: 274, name: '新建公共建筑'},
+                    {value: 235, name: '新建居住建筑'},
+                    {value: 400, name: '空气热源'},
+                    {value: 432, name: '农村住宅'},
+                    {value: 232, name: '建筑工业化'},
+                    {value: 178, name: '即有公共建筑改造'},
+                    {value: 128, name: '给排水及污水处理'},
+                    {value: 199, name: '太阳能光热'},
+                    {value: 274, name: '浅层地热能'},
+                    {value: 136, name: '园林绿化'}
+                ]
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    visualMap: {
+                        show: false,
+                        min: 80,
+                        max: 600,
+                        inRange: {
+                            colorLightness: [0, 1]
+                        }
+                    },
+                    series: [
+                        {
+                            name: "工作碳排放构成占比",
+                            type: "pie",
+                            radius: "78%",
+                            center: ["50%", "50%"],
+                            data: seriesData.sort(function (a, b) {
+                                return b.value - a.value;
+                            }),
+                            roseType: "radius",
+                            label: {
+                                formatter: params => {
+                                    return `{color${params.dataIndex}|${params.name}(${params.value})}`
+                                },
+                                rich: richColor
+                            },
+                            labelLine: {
+                                lineStyle: {
+                                    color: "rgb(98,137,169)",
+                                },
+                                smooth: 0.2,
+                                length: 10,
+                                length2: 20,
+                            },
+                            itemStyle: {
+                                color: item => {
+                                    return colors[item.dataIndex]
+                                },
+                                shadowColor: "rgba(0, 0, 0, 0.8)",
+                                shadowBlur: 50
+                            }
+                        }
+                    ]
+                }
+                myChart.setOption(option)
+            },
+
+            /**
+             * 碳达峰经济成本
+             */
+            fetchDataJJCB() {
+
+            },
+
+            handlePFQDToggle(yndqActive) {
+                this.pfqdActive = yndqActive
+                this.drawYNQDChart()
+            },
+
+            getCurrentDateTime() {
+                if (this.dateTimer) {
+                    clearInterval(this.dateTimer)
+                }
+                this.dateTimer = setInterval(() => {
+                    this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+                }, 1000)
+            },
+
+            /**
+             * 绘制地图
+             */
+            drawMapChart() {
+                const that = this;
+                const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+                const currentYear = this.currentYear
+                const customerBatteryCityData = [
+                    {name: '北京市', value: 309.1},
+                    {name: '天津市', value: 208.4},
+                    {name: '河北省', value: 780.6},
+                    {name: '山西省', value: 406.3},
+                    {name: '内蒙古自治区', value: 4353.6},
+                    {name: '辽宁省', value: 504.4},
+                    {name: '吉林省', value: 261.5},
+                    {name: '黑龙江省', value: 759.8},
+                    {name: '上海市', value: 315.9},
+                    {name: '江苏省', value: 549.5},
+                    {name: '浙江省', value: 543.5},
+                    {name: '安徽省', value: 342.2},
+                    {name: '福建省', value: 323.1},
+                    {name: '江西省', value: 211.7},
+                    {name: '山东省', value: 808.5},
+                    {name: '河南省', value: 608.5},
+                    {name: '湖北省', value: 340.9},
+                    {name: '湖南省', value: 419.4},
+                    {name: '广东省', value: 967.2},
+                    {name: '广西壮族自治区', value: 2467.2},
+                    {name: '海南省', value: 71.4},
+                    {name: '重庆市', value: 210.5},
+                    {name: '四川省', value: 526.6},
+                    {name: '贵州省', value: 271.9},
+                    {name: '云南省', value: 245.5},
+                    {name: '西藏自治区', value: 0},
+                    {name: '陕西省', value: 356.7},
+                    {name: '甘肃省', value: 2172.7},
+                    {name: '青海省', value: 809.3},
+                    {name: '宁夏自治区', value: 1045.4},
+                    {name: '新疆维吾尔自治区', value: 3561.5}
+                ]
+                const loadMap = (features, mapData, zoom, provinceName) => {
+                    const geoCoordMap = {}
+                    features.forEach(item => {
+                        const {properties} = item
+                        const {cp, name} = properties
+                        geoCoordMap[name] = cp
+                    })
+                    const option = {
+                        silent: false,
+                        tooltip: {
+                            trigger: "item",
+                            show: true,
+                            textStyle: {
+                                fontSize: 14,
+                                color: "#fff",
+                            },
+                            borderWidth: 3,
+                            borderColor: 'rgba(10, 113, 174, 0.8)',
+                            backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            extraCssText: "padding: 0;",
+                            formatter: function (params) {
+                                if (params.data) {
+                                    return `
                     <div class="map-tooltip">
                         <div class="map-tooltip-header" style="border-bottom: 1px solid #5CB2E3; height: 40px; display: flex;align-items: center; padding: 0 10px;">
                             <div class="header-icon" style="width: 5px;height: 5px; border-radius: 50%; background: #1CD5FF; margin-right: 5px;"></div>
-                            <div class="header-text">${ params.data.name }</div>
+                            <div class="header-text">${params.data.name}</div>
                         </div>
                         <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
                             <div class="content-item">年度: ${currentYear}年</div>
@@ -1112,191 +1122,190 @@
                         </div>
                     </div>
                   `
-                } else {
-                  return 'tooltip'
+                                }
+                            }
+                        },
+                        geo: {
+                            map: provinceName,
+                            roam: false,
+                            zoom,
+                            itemStyle: {
+                                borderColor: '#84B2FD',
+                                color: 'transparent',
+                                borderWidth: 3,
+                            },
+                            emphasis: {
+                                //当鼠标放上去  地区区域是否显示名称
+                                label: {
+                                    show: true,
+                                    color: "#fff",
+                                    backgroundColor: "rgba(0, 0, 0, .25)",
+                                },
+                                itemStyle: {
+                                    color: '#fcf565'
+                                },
+                            },
+                            select: {
+                                label: {
+                                    show: true,
+                                    color: "#fff"
+                                },
+                                itemStyle: {
+                                    color: {
+                                        image: '../assets/images/map/地图选中.jpg'
+                                    }
+                                }
+                            },
+                            label: {
+                                show: true,
+                                color: '#fff',
+                                position: 'top',
+                                offset: [0, -20],
+                                fontSize: 12,
+                                padding: 10
+                            }
+                        },
+                        visualMap: {
+                            max: 5000,
+                            calculable: true,
+                            inRange: {
+                                color: ['#115C9E', '#16EB9C']
+                            },
+                            padding: [0, 0, 50, 50],
+                            textStyle: {
+                                color: '#fff'
+                            },
+                            text: ['高', '低'],
+                        },
+                        series: [{
+                            map: provinceName,
+                            zoom: this.zoom,
+                            geoIndex: 0,
+                            coordinateSystem: 'geo',
+                            selectedMode: 'single',
+                            showLegendSymbol: true,
+                            type: 'map',
+                            roam: false,
+                            label: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {
+                                        color: "#fff",
+                                    }
+                                },
+                                emphasis: {
+                                    show: false,
+                                    textStyle: {
+                                        color: "#fff",
+                                    }
+                                },
+                            },
+                            data: mapData
+                        }]
+                    }
+                    myChart.setOption(option)
                 }
-              }
+
+                $.get(`../assets/mapJson/全国.json`, function (data) {
+                    // echarts.registerMap('china', data) 显示南海九段线
+                    echarts.getMap("china").geoJson.features;
+                    loadMap(data.features, data.features.map(item => {
+                        return {
+                            name: item.properties.name,
+                            value: parseFloat((Math.random() * 1000).toFixed(2))
+                        }
+                    }), 1.2, 'china')
+                })
+
+                myChart.on('click', params => {
+                    that.mapActive = "province"
+                    const {name: provinceName} = params;
+                    $.get(`../assets/mapJson/${provinceName}.json`, function (data) {
+                        echarts.registerMap(provinceName, data);
+                        loadMap(data.features, data.features.map(item => {
+                            return {
+                                name: item.properties.name,
+                                value: parseFloat((Math.random() * 1000).toFixed(2))
+                            }
+                        }), 0.9, provinceName)
+                    })
+                })
             },
-            geo: {
-              map: provinceName,
-              roam: false,
-              zoom,
-              itemStyle: {
-                borderColor: '#84B2FD',
-                color: 'transparent',
-                borderWidth: 3,
-              },
-              emphasis: {
-                //当鼠标放上去  地区区域是否显示名称
-                label: {
-                  show: false,
-                  color: "#fff",
-                  backgroundColor: "rgba(0, 0, 0, .25)",
-                },
-                itemStyle: {
-                  color: '#fcf565'
-                },
-              },
-              select: {
-                label: {
-                  show: true,
-                  color: "#fff"
-                },
-                itemStyle: {
-                  color: {
-                    image: '../assets/images/map/地图选中.jpg'
-                  }
-                }
-              },
-              label: {
-                show: true,
-                color: '#fff',
-                position: 'top',
-                offset: [0, -20],
-                fontSize: 12,
-                padding: 10,
-                backgroundColor: 'rgba(0,0 ,0, .25)'
-              }
+
+            handleMapChina() {
+                this.mapActive = 'china';
+                this.drawMapChart();
             },
-            visualMap: {
-              max: 5000,
-              calculable: true,
-              inRange: {
-                color: ['#115C9E', '#16EB9C']
-              },
-              padding: [0, 0, 50, 50],
-              textStyle: {
-                color: '#fff'
-              },
-              text: ['高', '低'],
+
+            handleNavClick(item) {
+                window.location.href = item.location;
             },
-            series: [{
-              map: provinceName,
-              zoom: this.zoom,
-              geoIndex: 0,
-              coordinateSystem: 'geo',
-              selectedMode: 'single',
-              showLegendSymbol: true,
-              type: 'map',
-              roam: false,
-              label: {
-                normal: {
-                  show: true,
-                  textStyle: {
-                    color: "#fff",
-                  }
-                },
-                emphasis: {
-                  show: false,
-                  textStyle: {
-                    color: "#fff",
-                  }
-                },
-              },
-              data: mapData
-            }]
-          }
-          myChart.setOption(option)
-        }
-        $.get(`../assets/mapJson/全国.json`, function (data) {
-          echarts.registerMap('china', data);
-          loadMap(data.features, data.features.map(item => {
-            return {
-              name: item.properties.name,
-              value: parseFloat((Math.random() * 1000).toFixed(2))
+
+            handleFetchDLAreaData() {
+                const yearMock = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+                const alreadyAreaData = this.provinceData.map(area => {
+                    return {
+                        area,
+                        value: Math.floor(Math.random() * 10000),
+                        year: yearMock[Math.ceil(Math.random() * 10)] || 2023
+                    }
+                })
+                const notReachedAreaData = this.provinceData.map((area, index) => {
+                    return {
+                        area,
+                        value: Math.random().toFixed(1),
+                        year: yearMock[Math.ceil(Math.random() * 10)] || 2023
+                    }
+                })
+                this.alreadyAreaData = alreadyAreaData;
+                this.notReachedAreaData = notReachedAreaData;
+                this.areaTableHeight = $('.table-wrap').height();
+            },
+
+            handleToggleSceneData(activeType) {
+                this.activeSceneType = activeType;
+                this.fetchDataScene();
             }
-          }), 1.1, 'china')
-        })
-
-        myChart.on('click',  params => {
-          that.mapActive = "province"
-          const { name: provinceName } = params;
-          $.get(`../assets/mapJson/${provinceName}.json`, function (data) {
-            echarts.registerMap(provinceName, data);
-            loadMap(data.features, data.features.map(item => {
-              return {
-                name: item.properties.name,
-                value: parseFloat((Math.random() * 1000).toFixed(2))
-              }
-            }), 0.9, provinceName)
-          })
-        })
-      },
-
-      handleMapChina() {
-        this.mapActive = 'china';
-        this.drawMapChart();
-      },
-
-      handleNavClick(item) {
-        window.location.href = item.location;
-      },
-
-      handleFetchDLAreaData() {
-        const yearMock = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
-        const alreadyAreaData = this.provinceData.map(area => {
-          return {
-            area,
-            value: Math.floor(Math.random() * 10000),
-            year: yearMock[Math.ceil(Math.random() * 10)] || 2023
-          }
-        })
-        const notReachedAreaData = this.provinceData.map((area, index) => {
-          return {
-            area,
-            value: Math.random().toFixed(1),
-            year: yearMock[Math.ceil(Math.random() * 10)] || 2023
-          }
-        })
-        this.alreadyAreaData = alreadyAreaData;
-        this.notReachedAreaData = notReachedAreaData;
-        this.areaTableHeight = $('.table-wrap').height();
-      },
-
-      handleToggleSceneData(activeType) {
-        this.activeSceneType = activeType;
-        this.fetchDataScene();
-      }
-    },
-    computed: {
-      navLeft() {
-        return this.navList.slice(0, 4)
-      },
-      navRight() {
-        return this.navList.slice(4)
-      },
-      provinceData() {
-        return provinceData
-      }
-    },
-    watch: {
-      mapActive: {
-        immediate: true,
-        handler(mapActive) {
-          if (mapActive === 'china') {
-            this.leftBtnClass = 'area-group-item area-group-item--active'
-            this.rightBtnClass = 'area-group-item left-active'
-          } else {
-            this.rightBtnClass = 'area-group-item area-group-item--active'
-            this.leftBtnClass = 'area-group-item right-active'
-          }
+        },
+        computed: {
+            navLeft() {
+                return this.navList.slice(0, 4)
+            },
+            navRight() {
+                return this.navList.slice(4)
+            },
+            provinceData() {
+                return provinceData
+            }
+        },
+        watch: {
+            mapActive: {
+                immediate: true,
+                handler(mapActive) {
+                    if (mapActive === 'china') {
+                        this.leftBtnClass = 'area-group-item area-group-item--active'
+                        this.rightBtnClass = 'area-group-item left-active'
+                    } else {
+                        this.rightBtnClass = 'area-group-item area-group-item--active'
+                        this.leftBtnClass = 'area-group-item right-active'
+                    }
+                }
+            }
+        },
+        mounted() {
+            this.$nextTick(() => {
+                this.drawXFZLChart();
+                this.drawPFZLChart();
+                this.drawPFQDChart();
+                this.fetchDataScene();
+                this.fetchDataTaskGXL();
+                this.fetchDataJJCB();
+                this.drawMapChart();
+                this.handleFetchDLAreaData();
+            })
+            this.getCurrentDateTime();
         }
-      }
-    },
-    mounted() {
-      this.$nextTick(() => {
-        this.drawXFZLChart();
-        this.drawPFZLChart();
-        this.drawPFQDChart();
-        this.fetchDataScene();
-        this.fetchDataTaskGXL();
-        this.fetchDataJJCB();
-        this.drawMapChart();
-        this.handleFetchDLAreaData();
-      })
-      this.getCurrentDateTime();
-    }
-  })
+    })
 </script>
 </body>
 </html>

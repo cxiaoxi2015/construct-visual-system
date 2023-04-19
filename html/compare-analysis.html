@@ -402,9 +402,22 @@
         mounted() {
             this.getCurrentDateTime();
 
+            $('.compare-box').on('mouseenter', '.city', function() {
+                $('.pinyin-hover').removeClass('pinyin-hover');
+                $(this)
+                    .parent('.city-container')
+                    .prev('.pinyin')
+                    .addClass('pinyin-hover')
+            }).on('mouseleave', '.city', function() {
+                $(this)
+                    .parent('.city-container')
+                    .prev('.pinyin')
+                    .removeClass('pinyin-hover')
+            })
             this.$nextTick(() => {
-                $('.city').hover(function () {
-                    $('.pinyin-hover').removeClass('pinyin-hover');
+                $('.city').click(function () {
+                    console.log('city hover')
+                    // $('.pinyin-hover').removeClass('pinyin-hover');
                     $(this)
                         .parent('.city-container')
                         .prev('.pinyin')

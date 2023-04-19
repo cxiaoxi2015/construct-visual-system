@@ -228,7 +228,8 @@
                 currentYear: '2023',
                 mapActive: 'china',
                 leftBtnClass: '',
-                rightBtnClass: ''
+                rightBtnClass: '',
+                appReady: false
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -1386,7 +1387,7 @@
                                 emphasis: {
                                     //当鼠标放上去  地区区域是否显示名称
                                     label: {
-                                        show: false,
+                                        show: true,
                                         color: "#fff",
                                         backgroundColor: "rgba(0, 0, 0, .25)",
                                     },
@@ -1404,10 +1405,8 @@
                                     show: true,
                                     color: '#fff',
                                     position: 'top',
-                                    offset: [0, -20],
                                     fontSize: 12,
-                                    padding: 10,
-                                    backgroundColor: 'rgba(0,0 ,0, .25)'
+                                    padding: 10
                                 }
                             },
                             visualMap: {
@@ -1451,13 +1450,14 @@
                         myChart.setOption(option)
                     }
                     $.get(`../assets/mapJson/全国.json`, function (data) {
-                        echarts.registerMap('china', data);
+                        // echarts.registerMap('china', data) 显示南海九段线
+                        echarts.getMap("china").geoJson.features;
                         loadMap(data.features, data.features.map(item => {
                             return {
                                 name: item.properties.name,
                                 value: parseFloat((Math.random() * 1000).toFixed(2))
                             }
-                        }), 1.1, 'china')
+                        }), 1.2, 'china')
                     })
 
                     myChart.on('click',  params => {

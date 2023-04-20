@@ -297,10 +297,20 @@ $hoverColor: #efe526;
       }
       .xz-item {
         flex: 1;
-        margin-bottom: 18px;
         display: flex;
         flex-direction: column;
         position: relative;
+        margin-bottom: 18px;
+        @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
+        background-size: 100% 100%;
+        .collapse-item-wrap {
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          height: 100%;
+          @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
+          background-size: 100% 100%;
+        }
         &-title {
           font-size: 0.2rem;
           font-weight: bold;
@@ -315,8 +325,6 @@ $hoverColor: #efe526;
         &:last-child {
           margin-bottom: 0;
         }
-        @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
-        background-size: 100% 100%;
         .chart-toggle-group {
           display: flex;
           position: absolute;
@@ -375,7 +383,7 @@ $hoverColor: #efe526;
               font-size: 0.32rem;
               font-weight: bold;
               padding: 5px 10px;
-              color: #FBF014;
+              color: #fbf014;
               @include bg(url('../../assets/images/xianzhuang/value-item.png'));
               background-size: 100% 100%;
               display: flex;

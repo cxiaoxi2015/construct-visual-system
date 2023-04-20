@@ -11,6 +11,7 @@
 </head>
 <body>
     <div id="app">
+        <div class="mask" v-show="showMask"></div>
         <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
 
         <!-- header -->
@@ -91,9 +92,19 @@
                     <div class="xz-item-title">能耗总量</div>
                     <div class="chart-container" id="nhzl"></div>
                 </div>
-                <div class="xz-item">
-                    <div class="xz-item-title">用能占比</div>
-                    <div class="chart-container" id="ynzb"></div>
+                <div class="xz-item" style="background: none;">
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item">
+                            用能占比
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseYNZB }, 'collapseYNZB']"
+                                 @click="handleCollapseClick('YNZB')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseYNZB ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="ynzb" v-if="loadChart.YNZB"></div>
+                    </div>
                 </div>
                 <div class="xz-item">
                     <div class="xz-item-title">用能增速</div>
@@ -205,7 +216,8 @@
                     {
                         iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
                         iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
-                        name: "数据查询"
+                        name: "数据查询",
+                        location: 'data-query.html'
                     }
                 ],
                 year: 2023,
@@ -229,7 +241,11 @@
                 mapActive: 'china',
                 leftBtnClass: '',
                 rightBtnClass: '',
-                appReady: false
+                collapseYNZB: true,
+                showMask: false,
+                loadChart: {
+                    YNZB: true
+                }
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -423,13 +439,38 @@
                 /**
                  * 绘制用能占比图表
                  */
-                drawYNZBChart() {
+                drawYNZBChart(showDataZoom = true) {
                     const myChart = echarts.init(document.getElementById('ynzb'));
                     const seriesData = [], yearData = [];
                     for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
                         yearData.push(year)
                         seriesData.push((Math.random() * 10).toFixed(1))
                     }
+                    const dataZoom = showDataZoom && [
+                        {
+                            show: showDataZoom,
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor: 'transparent',
                         tooltip: {
@@ -503,30 +544,7 @@
                                 color: '#fff'
                             }
                         },
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: {
                             data: seriesData,
                             type: 'line',
@@ -1486,6 +1504,54 @@
 
                 handleCompareAnalysisClick() {
                     window.location.href = `compare-analysis.html?type=${this.mapActive}`
+                },
+
+                handleCollapseClick(field) {
+                    const itemField = `collapse${field}`
+                    const collapseEl = $(`.${itemField}`).parents('.collapse-item-wrap');
+                    const height = collapseEl.height()
+                    const offset = collapseEl.offset();
+                    const mapContainerEl = $("#mapContainer");
+                    if (this[itemField]) {
+                        this[`${itemField}Width`] = collapseEl.width();
+                        this[itemField] = false;
+                        this.showMask = true;
+                        collapseEl.css({
+                            position: 'fixed',
+                            height: `${height}px`,
+                            top: `${offset.top}px`,
+                            left: `${offset.left}px`,
+                            zIndex: 1000,
+                            backgroundColor: '#01417c'
+                        })
+                        this.loadChart.YNZB = false;
+                        collapseEl.stop().animate({
+                            width: `${mapContainerEl.offset().left + mapContainerEl.width()}`
+                        }, 200)
+                        setTimeout(() => {
+                            this.loadChart.YNZB = true;
+                            this.$nextTick(() => {
+                                this[`draw${field}Chart`](false);
+                            })
+                        }, 200)
+                    } else {
+                        this[itemField] = true;
+                        this.showMask = false;
+                        collapseEl.css({
+                            backgroundColor: 'transparent'
+                        })
+                        this.loadChart.YNZB = false;
+                        collapseEl.stop().animate({
+                            position: 'static',
+                            width: this[`${itemField}Width`]
+                        }, 200)
+                        setTimeout(() => {
+                            this.loadChart.YNZB = true;
+                            this.$nextTick(() => {
+                                this[`draw${field}Chart`]();
+                            })
+                        }, 200)
+                    }
                 }
             },
             computed: {

@@ -89,10 +89,20 @@
         <div class="container">
             <div class="layout-ele">
                 <div class="xz-item">
-                    <div class="xz-item-title">能耗总量</div>
-                    <div class="chart-container" id="nhzl"></div>
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item">
+                            能耗总量
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseNHZL }, 'collapseNHZL']"
+                                 @click="handleCollapseClick('NHZL')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseYNZB ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="nhzl" v-if="loadChart.NHZL"></div>
+                    </div>
                 </div>
-                <div class="xz-item" style="background: none;">
+                <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item">
                             用能占比
@@ -107,8 +117,18 @@
                     </div>
                 </div>
                 <div class="xz-item">
-                    <div class="xz-item-title">用能增速</div>
-                    <div class="chart-container" id="ynzs"></div>
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item">
+                            用能增速
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseYNZS }, 'collapseYNZS']"
+                                 @click="handleCollapseClick('YNZS')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseYNZS ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="ynzs" v-if="loadChart.YNZS"></div>
+                    </div>
                 </div>
             </div>
             <div class="layout-ele">
@@ -138,24 +158,54 @@
             </div>
             <div class="layout-ele">
                 <div class="xz-item">
-                    <div class="xz-item-title">用能结构</div>
-                    <div class="chart-container" id="ynjg"></div>
-                </div>
-                <div class="xz-item">
-                    <div class="xz-item-title">电气化率</div>
-                    <div class="chart-container" id="dqhl"></div>
-                </div>
-                <div class="xz-item">
-                    <div class="xz-item-title">用能强度</div>
-                    <div class="chart-toggle-group">
-                        <div class="group-item"
-                             :class="[ynqdActive === 1 && 'group-item--active']"
-                             @click="handleYNQDToggle(1)">人均</div>
-                        <div class="group-item"
-                             :class="[ynqdActive === 2 && 'group-item--active']"
-                             @click="handleYNQDToggle(2)">面均</div>
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item in-right">
+                            用能结构
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseYNJG }, 'collapseYNJG']"
+                                 @click="handleCollapseClick('YNJG')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseYNJG ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="ynjg" v-if="loadChart.YNJG"></div>
                     </div>
-                    <div class="chart-container" id="ynqd"></div>
+                </div>
+                <div class="xz-item">
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item in-right">
+                            电气化率
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseDQHL }, 'collapseDQHL']"
+                                 @click="handleCollapseClick('DQHL')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseDQHL ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="dqhl" v-if="loadChart.DQHL"></div>
+                    </div>
+                </div>
+                <div class="xz-item">
+                    <div class="collapse-item-wrap">
+                        <div class="xz-item-title collapse-item in-right">
+                            用能强度
+                            <div class="collapse-item-btn"
+                                 :class="[{ 'is-collapsed': collapseYNQD }, 'collapseYNQD']"
+                                 @click="handleCollapseClick('YNQD')">
+                                <span class="iconfont">&#xe622;</span>
+                                {{ collapseYNQD ? '展开' : '收起' }}
+                            </div>
+                        </div>
+                        <div class="chart-toggle-group" style="right: 0.25rem;">
+                            <div class="group-item"
+                                 :class="[ynqdActive === 1 && 'group-item--active']"
+                                 @click="handleYNQDToggle(1)">人均</div>
+                            <div class="group-item"
+                                 :class="[ynqdActive === 2 && 'group-item--active']"
+                                 @click="handleYNQDToggle(2)">面均</div>
+                        </div>
+                        <div class="chart-container" id="ynqd" v-if="loadChart.YNQD"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -242,9 +292,19 @@
                 leftBtnClass: '',
                 rightBtnClass: '',
                 collapseYNZB: true,
+                collapseNHZL: true,
+                collapseYNZS: true,
+                collapseYNJG: true,
+                collapseDQHL: true,
+                collapseYNQD: true,
                 showMask: false,
                 loadChart: {
-                    YNZB: true
+                    YNZB: true,
+                    NHZL: true,
+                    YNZS: true,
+                    YNJG: true,
+                    DQHL: true,
+                    YNQD: true
                 }
             },
             methods: {
@@ -264,7 +324,7 @@
                 /**
                  * 绘制能耗总量图表
                  */
-                drawNHZLChart() {
+                drawNHZLChart(showDataZoom = true) {
                     const nhzlData = {
                         gonggong: [],
                         juzhu: [],
@@ -276,6 +336,30 @@
                         nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('nhzl'));
+                    const dataZoom = showDataZoom && [
+                        {
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
@@ -295,10 +379,10 @@
                             }
                         },
                         grid: {
-                            top: '25%',
-                            left: '5%',
-                            right: '8%',
-                            bottom: '15%',
+                            top: showDataZoom ? '25%' : '20%',
+                            left: showDataZoom ? '5%' : '2%',
+                            right: showDataZoom ?'5%' : '2%',
+                            bottom: showDataZoom ? '15%' : '10%',
                             containLabel: true
                         },
                         legend: {
@@ -362,30 +446,7 @@
                                 }
                             },
                         ],
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: [
                             {
                                 name: "统计",
@@ -492,8 +553,8 @@
                         },
                         grid: {
                             top: '20%',
-                            left: '5%',
-                            right: '8%',
+                            left: showDataZoom ? '5%' : '2%',
+                            right: showDataZoom ?'5%' : '2%',
                             bottom: '15%',
                             containLabel: true
                         },
@@ -567,7 +628,7 @@
                 /**
                  * 绘制用能增速图表
                  */
-                drawYNZSChart() {
+                drawYNZSChart(showDataZoom = true) {
                     const ynzsData = []
                     for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
                         ynzsData.push({
@@ -583,6 +644,30 @@
                         cfData.push(item.actual)
                     })
                     const myChart = echarts.init(document.getElementById('ynzs'));
+                    const dataZoom = showDataZoom && [
+                        {
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
@@ -611,14 +696,14 @@
                             }
                         },
                         grid: {
-                            top: '20%',
-                            left: '5%',
-                            right: '8%',
-                            bottom: '15%',
+                            top: showDataZoom ? '20%' : '15%',
+                            left: showDataZoom ? '5%' : '2%',
+                            right: showDataZoom ?'5%' : '2%',
+                            bottom: showDataZoom ? '15%' : '10%',
                             containLabel: true
                         },
                         legend: {
-                            top: "0%",
+                            top: "3%",
                             right: '2%',
                             textStyle: {
                                 color: "#fff",
@@ -677,30 +762,7 @@
                                 color: '#fff'
                             }
                         },
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: [
                             {
                                 name: "统计",
@@ -747,7 +809,7 @@
                 /**
                  * 绘制用能结构图表
                  */
-                drawYNJGChart() {
+                drawYNJGChart(showDataZoom = true) {
                     const myChart = echarts.init(document.getElementById('ynjg'));
                     const yearData = []
                     for (let i = 2005; i < new Date().getFullYear() + 1; i++) {
@@ -867,7 +929,30 @@
                             }
                         })
                     })
-
+                    const dataZoom = showDataZoom && [
+                        {
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor: "transparent",
                         title:{
@@ -875,7 +960,7 @@
                         },
                         legend: {
                             top: "2%",
-                            left: '2%',
+                            left: showDataZoom ? '2%' : '10px',
                             textStyle: {
                                 color: "#fff",
                                 fontSize: 12
@@ -902,10 +987,10 @@
                             },
                         },
                         grid: {
-                            top: '30%',
-                            left: '3%',
-                            right: '4%',
-                            bottom: '15%',
+                            top: showDataZoom ? '30%' : '20%',
+                            left: showDataZoom ? '3%' : '1%',
+                            right: showDataZoom ? '4%' : '1%',
+                            bottom: showDataZoom ? '15%' : '5%',
                             containLabel: true
                         },
                         xAxis : [
@@ -943,30 +1028,7 @@
                                 }
                             }
                         ],
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: seriesData
                     }
                     myChart.setOption(option)
@@ -975,7 +1037,7 @@
                 /**
                  * 绘制电气化率图表
                  */
-                drawDQHLChart() {
+                drawDQHLChart(showDataZoom = true) {
                     const nhzlData = {
                         gonggong: [],
                         juzhu: [],
@@ -987,6 +1049,30 @@
                         nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('dqhl'));
+                    const dataZoom = showDataZoom && [
+                        {
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
@@ -1011,14 +1097,14 @@
                             }
                         },
                         grid: {
-                            top: '30%',
-                            left: '5%',
-                            right: '5%',
-                            bottom: '15%',
+                            top: showDataZoom ? '30%' : '25%',
+                            left: showDataZoom ? '5%' : '1%',
+                            right: showDataZoom ?'5%' : '1.5%',
+                            bottom: showDataZoom ? '15%' : '5%',
                             containLabel: true
                         },
                         legend: {
-                            left: '5%',
+                            left: showDataZoom ? '5%' : '12px',
                             padding: [20, 30, 0, 0],
                             itemGap: 34,
                             data: ['电力消耗总量亿kwh', '电气化率'],
@@ -1109,30 +1195,7 @@
                                 }
                             }
                         ],
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: [
                             {
                                 name: "电力消耗总量亿kwh",
@@ -1169,7 +1232,7 @@
                 /**
                  * 绘制用能强度图表
                  */
-                drawYNQDChart() {
+                drawYNQDChart(showDataZoom = true) {
                     const nhzlData = {
                         gonggong: [],
                         juzhu: [],
@@ -1181,6 +1244,30 @@
                         nhzlData.year.push(year)
                     }
                     const myChart = echarts.init(document.getElementById('ynqd'));
+                    const dataZoom = showDataZoom && [
+                        {
+                            type: 'slider',
+                            startValue: 0,
+                            endValue: 7,
+                            bottom: '20',
+                            left: '30',
+                            height: 10,
+                            borderColor: '#1479A1',
+                            textStyle: {
+                                color: '#05D5FF',
+                            },
+                            backgroundColor: '#032E5C',
+                            dataBackground: {
+                                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+                            },
+                            moveHandleStyle: {
+                                color: 'rgba(38, 203, 251, 1)',
+                                borderColor: 'rgba(38, 203, 251, 1)'
+                            },
+                            fillerColor: 'rgba(250, 84, 28, .1)'
+                        }
+                    ]
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
@@ -1209,10 +1296,10 @@
                             }
                         },
                         grid: {
-                            top: '30%',
-                            left: '5%',
-                            right: '5%',
-                            bottom: '15%',
+                            top: showDataZoom ? '30%' : '20%',
+                            left: showDataZoom ? '5%' : '2%',
+                            right: showDataZoom ?'5%' : '2%',
+                            bottom: showDataZoom ? '15%' : '5%',
                             containLabel: true
                         },
                         xAxis: [
@@ -1262,30 +1349,7 @@
                                 color: '#fff'
                             }
                         },
-                        dataZoom: [
-                            {
-                                type: 'slider',
-                                startValue: 0,
-                                endValue: 7,
-                                bottom: '20',
-                                left: '30',
-                                height: 10,
-                                borderColor: '#1479A1',
-                                textStyle: {
-                                    color: '#05D5FF',
-                                },
-                                backgroundColor: '#032E5C',
-                                dataBackground: {
-                                    lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                                    areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-                                },
-                                moveHandleStyle: {
-                                    color: 'rgba(38, 203, 251, 1)',
-                                    borderColor: 'rgba(38, 203, 251, 1)'
-                                },
-                                fillerColor: 'rgba(250, 84, 28, .1)'
-                            }
-                        ],
+                        dataZoom,
                         series: {
                             name: "用能强度",
                             type: "bar",
@@ -1512,24 +1576,67 @@
                     const height = collapseEl.height()
                     const offset = collapseEl.offset();
                     const mapContainerEl = $("#mapContainer");
+                    const leftPosKeyMap = {
+                        "NHZL": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top}px`,
+                        },
+                        "YNZB": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top - 100}px`,
+                        },
+                        "YNZS": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top - 100}px`,
+                        }
+                    }
+                    const rightPosKeyMap = {
+                        "YNJG": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top}px`,
+                        },
+                        "DQHL": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top - 100}px`,
+                        },
+                        "YNQD": {
+                            height: `${height + 100}px`,
+                            top: `${offset.top - 100}px`,
+                        }
+                    }
                     if (this[itemField]) {
                         this[`${itemField}Width`] = collapseEl.width();
+                        this[`${itemField}Height`] = collapseEl.height();
+                        this[`${itemField}Top`] = offset.top;
                         this[itemField] = false;
                         this.showMask = true;
-                        collapseEl.css({
-                            position: 'fixed',
-                            height: `${height}px`,
-                            top: `${offset.top}px`,
-                            left: `${offset.left}px`,
-                            zIndex: 1000,
-                            backgroundColor: '#01417c'
-                        })
-                        this.loadChart.YNZB = false;
+                        if (leftPosKeyMap.hasOwnProperty(field)) {
+                            const { height, top } = leftPosKeyMap[field]
+                            collapseEl.css({
+                                position: 'fixed',
+                                height,
+                                top,
+                                left: `${offset.left}px`,
+                                zIndex: 2000,
+                                backdropFilter: 'blur(300px)'
+                            })
+                        } else {
+                            const { height, top } = rightPosKeyMap[field]
+                            collapseEl.css({
+                                position: 'fixed',
+                                height,
+                                top,
+                                right: '11px',
+                                zIndex: 2000,
+                                backdropFilter: 'blur(300px)'
+                            })
+                        }
+                        this.loadChart[field] = false;
                         collapseEl.stop().animate({
-                            width: `${mapContainerEl.offset().left + mapContainerEl.width()}`
+                            width: `${mapContainerEl.offset().left - 15 + mapContainerEl.width()}`
                         }, 200)
                         setTimeout(() => {
-                            this.loadChart.YNZB = true;
+                            this.loadChart[field] = true;
                             this.$nextTick(() => {
                                 this[`draw${field}Chart`](false);
                             })
@@ -1540,13 +1647,16 @@
                         collapseEl.css({
                             backgroundColor: 'transparent'
                         })
-                        this.loadChart.YNZB = false;
+                        this.loadChart[field] = false;
                         collapseEl.stop().animate({
                             position: 'static',
-                            width: this[`${itemField}Width`]
+                            width: this[`${itemField}Width`],
+                            height: this[`${itemField}Height`],
+                            top: this[`${itemField}Top`],
+                            zIndex: 0
                         }, 200)
                         setTimeout(() => {
-                            this.loadChart.YNZB = true;
+                            this.loadChart[field] = true;
                             this.$nextTick(() => {
                                 this[`draw${field}Chart`]();
                             })

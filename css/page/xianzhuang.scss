@@ -301,15 +301,11 @@ $hoverColor: #efe526;
         flex-direction: column;
         position: relative;
         margin-bottom: 18px;
-        @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
-        background-size: 100% 100%;
         .collapse-item-wrap {
           display: flex;
           flex-direction: column;
           position: relative;
           height: 100%;
-          @include bg(url('../../assets/images/xianzhuang/xz-item.png'));
-          background-size: 100% 100%;
         }
         &-title {
           font-size: 0.2rem;
@@ -317,10 +313,36 @@ $hoverColor: #efe526;
           height: 0.48rem;
           line-height: 0.48rem;
           padding-left: 0.35rem;
+          border: 1px solid #007ac7;
+          margin-bottom: -1px;
+          box-shadow: inset 0 0 5px 1px #007ac7;
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            margin-top: -4px;
+            left: 15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #0FD7FE;
+            animation: title-icon 1s linear infinite alternate-reverse;
+            @keyframes title-icon {
+              0% {
+                box-shadow: 0 0 5px 2px #0FD7FE;
+              }
+              100% {
+                box-shadow: 0 0 8px 2px #0FD7FE;
+              }
+            }
+          }
         }
         .chart-container {
           flex: 1;
           overflow: hidden;
+          border: 1px solid #007ac7;
+          box-shadow: inset 0 0 5px 1px #007ac7;
         }
         &:last-child {
           margin-bottom: 0;

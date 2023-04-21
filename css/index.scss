@@ -121,12 +121,24 @@
       }
     }
   }
+  &.in-right {
+    .collapse-item-btn {
+      .iconfont {
+        transform: rotate(0);
+      }
+      &.is-collapsed {
+        .iconfont {
+          transform: rotate(-180deg);
+        }
+      }
+    }
+  }
 }
 
 .mask {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, .15);
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1999;
 }

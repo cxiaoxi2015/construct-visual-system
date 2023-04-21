@@ -15,7 +15,7 @@
 
   <!-- header -->
   <div class="sys-header">
-    <div class="full-screen iconfont">&#xe607;</div>
+    <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
     <div class="home">
       <div class="home-icon iconfont">&#xe751;</div>
       <span class="home-text">首页</span>
@@ -6802,6 +6802,36 @@
       handlePageSizeChange(pageSize) {
         this.page = 1;
         this.tableData = this.originData.slice((this.page - 1) * pageSize, (this.page - 1) * pageSize + pageSize);
+      },
+
+      fullScreenClick() {
+        const isFullScreen = () => {
+          return !! (
+                  document.fullscreen ||
+                  document.mozFullScreen ||
+                  document.webkitIsFullScreen ||
+                  document.webkitFullScreen ||
+                  document.msFullScreen
+          );
+        }
+        const de = document.documentElement;
+        if (!isFullScreen()) {
+          if (de.requestFullscreen) {
+            de.requestFullscreen();
+          } else if (de.mozRequestFullScreen) {
+            de.mozRequestFullScreen();
+          } else if (de.webkitRequestFullScreen) {
+            de.webkitRequestFullScreen();
+          }
+        } else {
+          if(document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if(document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if(document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
       }
     },
     computed: {

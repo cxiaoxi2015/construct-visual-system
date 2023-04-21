@@ -130,4 +130,13 @@
   z-index: 1999;
 }
 
+.full-screen {
+  user-select: none;
+  transition: all 0.2s linear;
+  transform: scale(0.95);
+}
+.full-screen:hover {
+  transform: scale(1.15);
+}
+
 /*# sourceMappingURL=index.css.map */

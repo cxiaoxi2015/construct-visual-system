@@ -121,15 +121,18 @@
         </div>
         <div class="map" id="mapContainer"></div>
       </div>
-      <div class="category">
-        <div class="category-item"
-             :class="[
+      <div class="model-wrap">
+        <div class="model-title">碳达峰预测模型</div>
+        <div class="model">
+          <div class="model-item"
+               :class="[
                             item.value === category && 'category-item--active',
                             item.size === 'small' && 'category-item-small'
                          ]"
-             v-for="(item, index) in categories"
-             :key="index"
-             @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+               v-for="(item, index) in categories"
+               :key="index"
+               @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+        </div>
       </div>
     </div>
     <div class="layout-ele">
@@ -212,29 +215,54 @@
           <div class="xz-item-title collapse-item in-right">
             重点建筑监测
           </div>
-          <div class="chart-container"></div>
+          <div class="chart-container jzjc">
+            <div class="item" v-for="(item, index) in jzjcData" :key="index">
+              <img :src="item.imgSrc" alt="">
+              <div class="item-text">{{ item.name }}</div>
+              <div class="item-value-wrap">
+                <span class="item-value">{{ item.value }}</span>
+                <span class="item-unit">{{ item.unit }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="xz-item">
         <div class="collapse-item-wrap">
           <div class="xz-item-title collapse-item in-right">
             重点行业监管
-            <div class="collapse-item-btn"
-                 :class="[{ 'is-collapsed': collapseYNQD }, 'collapseYNQD']"
-                 @click="handleCollapseClick('YNQD')">
-              <span class="iconfont">&#xe622;</span>
-              {{ collapseYNQD ? '展开' : '收起' }}
+          </div>
+          <div class="chart-container hyjg">
+            <div class="item" v-for="(item, index) in hyjgData" :key="index">
+              <div class="icon-wrap">
+                <div class="icon" :style="{ 'background-image': `url(${item.icon})` }"></div>
+                <span>{{ item.name }}</span>
+              </div>
+              <div class="item-info">
+                <div class="item-info-detail">
+                  <div>数量</div>
+                  <div>
+                    <span class="value">{{ item.count }}</span>
+                    <span class="unit">栋</span>
+                  </div>
+                </div>
+                <div class="item-info-detail">
+                  <div>面积</div>
+                  <div>
+                    <span class="value">{{ item.area }}</span>
+                    <span class="unit">万平方米</span>
+                  </div>
+                </div>
+                <div class="item-info-detail">
+                  <div>数量</div>
+                  <div>
+                    <span class="value">{{ item.value }}</span>
+                    <span class="unit">kgce/㎡</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="chart-toggle-group" style="right: 0.25rem;">
-            <div class="group-item"
-                 :class="[ynqdActive === 1 && 'group-item--active']"
-                 @click="handleYNQDToggle(1)">人均</div>
-            <div class="group-item"
-                 :class="[ynqdActive === 2 && 'group-item--active']"
-                 @click="handleYNQDToggle(2)">面均</div>
-          </div>
-          <div class="chart-container" id="ynqd" v-if="loadChart.YNQD"></div>
         </div>
       </div>
     </div>
@@ -319,17 +347,13 @@
           { categoryName: "建筑业", value: 7, size: "medium" },
           { categoryName: "基础设施", value: 8, size: "medium" }
         ],
-        // 用能强度
-        ynqdActive: 1,
         currentYear: '2023',
         collapseGZDD: true,
-        collapseYNQD: true,
         showMask: false,
         loadChart: {
           YNZB: true,
           TPFYC: true,
-          GZDD: true,
-          YNQD: true
+          GZDD: true
         },
         energyTypeList: [
           { label: "用能", type: 1 },
@@ -338,7 +362,18 @@
         xftpfzl: 1,
         tpfyc: 1,
         rankTableData: [],
-        unit: "万平方米"
+        unit: "万平方米",
+        jzjcData: [
+          { imgSrc: "../assets/images/index/已接入建筑数量.png", name: "已接入建筑数量", value: 2083, unit: "栋" },
+          { imgSrc: "../assets/images/index/已接入建筑面积.png", name: "已接入建筑面积", value: 2349, unit: "万㎡" },
+          { imgSrc: "../assets/images/index/电耗强度.png", name: "电耗强度", value: 103, unit: "kwh/㎡" },
+          { imgSrc: "../assets/images/index/碳排放强度.png", name: "碳排放强度", value: 72.5, unit: "kgco₂/㎡" },
+        ],
+        hyjgData: [
+          { name: "文旅", icon: "../assets/images/index/文旅.png", count: 1300, area: 135, value: 5.21 },
+          { name: "学校", icon: "../assets/images/index/学校.png", count: 1300, area: 135, value: 5.21 },
+          { name: "医院", icon: "../assets/images/index/医院.png", count: 1300, area: 135, value: 5.21 }
+        ]
       },
       methods: {
         getCurrentDateTime() {
@@ -1057,139 +1092,10 @@
         },
 
         /**
-         * 绘制用能强度图表
+         * 获取重点行业监管数据
          */
-        drawYNQDChart(showDataZoom = true) {
-          const nhzlData = {
-            gonggong: [],
-            juzhu: [],
-            year: []
-          }
-          for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-            nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
-            nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
-            nhzlData.year.push(year)
-          }
-          const myChart = echarts.init(document.getElementById('ynqd'));
-          const dataZoom = showDataZoom && [
-            {
-              type: 'slider',
-              startValue: 0,
-              endValue: 7,
-              bottom: '20',
-              left: '30',
-              height: 10,
-              borderColor: '#1479A1',
-              textStyle: {
-                color: '#05D5FF',
-              },
-              backgroundColor: '#032E5C',
-              dataBackground: {
-                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
-                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
-              },
-              moveHandleStyle: {
-                color: 'rgba(38, 203, 251, 1)',
-                borderColor: 'rgba(38, 203, 251, 1)'
-              },
-              fillerColor: 'rgba(250, 84, 28, .1)'
-            }
-          ]
-          const option = {
-            backgroundColor:  'transparent',
-            tooltip: {
-              trigger: 'axis',
-              confine: true,
-              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-              formatter: function(params){
-                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
-              },
-              axisPointer: {
-                type: 'cross',
-                crossStyle: {
-                  axisPointer: {
-                    type: 'cross',
-                    crossStyle: {
-                      color: '#fff'
-                    },
-                    lineStyle: {
-                      type: 'dashed'
-                    }
-                  }
-                },
-                lineStyle: {
-                  type: 'dashed'
-                }
-              }
-            },
-            grid: {
-              top: showDataZoom ? '30%' : '20%',
-              left: showDataZoom ? '5%' : '2%',
-              right: showDataZoom ?'5%' : '2%',
-              bottom: showDataZoom ? '15%' : '5%',
-              containLabel: true
-            },
-            xAxis: [
-              {
-                type: "category",
-                axisTick: {
-                  show: true
-                },
-                axisLine: {
-                  lineStyle: {
-                    color: 'rgba(255, 255, 255, .05)'
-                  }
-                },
-                data: nhzlData.year,
-                axisLabel: {
-                  margin: 10,
-                  fontSize: '.1rem',
-                  formatter: "{value}年",
-                  color: '#fff'
-                }
-              },
-            ],
-            yAxis: {
-              type: "value",
-              name: '单位：kgce/㎡',
-              position: 'left',
-              nameTextStyle: {
-                color: "#fff",
-                fontSize: "",
-                padding: [0, 0, 0, 0],
-              },
-              show: true,
-              axisTick: {
-                show: false,
-              },
-              axisLine: {
-                show: false,
-              },
-              splitLine: {
-                show: true,
-                lineStyle: {
-                  color: "rgba(255, 255, 255, .85)"
-                }
-              },
-              axisLabel: {
-                fontSize: '.12rem',
-                color: '#fff'
-              }
-            },
-            dataZoom,
-            series: {
-              name: "用能强度",
-              type: "bar",
-              barWidth: 8,
-              itemStyle: {
-                borderWidth: 1,
-                color: '#0B7062',
-                borderColor: '#15FED1'
-              },
-              data: nhzlData.gonggong,
-            }
-          };
-          myChart.setOption(option)
+        drawHYJGChart() {
+
         },
 
         handleToggleEnergy(energyType, typeValue) {
@@ -1234,7 +1140,7 @@
           this.drawGZDDChart();
           this.drawJTNLChart();
           this.drawJZJCChart();
-          this.drawYNQDChart();
+          this.drawHYJGChart();
           this.drawMapChart();
         })
       }

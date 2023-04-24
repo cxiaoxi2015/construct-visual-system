@@ -72,6 +72,7 @@
   border: 1px solid #1380AB;
   border-radius: 4px;
   display: none;
+  z-index: 1000;
 }
 .cx-select .cx-option li {
   height: 0.32rem;
@@ -137,6 +138,41 @@
 }
 .full-screen:hover {
   transform: scale(1.15);
+}
+
+.area-group {
+  display: flex;
+  align-items: center;
+  font-size: 0.18rem;
+}
+.area-group-item {
+  width: 1.34rem;
+  height: 0.52rem;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 0.52rem;
+  background-image: url("../assets/images/xianzhuang/right-btn.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.area-group-item:hover {
+  cursor: pointer;
+}
+.area-group-item:first-child {
+  margin-right: -0.35rem;
+}
+.area-group-item.area-group-item--active:first-child {
+  background-image: url("../assets/images/xianzhuang/left-btn-active.png");
+}
+.area-group-item.area-group-item--active:last-child {
+  background-image: url("../assets/images/xianzhuang/right-btn-active.png");
+}
+.area-group-item.left-active {
+  background-image: url("../assets/images/xianzhuang/right-btn.png");
+}
+.area-group-item.right-active {
+  background-image: url("../assets/images/xianzhuang/left-btn.png");
 }
 
 /*# sourceMappingURL=index.css.map */

@@ -1,0 +1,574 @@
+/**
+ * 考评
+ */
+
+$hoverColor: #efe526;
+$activeColor: #d8d42f;
+@mixin transition {
+  transition: all .2s linear;
+}
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
+}
+@mixin bg($img) {
+  background-image: $img;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+@mixin button-style {
+  width: 1.34rem;
+  height: 0.52rem;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 0.52rem;
+  @include bg(url("../../assets/images/xianzhuang/right-btn.png"));
+  &:hover {
+    cursor: pointer;
+  }
+  &:first-child {
+    margin-right: -0.35rem;
+  }
+}
+@mixin button-active-style {
+  background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
+}
+@mixin zoom-in {
+  background-position: center center;
+  animation: zoomIn .2s linear forwards;
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+@mixin breathing($color: #FFF552) {
+  color: $color;
+  animation: breathing 1s linear infinite alternate-reverse;
+  @keyframes breathing {
+    0% {
+      text-shadow: 0 0 0 $color,
+      0 0 8px $color;
+    }
+    100% {
+      text-shadow: 0 0 0 #fff
+    }
+  }
+}
+
+@mixin icon-title {
+  position: absolute;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/images/xianzhuang/bj.png") no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+
+  .sys-title {
+    position: absolute;
+    top: 0.16rem;
+    left: 50%;
+    transform: translateX(-52%);
+    font-size: .34rem;
+    font-weight: bold;
+    color: #DAF9FF;
+    text-align: center;
+  }
+
+  .sys-header {
+    padding: .11rem .27rem .2rem .17rem;
+    display: flex;
+
+    .full-screen {
+      height: .64rem;
+      line-height: .64rem;
+      margin-right: .26rem;
+      @include transition;
+
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+      }
+    }
+
+    .home {
+      display: flex;
+      align-items: center;
+      width: .9rem;
+      height: .64rem;
+      margin-right: .25rem;
+      @include transition;
+
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+
+        .home-text {
+          color: $hoverColor !important;
+        }
+      }
+
+      &-icon {
+        font-size: 0.28rem;
+        margin-right: 0.09rem;
+      }
+
+      &-text {
+        font-size: .2rem;
+        color: #fff;
+      }
+    }
+
+    .nav {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+
+      .sys-title-placeholder {
+        width: 5.95rem;
+      }
+    }
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      flex: 1;
+
+      li {
+        flex: 1;
+        height: .64rem;
+        margin-right: .23rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @include transition;
+
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url("../../assets/images/xianzhuang/nav.png") no-repeat center center;
+          background-size: 100% 100%;
+        }
+
+        &:hover {
+          cursor: pointer;
+          color: $hoverColor;
+
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+
+          .nav-icon {
+            background-image: var(--bgActive) !important;
+          }
+        }
+
+        &.nav-active {
+          color: $hoverColor;
+
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+
+          .nav-icon {
+            background-image: var(--bgActive) !important;
+          }
+        }
+
+        .nav-icon {
+          margin-bottom: 3px;
+          width: 0.2rem;
+          height: 0.18rem;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+
+        .nav-name {
+          text-align: center;
+        }
+      }
+    }
+
+    .header-right-line {
+      width: .1rem;
+      height: .65rem;
+      background: url("../../assets/images/xianzhuang/area-split-line.png") no-repeat;
+      background-size: contain;
+      margin-right: .18rem;
+    }
+
+    .header-right {
+      height: .64rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      &-top {
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 30px;
+          height: 30px;
+          border: 1px solid #01FAFE;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+
+        .text {
+          font-size: .12rem;
+          font-weight: bold;
+          color: #ccc;
+          display: flex;
+          align-items: center;
+
+          a {
+            color: #fff;
+          }
+        }
+      }
+
+      &-bottom {
+        font-size: .14rem;
+        font-weight: bold;
+        color: #01FAFE;
+      }
+    }
+  }
+
+  .area-group {
+    padding: 0 0.2rem;
+    margin: 0.11rem 0;
+  }
+
+  .container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    &-header-line {
+      height: 15px;
+      background: linear-gradient(0deg, rgba(9, 99, 229, 0) 1%, rgba(4, 96, 205, 0.99) 100%);
+    }
+    &-detail {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      padding: 0.11rem 0.2rem 0.2rem;
+      .layout-left-wrap {
+        display: flex;
+        flex-direction: column;
+        width: 6.74rem;
+        margin-right: 0.3rem;
+        .layout-left-top {
+          height: 3.7rem;
+          margin-bottom: 0.2rem;
+        }
+        .layout-left-bottom {
+          flex: 1;
+          overflow: hidden;
+          .kp-item-content {
+            display: flex;
+            flex-direction: column;
+            .table-wrap {
+              flex: 1;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+      .layout-right-wrap {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        .layout-right-top {
+          height: 4.43rem;
+          margin-bottom: 0.2rem;
+          .el-carousel {
+            &__container {
+              .el-carousel__item {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                .chart__container__top,
+                .chart__container__bottom {
+                  display: flex;
+                  width: 100%;
+                  padding: 0 0.25rem;
+                  .item {
+                    flex: 1;
+                    display: flex;
+                    padding: 0.14rem 0.22rem;
+                    align-items: center;
+                    margin-right: 28px;
+                    @include bg(url("../../assets/images/kaoping/考核指标完成情况.png"));
+                    background-size: 100% 100%;
+                    &:last-child {
+                      margin-right: 0;
+                    }
+                    &__img {
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      margin-right: 24px;
+                      img {
+                        width: 53px;
+                        height: 53px;
+                      }
+                    }
+                    &-value-wrap {
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      .item__typeName {
+                        font-size: 0.16rem;
+                        font-weight: bold;
+                        color: #fff;
+                      }
+                      .item__value {
+                        font-size: 0.18rem;
+                        font-weight: bold;
+                        color: #f4e925;
+                      }
+                    }
+                  }
+                }
+                .chart__container__top {
+                  margin-bottom: 0.4rem;
+                }
+              }
+            }
+          }
+          .indicator {
+            display: flex;
+            justify-content: center;
+            &-item {
+              width: 78px;
+              height: 78px;
+              &:hover {
+                cursor: pointer;
+              }
+            }
+            &-prev {
+              @include bg(url("../../assets/images/kaoping/prev.png"));
+              margin-right: 1rem;
+              &:hover {
+                @include bg(url("../../assets/images/kaoping/prev-hover.png"));
+              }
+            }
+            &-next {
+              @include bg(url("../../assets/images/kaoping/next.png"));
+              &:hover {
+                @include bg(url("../../assets/images/kaoping/next-hover.png"));
+              }
+            }
+          }
+        }
+        .layout-right-bottom {
+          flex: 1;
+          overflow: hidden;
+          .kp-item-content {
+            display: flex;
+            flex-direction: column;
+            .table-wrap {
+              flex: 1;
+              overflow: hidden;
+              .el-table__body {
+                .el-table__row {
+                  &:hover {
+                    .cell {
+                      color: #FFE400 !important;
+                      span {
+                        color: #FFE400 !important;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .kp-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.2rem;
+        border: 1px solid #007ac7;
+        box-shadow: inset 0 0 5px 1px #007ac7;
+        &-title {
+          font-size: 0.2rem;
+          font-weight: bold;
+          height: 0.48rem;
+          line-height: 0.48rem;
+          padding-left: 0.35rem;
+          border: 1px solid #007ac7;
+          margin-bottom: -1px;
+          box-shadow: inset 0 0 5px 1px #007ac7;
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            margin-top: -4px;
+            left: 15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #0FD7FE;
+            animation: title-icon 1s linear infinite alternate-reverse;
+            @keyframes title-icon {
+              0% {
+                box-shadow: 0 0 5px 2px #0FD7FE;
+              }
+              100% {
+                box-shadow: 0 0 8px 2px #0FD7FE;
+              }
+            }
+          }
+        }
+        &-content {
+          flex: 1;
+          overflow: hidden;
+        }
+      }
+      .layout-left-top {
+        .kp-item-content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .data-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.82rem;
+            height: 1.9rem;
+            background: url("../../assets/images/kaoping/达峰曲线-item.png") no-repeat 100% 100%;
+            &:first-child {
+              margin-right: 0.37rem;
+              .data-item-icon {
+                background: url("../../assets/images/kaoping/达峰提前至.png") no-repeat 100% 100%;
+              }
+            }
+            &:last-child {
+              .data-item-icon {
+                background: url("../../assets/images/kaoping/达峰指数.png") no-repeat 100% 100%;
+              }
+              .data-item-value {
+                span {
+                  color: #14e144;
+                }
+              }
+            }
+            .data-item-title {
+              display: flex;
+              align-items: center;
+              font-size: 0.24rem;
+              font-weight: bold;
+              margin-bottom: 0.25rem;
+              .data-item-icon {
+                width: 0.27rem;
+                height: 0.27rem;
+                margin-right: 0.08rem;
+                transform: scale(0.95);
+              }
+            }
+            .data-item-value {
+              span {
+                display: inline-block;
+                color: #f7d411;
+                font-size: 0.45rem;
+                font-weight: bold;
+              }
+              .suffix {
+                color: #fff;
+                font-size: 0.28rem;
+                transform: translateY(-5px);
+              }
+            }
+          }
+        }
+      }
+      .table-info {
+        display: flex;
+        align-items: center;
+        padding: 0.2rem 0.1rem;
+        span {
+          font-size: 0.16rem;
+          font-weight: bold;
+          margin-right: 0.1rem;
+        }
+        .el-input__inner {
+          width: 200px;
+          height: 40px;
+          background: #013B78;
+          border: 2px solid #1380BD;
+          border-radius: 4px;
+          color: #fff;
+          font-weight: bold;
+        }
+      }
+      .table-wrap {
+        .el-table {
+          background: transparent;
+          margin: 0 -2px;
+          &__cell {
+            background: transparent;
+            color: #fff;
+          }
+          .el-table__header {
+            border: 2px solid #138BDC;
+            tr {
+              background: #074782;
+            }
+            .el-table__cell {
+              border-bottom: none;
+            }
+          }
+          .el-table__body {
+            tr {
+              background: transparent;
+            }
+            .el-table__cell {
+              border-bottom: 2px dashed #3771B2;
+              font-weight: bold;
+            }
+          }
+        }
+        .cell {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .is--warning {
+          color: #FF0000;
+        }
+        .el-table--border::after, .el-table--group::after, .el-table::before,
+        .el-table__fixed-right::before, .el-table__fixed::before {
+          display: none;
+        }
+      }
+    }
+  }
+}

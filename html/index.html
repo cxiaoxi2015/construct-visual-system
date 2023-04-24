@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>城乡建设领域碳排放监测管理平台</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/elementUI.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/page/index.css">
+  <style>
+
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+  <!-- header -->
+  <div class="sys-header">
+    <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
+    <div class="home active" @click="location.href('index.html')">
+      <div class="home-icon iconfont">&#xe751;</div>
+      <span class="home-text">首页</span>
+    </div>
+    <div class="nav">
+      <ul class="nav-left">
+        <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"
+               :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name">{{ item.name }}</div>
+        </li>
+      </ul>
+      <div class="sys-title-placeholder"></div>
+      <ul class="nav-right">
+        <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"
+               :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+          <dl class="nav-name" v-else>
+            <dt>{{ item.name.substring(0, 4) }}</dt>
+            <dd>{{ item.name.substring(4) }}</dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div class="header-right-line"></div>
+    <div class="header-right">
+      <div class="header-right-top">
+        <img class="avatar"
+             src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+        <div class="text">
+          <span>欢迎您！</span>
+          <a>{{ userName }}</a>
+        </div>
+      </div>
+      <div class="header-right-bottom">{{ dateTime }}</div>
+    </div>
+  </div>
+  <!-- 系统内容部分 -->
+  <div class="container">
+    <div class="layout-ele">
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item">
+            用能消费总量/碳排放总量
+            <div class="tabs">
+              <div class="tab-item"
+                   :class="{ 'tab-item--active': xftpfzl === item.type }"
+                   v-for="(item, index) in energyTypeList"
+                   :key="index"
+                   @click="handleToggleEnergy('xftpfzl', item.type)">{{ item.label }}</div>
+            </div>
+          </div>
+          <div class="chart-container" id="xftpfzl"></div>
+        </div>
+      </div>
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item">
+            能源消费预测碳排放预测
+            <div class="tabs">
+              <div class="tab-item"
+                   :class="{ 'tab-item--active': tpfyc === item.type }"
+                   v-for="(item, index) in energyTypeList"
+                   :key="index"
+                   @click="handleToggleEnergy('tpfyc', item.type)">{{ item.label }}</div>
+            </div>
+          </div>
+          <div class="chart-container" id="tpfyc"></div>
+        </div>
+      </div>
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item">
+            各省碳达峰专项工作调度
+            <div class="collapse-item-btn"
+                 :class="[{ 'is-collapsed': collapseGZDD }, 'collapseGZDD']"
+                 @click="handleCollapseClick('GZDD')">
+              <span class="iconfont">&#xe622;</span>
+              {{ collapseGZDD ? '展开' : '收起' }}
+            </div>
+          </div>
+          <div class="chart-container" id="gzdd" v-if="loadChart.GZDD"></div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-ele">
+      <div class="map-wrap">
+        <div class="energy-consumption">
+          <div class="energy-consumption-title">能耗</div>
+          <div class="energy-consumption-value">
+            <div class="value-item">1</div>
+            <div class="value-item">1</div>
+            <div class="value-item">.</div>
+            <div class="value-item">8</div>
+          </div>
+          <div class="energy-consumption-suffix">亿吨标准煤</div>
+        </div>
+        <div class="map" id="mapContainer"></div>
+      </div>
+      <div class="category">
+        <div class="category-item"
+             :class="[
+                            item.value === category && 'category-item--active',
+                            item.size === 'small' && 'category-item-small'
+                         ]"
+             v-for="(item, index) in categories"
+             :key="index"
+             @click="handleCategoryClick(item)">{{ item.categoryName }}</div>
+      </div>
+    </div>
+    <div class="layout-ele">
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item in-right">
+            新增减碳能力排名
+          </div>
+          <div class="table-wrap">
+            <el-table
+              :data="rankTableData"
+              height="100%">
+              <el-table-column
+                label="省份"
+                prop="year"
+                align="center"
+                width="80">
+                <template #default="{ row }">
+                  <span>{{ row.year }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="task"
+                sortable
+                align="center"
+                width="115">
+                <template #header="{ column, $index }">
+                  <div class="label">
+                    <div class="label-text">{{ $index === 1 && '目标任务量' }}</div>
+                    <div class="label-unit">(万吨)</div>
+                  </div>
+                </template>
+                <template #default="{ row }">
+                  <span style="color: #FFE400;">{{ row.task }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                property="real"
+                sortable
+                align="center"
+                width="115">
+                <template #header="{ column, $index }">
+                  <div class="label">
+                    <div class="label-text">{{ $index === 2 && '实际任务量' }}</div>
+                    <div class="label-unit">(万吨)</div>
+                  </div>
+                </template>
+                <template #default="{ row }">
+                  <span style="color: #14E144;">{{ row.real }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="cut"
+                sortable
+                align="center">
+                <template #header="{ column, $index }">
+                  <div class="label">
+                    <div class="label-text">{{ $index === 3 && '差值' }}</div>
+                    <div class="label-unit">(万平方米)</div>
+                  </div>
+                </template>
+                <template #default="{ row }">
+                  <span :class="{ 'is--warning': row.cut < 0 }">{{ row.cut }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="排名"
+                align="center"
+                width="40">
+                <template #default="{ row, $index }">
+                  <span style="color: #14e144;">{{ $index + 1 }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+      </div>
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item in-right">
+            重点建筑监测
+          </div>
+          <div class="chart-container"></div>
+        </div>
+      </div>
+      <div class="xz-item">
+        <div class="collapse-item-wrap">
+          <div class="xz-item-title collapse-item in-right">
+            重点行业监管
+            <div class="collapse-item-btn"
+                 :class="[{ 'is-collapsed': collapseYNQD }, 'collapseYNQD']"
+                 @click="handleCollapseClick('YNQD')">
+              <span class="iconfont">&#xe622;</span>
+              {{ collapseYNQD ? '展开' : '收起' }}
+            </div>
+          </div>
+          <div class="chart-toggle-group" style="right: 0.25rem;">
+            <div class="group-item"
+                 :class="[ynqdActive === 1 && 'group-item--active']"
+                 @click="handleYNQDToggle(1)">人均</div>
+            <div class="group-item"
+                 :class="[ynqdActive === 2 && 'group-item--active']"
+                 @click="handleYNQDToggle(2)">面均</div>
+          </div>
+          <div class="chart-container" id="ynqd" v-if="loadChart.YNQD"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/vue.min.js"></script>
+  <script src="../js/element.js"></script>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/select.js"></script>
+  <script src="../js/echarts.min.js"></script>
+  <script src="../js/moment.min.js"></script>
+  <script src="../js/china.js"></script>
+  <script src="../js/province.js"></script>
+  <script>
+    const myApp = new Vue({
+      el: "#app",
+      data: {
+        userName: "管理员",
+        navList: [
+          {
+            iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+            name: "现状",
+            location: 'xianzhuang.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+            name: "预测",
+            location: 'yuce.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+            name: "调度",
+            location: 'diaodu.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+            name: "考评",
+            location: 'kaoping.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+            name: "重点建筑监管"
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+            name: "重点行业监管"
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+            name: "技术产品",
+            location: 'chanpin.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+            name: "数据查询",
+            location: 'data-query.html'
+          }
+        ],
+        dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+        dateTimer: null,
+        mapActive: 'china',
+        leftBtnClass: '',
+        rightBtnClass: '',
+        year: 2023,
+        yearOptions: [ 2023, 2022, 2021, 2020, 2019 ],
+        category: 1,
+        categories: [
+          { categoryName: "城乡建设领域", value: 1, size: "medium" },
+          { categoryName: "建筑运行", value: 2, size: "medium" },
+          { categoryName: "城镇居建", value: 3, size: "small" },
+          { categoryName: "公共建筑", value: 4, size: "small" },
+          { categoryName: "农村居建", value: 5, size: "small" },
+          { categoryName: "集中供暖", value: 6, size: "small" },
+          { categoryName: "建筑业", value: 7, size: "medium" },
+          { categoryName: "基础设施", value: 8, size: "medium" }
+        ],
+        // 用能强度
+        ynqdActive: 1,
+        currentYear: '2023',
+        collapseGZDD: true,
+        collapseYNQD: true,
+        showMask: false,
+        loadChart: {
+          YNZB: true,
+          TPFYC: true,
+          GZDD: true,
+          YNQD: true
+        },
+        energyTypeList: [
+          { label: "用能", type: 1 },
+          { label: "排放", type: 2 },
+        ],
+        xftpfzl: 1,
+        tpfyc: 1,
+        rankTableData: [],
+        unit: "万平方米"
+      },
+      methods: {
+        getCurrentDateTime() {
+          if (this.dateTimer) {
+            clearInterval(this.dateTimer)
+          }
+          this.dateTimer = setInterval(() => {
+            this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+          }, 1000)
+        },
+
+        handleNavClick(item) {
+          window.location.href = item.location;
+        },
+
+        fullScreenClick() {
+          const isFullScreen = () => {
+            return !! (
+                    document.fullscreen ||
+                    document.mozFullScreen ||
+                    document.webkitIsFullScreen ||
+                    document.webkitFullScreen ||
+                    document.msFullScreen
+            );
+          }
+          const de = document.documentElement;
+          if (!isFullScreen()) {
+            if (de.requestFullscreen) {
+              de.requestFullscreen();
+            } else if (de.mozRequestFullScreen) {
+              de.mozRequestFullScreen();
+            } else if (de.webkitRequestFullScreen) {
+              de.webkitRequestFullScreen();
+            }
+          } else {
+            if(document.exitFullscreen) {
+              document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            }
+          }
+        },
+
+        /**
+         * 绘制地图
+         */
+        drawMapChart() {
+          const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+          const currentYear = this.currentYear
+          const customerBatteryCityData = [
+            {name: '北京市', value: 309.1},
+            {name: '天津市', value: 208.4},
+            {name: '河北省', value: 780.6},
+            {name: '山西省', value: 406.3},
+            {name: '内蒙古自治区', value: 4353.6},
+            {name: '辽宁省', value: 504.4},
+            {name: '吉林省', value: 261.5},
+            {name: '黑龙江省', value: 759.8},
+            {name: '上海市', value: 315.9},
+            {name: '江苏省', value: 549.5},
+            {name: '浙江省', value: 543.5},
+            {name: '安徽省', value: 342.2},
+            {name: '福建省', value: 323.1},
+            {name: '江西省', value: 211.7},
+            {name: '山东省', value: 808.5},
+            {name: '河南省', value: 608.5},
+            {name: '湖北省', value: 340.9},
+            {name: '湖南省', value: 419.4},
+            {name: '广东省', value: 967.2},
+            {name: '广西壮族自治区', value: 2467.2},
+            {name: '海南省', value: 71.4},
+            {name: '重庆市', value: 210.5},
+            {name: '四川省', value: 526.6},
+            {name: '贵州省', value: 271.9},
+            {name: '云南省', value: 245.5},
+            {name: '西藏自治区', value: 0},
+            {name: '陕西省', value: 356.7},
+            {name: '甘肃省', value: 2172.7},
+            {name: '青海省', value: 809.3},
+            {name: '宁夏自治区', value: 1045.4},
+            {name: '新疆维吾尔自治区', value: 3561.5}
+          ]
+          const loadMap = (features, mapData, zoom, provinceName) => {
+            const geoCoordMap = {}
+            features.forEach(item => {
+              const {properties} = item
+              const {cp, name} = properties
+              geoCoordMap[name] = cp
+            })
+            const option = {
+              silent: false,
+              tooltip: {
+                trigger: "item",
+                show: true,
+                textStyle: {
+                  fontSize: 14,
+                  color: "#fff",
+                },
+                borderWidth: 3,
+                borderColor: 'rgba(10, 113, 174, 0.8)',
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                extraCssText: "padding: 0;",
+                formatter: function (params) {
+                  if (params.data) {
+                    return `
+                                        <div class="map-tooltip">
+                                            <div class="map-tooltip-header" style="border-bottom: 1px solid #5CB2E3; height: 40px; display: flex;align-items: center; padding: 0 10px;">
+                                                <div class="header-icon" style="width: 5px;height: 5px; border-radius: 50%; background: #1CD5FF; margin-right: 5px;"></div>
+                                                <div class="header-text">${ params.data.name }</div>
+                                            </div>
+                                            <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
+                                                <div class="content-item">年度: ${currentYear}年</div>
+                                                <div class="content-item">能耗: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> 吨标煤</div>
+                                            </div>
+                                        </div>
+                                    `
+                  } else {
+                    return 'tooltip'
+                  }
+                }
+              },
+              geo: {
+                map: provinceName,
+                roam: false,
+                zoom,
+                itemStyle: {
+                  borderColor: '#84B2FD',
+                  color: 'transparent',
+                  borderWidth: 3,
+                },
+                emphasis: {
+                  //当鼠标放上去  地区区域是否显示名称
+                  label: {
+                    show: true,
+                    color: "#fff",
+                    backgroundColor: "rgba(0, 0, 0, .25)",
+                  },
+                  itemStyle: {
+                    color: '#fcf565'
+                  },
+                },
+                select: {
+                  label: {
+                    show: true,
+                    color: "#fff"
+                  }
+                },
+                label: {
+                  show: true,
+                  color: '#fff',
+                  position: 'top',
+                  fontSize: 12,
+                  padding: 10
+                }
+              },
+              visualMap: {
+                max: 5000,
+                calculable: true,
+                inRange: {
+                  color: ['#115C9E', '#16EB9C']
+                },
+                padding: [0, 0, 50, 50],
+                textStyle: {
+                  color: '#fff'
+                },
+                text: ['高', '低'],
+              },
+              series: [{
+                map: provinceName,
+                zoom: this.zoom,
+                geoIndex: 0,
+                coordinateSystem: 'geo',
+                selectedMode: 'single',
+                showLegendSymbol: true,
+                type: 'map',
+                roam: false,
+                label: {
+                  normal: {
+                    show: true,
+                    textStyle: {
+                      color: "#fff",
+                    }
+                  },
+                  emphasis: {
+                    show: false,
+                    textStyle: {
+                      color: "#fff",
+                    }
+                  },
+                },
+                data: mapData
+              }]
+            }
+            myChart.setOption(option)
+          }
+          $.get(`../assets/mapJson/全国.json`, function (data) {
+            // echarts.registerMap('china', data) 显示南海九段线
+            echarts.getMap("china").geoJson.features;
+            loadMap(data.features, data.features.map(item => {
+              return {
+                name: item.properties.name,
+                value: parseFloat((Math.random() * 1000).toFixed(2))
+              }
+            }), 1.2, 'china')
+          })
+
+          myChart.on('click',  params => {
+            this.mapActive = "province"
+            const { name: provinceName } = params;
+            $.get(`../assets/mapJson/${provinceName}.json`, function (data) {
+              echarts.registerMap(provinceName, data);
+              loadMap(data.features, data.features.map(item => {
+                return {
+                  name: item.properties.name,
+                  value: parseFloat((Math.random() * 1000).toFixed(2))
+                }
+              }), 0.9, provinceName)
+            })
+          })
+        },
+
+        /**
+         * 绘制用能消费总量/碳排放总量图表
+         */
+        drawXFTPFChart(showDataZoom = true) {
+          const nhzlData = {
+            gonggong: [],
+            juzhu: [],
+            year: []
+          }
+          for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+            nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+            nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+            nhzlData.year.push(year)
+          }
+          const myChart = echarts.init(document.getElementById('xftpfzl'));
+          const dataZoom = showDataZoom && [
+            {
+              type: 'slider',
+              startValue: 0,
+              endValue: 7,
+              bottom: '20',
+              left: '30',
+              height: 10,
+              borderColor: '#1479A1',
+              textStyle: {
+                color: '#05D5FF',
+              },
+              backgroundColor: '#032E5C',
+              dataBackground: {
+                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+              },
+              moveHandleStyle: {
+                color: 'rgba(38, 203, 251, 1)',
+                borderColor: 'rgba(38, 203, 251, 1)'
+              },
+              fillerColor: 'rgba(250, 84, 28, .1)'
+            }
+          ]
+          const option = {
+            backgroundColor:  'transparent',
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              },
+              confine: true,
+              formatter: function(params){
+                let relVal = `${params[0].name}年`;
+                let prefix
+                for (let i = 0, l = params.length; i < l; i++) {
+                  prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
+                  relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} 亿tce`;
+                }
+                return relVal;
+              }
+            },
+            grid: {
+              top: showDataZoom ? '25%' : '20%',
+              left: showDataZoom ? '3%' : '2%',
+              right: showDataZoom ?'3%' : '2%',
+              bottom: showDataZoom ? '15%' : '10%',
+              containLabel: true
+            },
+            legend: {
+              x:'right',
+              y:'top',
+              padding: [20, 30, 0, 0],
+              itemGap: 34,
+              data: ['统计', '拆分'],
+              textStyle: {
+                color: '#fff',
+                fontSize: '.12rem'
+              },
+              itemWidth: 10,
+              itemHeight: 4
+            },
+            xAxis: [
+              {
+                type: "category",
+                axisTick: {
+                  show: false,
+                },
+                axisLine: {
+                  lineStyle: {
+                    color: 'rgba(255, 255, 255, .05)'
+                  }
+                },
+                data: nhzlData.year,
+                axisLabel: {
+                  margin: 10,
+                  fontSize: '.1rem',
+                  formatter: "{value}年",
+                  color: '#fff'
+                }
+              },
+            ],
+            yAxis: [
+              {
+                type: "value",
+                name: '单位：亿tce',
+                nameTextStyle: {
+                  color: "#fff",
+                  fontSize: "",
+                  padding: [0, 0, 0, 0],
+                },
+                show: true,
+                axisTick: {
+                  show: false,
+                },
+                axisLine: {
+                  show: false,
+                },
+                splitLine: {
+                  show: true,
+                  lineStyle: {
+                    color: "rgba(255, 255, 255, .09)"
+                  }
+                },
+                axisLabel: {
+                  fontSize: '.12rem',
+                  color: '#fff'
+                }
+              },
+            ],
+            dataZoom,
+            series: [
+              {
+                name: "统计",
+                type: "bar",
+                barWidth: 8,
+                itemStyle: {
+                  borderWidth: 2,
+                  color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                    {
+                      offset: 0,
+                      color: "#F5804D",
+                    },
+                    {
+                      offset: 1,
+                      color: '#FCCB05'
+                    }
+                  ]),
+                  borderRadius: 3
+                },
+                data: nhzlData.gonggong,
+              },
+              {
+                name: "拆分",
+                type: "bar",
+                barWidth: 8,
+                barGap: "50%",
+                label: {
+                  show: false
+                },
+                itemStyle: {
+                  borderWidth: 2,
+                  color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                    {
+                      offset: 0,
+                      color: "#6851F1",
+                    },
+                    {
+                      offset: 1,
+                      color: '#248FF7'
+                    }
+                  ]),
+                  borderRadius: 3
+                },
+                data: nhzlData.juzhu,
+              }
+            ]
+          };
+          myChart.setOption(option)
+        },
+
+        /**
+         * 绘制碳排放预测图表
+         */
+        drawTPFYCChart(showDataZoom = true) {
+          const myChart = echarts.init(document.getElementById('tpfyc'));
+          const wzcSeriesData = [], sjgzSeriesData = [], dfqjSeriesData = [], yearData = [];
+          for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+            yearData.push(year)
+            wzcSeriesData.push((Math.random() * 10).toFixed(1))
+            sjgzSeriesData.push((Math.random() * 10).toFixed(1))
+            dfqjSeriesData.push((Math.random() * 10).toFixed(1))
+          }
+          const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+              trigger: 'axis',
+              confine: true,
+              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+              formatter: function (params) {
+                return `<div class="cx-tooltip">占比: ${params[0].value}%</div>`
+              },
+              axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                  color: '#fff'
+                },
+                lineStyle: {
+                  type: 'dashed'
+                }
+              }
+            },
+            legend: {
+              x: 'right',
+              y: 'top',
+              itemGap: 5,
+              padding: [15, 15, 0, 0],
+              data: ['无政策情景', '实际工作进展情景', '2030达峰情景'],
+              textStyle: {
+                color: '#fff',
+                fontSize: '.12rem'
+              },
+              itemWidth: 10,
+              itemHeight: 4
+            },
+            grid: {
+              top: '20%',
+              left: '3%',
+              right: '3%',
+              bottom: '5%',
+              containLabel: true
+            },
+            xAxis: {
+              type: 'category',
+              data: yearData,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                lineStyle: {
+                  color: 'rgba(255, 255, 255, .05)'
+                }
+              },
+              axisLabel: {
+                margin: 10,
+                fontSize: '.1rem',
+                formatter: "{value}年",
+                color: '#fff'
+              }
+            },
+            yAxis: {
+              type: "value",
+              name: '单位：亿吨标煤',
+              nameTextStyle: {
+                color: "#fff",
+                fontSize: "",
+                padding: [-15, 0, 0, 25],
+              },
+              show: true,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                show: false,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .09)"
+                }
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .09)"
+                }
+              },
+              axisLabel: {
+                fontSize: '.12rem',
+                color: '#fff'
+              }
+            },
+            series: [
+              {
+                name: "无政策情景",
+                data: wzcSeriesData,
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                  color: '#F3B330'
+                },
+                symbolSize: 5,
+                symbol: 'circle',
+                itemStyle: {
+                  barBorderRadius: [30, 30, 0, 0],
+                  color: '#F3B330',
+                  borderColor: '#fff'
+                }
+              },
+              {
+                name: "实际工作进展情景",
+                data: sjgzSeriesData,
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                  color: '#D35700'
+                },
+                symbolSize: 5,
+                symbol: 'circle',
+                itemStyle: {
+                  barBorderRadius: [30, 30, 0, 0],
+                  color: '#D35700',
+                  borderColor: '#fff'
+                }
+              },
+              {
+                name: "2030达峰情景",
+                data: dfqjSeriesData,
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                  color: '#00C900'
+                },
+                symbolSize: 5,
+                symbol: 'circle',
+                itemStyle: {
+                  barBorderRadius: [30, 30, 0, 0],
+                  color: '#00C900',
+                  borderColor: '#fff'
+                }
+              }
+            ]
+          }
+          myChart.setOption(option)
+        },
+
+        /**
+         * 绘制工作调度图表
+         */
+        drawGZDDChart(showDataZoom = true) {
+          const nhzlData = {
+            gonggong: [],
+            juzhu: [],
+            year: []
+          }
+          this.provinceData.forEach((province, index) => {
+            nhzlData.gonggong.push(index / 3 === 0 ? (Math.random() * 100).toFixed(2) - 100 : (Math.random() * 100).toFixed(2))
+            nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+            nhzlData.year.push(province)
+          })
+          const myChart = echarts.init(document.getElementById('gzdd'));
+          const dataZoom = showDataZoom && [
+            {
+              type: 'slider',
+              startValue: 0,
+              endValue: 12,
+              bottom: '20',
+              left: '30',
+              height: 10,
+              borderColor: '#1479A1',
+              textStyle: {
+                color: '#05D5FF',
+              },
+              backgroundColor: '#032E5C',
+              dataBackground: {
+                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+              },
+              moveHandleStyle: {
+                color: 'rgba(38, 203, 251, 1)',
+                borderColor: 'rgba(38, 203, 251, 1)'
+              },
+              fillerColor: 'rgba(250, 84, 28, .1)'
+            }
+          ]
+          const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+              trigger: 'axis',
+              confine: true,
+              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+              formatter: function (params) {
+                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
+              },
+              axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                  axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                      color: '#fff'
+                    },
+                    lineStyle: {
+                      type: 'dashed'
+                    }
+                  }
+                },
+                lineStyle: {
+                  type: 'dashed'
+                }
+              }
+            },
+            grid: {
+              top: '20%',
+              left: '2%',
+              right: '2%',
+              bottom: '15%',
+              containLabel: true
+            },
+            xAxis: [
+              {
+                type: "category",
+                axisTick: {
+                  show: true
+                },
+                axisLine: {
+                  lineStyle: {
+                    color: 'rgba(255, 255, 255, .05)'
+                  }
+                },
+                data: nhzlData.year,
+                axisLabel: {
+                  margin: 10,
+                  fontSize: '.12rem',
+                  formatter: "{value}",
+                  color: '#fff'
+                }
+              },
+            ],
+            yAxis: {
+              type: "value",
+              name: '单位：万吨',
+              position: 'left',
+              nameTextStyle: {
+                color: "#fff",
+                fontSize: "0.12rem",
+                padding: [0, 0, 0, 5],
+              },
+              show: true,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                show: false,
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .15)"
+                }
+              },
+              axisLabel: {
+                fontSize: '.12rem',
+                color: '#fff'
+              }
+            },
+            dataZoom,
+            series: {
+              name: "用能强度",
+              type: "bar",
+              barWidth: 12,
+              itemStyle: {
+                borderWidth: 1,
+                color: data => {
+                  return parseFloat(data.value) < 0 ? '#0B7062' : '#FCA805'
+                },
+                borderColor: data => {
+                  return parseFloat(data.value) < 0 ? '#15FED1' : '#F3A603'
+                },
+                borderRadius: 2
+              },
+              data: nhzlData.gonggong,
+            }
+          };
+          myChart.setOption(option)
+        },
+
+        /**
+         * 获取新增减碳能力排名数据
+         */
+        drawJTNLChart() {
+          this.rankTableData = [
+            { year: "北京", task: 136254, real: 144429.2, cut: -8175.2, },
+            { year: "上海", task: 139612.5, real: 146593.1, cut: -6980.6 },
+            { year: "天津", task: 132873.7, real: 130216.2, cut: 2657.5 },
+            { year: "重庆", task: 135868.4, real: 144020.5, cut: -8152.1 },
+            { year: "杭州", task: 137875.6, real: 139254.4, cut: -1378.8 },
+            { year: "南昌", task: 123375.2, real: 127076.5, cut: -3701.3 },
+            { year: "长沙", task: 123884.1, real: 131317.1, cut: -7433 },
+            { year: "武汉", task: 123496.2, real: 124731.2, cut: -1235 },
+            { year: "北海", task: 111675.5, real: 117259.3, cut: -5583.8 },
+            { year: "南京", task: 113217, real: 107556.2, cut: 5660.9 }
+          ]
+        },
+
+        /**
+         * 获取建筑检测数据
+         */
+        drawJZJCChart(showDataZoom = true) {
+
+        },
+
+        /**
+         * 绘制用能强度图表
+         */
+        drawYNQDChart(showDataZoom = true) {
+          const nhzlData = {
+            gonggong: [],
+            juzhu: [],
+            year: []
+          }
+          for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
+            nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
+            nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+            nhzlData.year.push(year)
+          }
+          const myChart = echarts.init(document.getElementById('ynqd'));
+          const dataZoom = showDataZoom && [
+            {
+              type: 'slider',
+              startValue: 0,
+              endValue: 7,
+              bottom: '20',
+              left: '30',
+              height: 10,
+              borderColor: '#1479A1',
+              textStyle: {
+                color: '#05D5FF',
+              },
+              backgroundColor: '#032E5C',
+              dataBackground: {
+                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+              },
+              moveHandleStyle: {
+                color: 'rgba(38, 203, 251, 1)',
+                borderColor: 'rgba(38, 203, 251, 1)'
+              },
+              fillerColor: 'rgba(250, 84, 28, .1)'
+            }
+          ]
+          const option = {
+            backgroundColor:  'transparent',
+            tooltip: {
+              trigger: 'axis',
+              confine: true,
+              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+              formatter: function(params){
+                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
+              },
+              axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                  axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                      color: '#fff'
+                    },
+                    lineStyle: {
+                      type: 'dashed'
+                    }
+                  }
+                },
+                lineStyle: {
+                  type: 'dashed'
+                }
+              }
+            },
+            grid: {
+              top: showDataZoom ? '30%' : '20%',
+              left: showDataZoom ? '5%' : '2%',
+              right: showDataZoom ?'5%' : '2%',
+              bottom: showDataZoom ? '15%' : '5%',
+              containLabel: true
+            },
+            xAxis: [
+              {
+                type: "category",
+                axisTick: {
+                  show: true
+                },
+                axisLine: {
+                  lineStyle: {
+                    color: 'rgba(255, 255, 255, .05)'
+                  }
+                },
+                data: nhzlData.year,
+                axisLabel: {
+                  margin: 10,
+                  fontSize: '.1rem',
+                  formatter: "{value}年",
+                  color: '#fff'
+                }
+              },
+            ],
+            yAxis: {
+              type: "value",
+              name: '单位：kgce/㎡',
+              position: 'left',
+              nameTextStyle: {
+                color: "#fff",
+                fontSize: "",
+                padding: [0, 0, 0, 0],
+              },
+              show: true,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                show: false,
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .85)"
+                }
+              },
+              axisLabel: {
+                fontSize: '.12rem',
+                color: '#fff'
+              }
+            },
+            dataZoom,
+            series: {
+              name: "用能强度",
+              type: "bar",
+              barWidth: 8,
+              itemStyle: {
+                borderWidth: 1,
+                color: '#0B7062',
+                borderColor: '#15FED1'
+              },
+              data: nhzlData.gonggong,
+            }
+          };
+          myChart.setOption(option)
+        },
+
+        handleToggleEnergy(energyType, typeValue) {
+          this[energyType] = typeValue
+          if (energyType === 'xftpfzl') {
+            // do...
+          } else {
+            // do...
+          }
+        }
+      },
+      computed: {
+        navLeft() {
+          return this.navList.slice(0, 4)
+        },
+        navRight() {
+          return this.navList.slice(4)
+        },
+        provinceData() {
+          return provinceData
+        }
+      },
+      watch: {
+        mapActive: {
+          immediate: true,
+          handler(mapActive) {
+            if (mapActive === 'china') {
+              this.leftBtnClass = 'area-group-item area-group-item--active'
+              this.rightBtnClass = 'area-group-item left-active'
+            } else {
+              this.leftBtnClass = 'area-group-item right-active'
+              this.rightBtnClass = 'area-group-item area-group-item--active'
+            }
+          }
+        }
+      },
+      mounted() {
+        this.getCurrentDateTime();
+        this.$nextTick(() => {
+          this.drawXFTPFChart();
+          this.drawTPFYCChart();
+          this.drawGZDDChart();
+          this.drawJTNLChart();
+          this.drawJZJCChart();
+          this.drawYNQDChart();
+          this.drawMapChart();
+        })
+      }
+    })
+  </script>
+</div>
+</body>
+</html>

@@ -74,6 +74,7 @@
     border: 1px solid #1380AB;
     border-radius: 4px;
     display: none;
+    z-index: 1000;
     li {
       height: 0.32rem;
       line-height: 0.32rem;
@@ -149,5 +150,42 @@
   transform: scale(0.95);
   &:hover {
     transform: scale(1.15);
+  }
+}
+
+.area-group {
+  display: flex;
+  align-items: center;
+  font-size: 0.18rem;
+  &-item {
+    width: 1.34rem;
+    height: 0.52rem;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 0.52rem;
+    background-image: url("../assets/images/xianzhuang/right-btn.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    &:hover {
+      cursor: pointer;
+    }
+    &:first-child {
+      margin-right: -0.35rem;
+    }
+    &.area-group-item--active {
+      &:first-child {
+        background-image: url("../assets/images/xianzhuang/left-btn-active.png");
+      }
+      &:last-child {
+        background-image: url("../assets/images/xianzhuang/right-btn-active.png");
+      }
+    }
+    &.left-active {
+      background-image: url("../assets/images/xianzhuang/right-btn.png");
+    }
+    &.right-active {
+      background-image: url("../assets/images/xianzhuang/left-btn.png");
+    }
   }
 }

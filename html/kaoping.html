@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>城乡建设领域碳排放监测管理平台</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/iconfont.css">
+    <link rel="stylesheet" href="../css/elementUI.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/page/kaoping.css">
+</head>
+<body>
+<div id="app">
+    <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+    <!-- header -->
+    <div class="sys-header">
+        <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
+        <div class="home" @click="handleHomeClick">
+            <div class="home-icon iconfont">&#xe751;</div>
+            <span class="home-text">首页</span>
+        </div>
+        <div class="nav">
+            <ul class="nav-left">
+                <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index"
+                    @click="handleNavClick(item)">
+                    <div class="nav-icon"
+                         :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name">{{ item.name }}</div>
+                </li>
+            </ul>
+            <div class="sys-title-placeholder"></div>
+            <ul class="nav-right">
+                <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index"
+                    @click="handleNavClick(item)">
+                    <div class="nav-icon"
+                         :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+                    <dl class="nav-name" v-else>
+                        <dt>{{ item.name.substring(0, 4) }}</dt>
+                        <dd>{{ item.name.substring(4) }}</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="header-right-line"></div>
+        <div class="header-right">
+            <div class="header-right-top">
+                <img class="avatar"
+                     src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+                <div class="text">
+                    <span>欢迎您！</span>
+                    <a>{{ userName }}</a>
+                </div>
+            </div>
+            <div class="header-right-bottom">{{ dateTime }}</div>
+        </div>
+    </div>
+
+    <div class="area-group">
+        <div :class="leftBtnClass"
+             @click="handleChinaClick">全国</div>
+        <div :class="rightBtnClass">各地</div>
+    </div>
+
+    <!-- 系统内容部分 -->
+    <div class="container">
+        <div class="container-header-line"></div>
+        <div class="container-detail">
+            <div class="layout-left-wrap">
+                <div class="layout-left-top kp-item">
+                    <div class="kp-item-title">碳达峰曲线</div>
+                    <div class="kp-item-content">
+                        <div class="data-item">
+                            <div class="data-item-title">
+                                <div class="data-item-icon"></div>
+                                <span>达峰提前至</span>
+                            </div>
+                            <div class="data-item-value">
+                                <span class="font">2029</span>
+                                <span class="suffix">年</span>
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-title">
+                                <div class="data-item-icon"></div>
+                                <span>达峰指数</span>
+                            </div>
+                            <div class="data-item-value">
+                                <span class="font">98</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layout-left-bottom kp-item">
+                    <div class="kp-item-title">专项工作考核评估</div>
+                    <div class="kp-item-content">
+                        <div class="table-info">
+                            <span>任务执行</span>
+                            <div class="table-info-select">
+                                <el-select v-model="cate">
+                                    <el-option
+                                        v-for="item in taskTypeOptions"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <el-table
+                                :data="taskTableData"
+                                height="100%">
+                                <el-table-column
+                                        type="index"
+                                        fixed="left"
+                                        align="center"
+                                        width="60">
+                                    <template #default="{ row, $index }">
+                                        {{ $index + 1 }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="年度"
+                                        prop="year"
+                                        align="center"
+                                        width="80">
+                                    <template #default="{ row }">
+                                        <span>{{ row.year }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="task"
+                                        sortable
+                                        align="center"
+                                        width="170">
+                                    <template #header="{ column, $index }">
+                                        <div class="label">
+                                            <div class="label-text">{{ $index === 2 && '目标任务量' }}</div>
+                                            <div class="label-unit">({{ unit }})</div>
+                                        </div>
+                                    </template>
+                                    <template #default="{ row }">
+                                        <span style="color: #FFE400;">{{ row.task }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        property="real"
+                                        sortable
+                                        align="center"
+                                        width="150">
+                                    <template #header="{ column, $index }">
+                                        <div class="label">
+                                            <div class="label-text">{{ $index === 3 && '实际任务量' }}</div>
+                                            <div class="label-unit">({{ unit }})</div>
+                                        </div>
+                                    </template>
+                                    <template #default="{ row }">
+                                        <span style="color: #14E144;">{{ row.real }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="cut"
+                                        sortable
+                                        align="center">
+                                    <template #header="{ column, $index }">
+                                        <div class="label">
+                                            <div class="label-text">{{ $index === 4 && '差值' }}</div>
+                                            <div class="label-unit">({{ unit }})</div>
+                                        </div>
+                                    </template>
+                                    <template #default="{ row }">
+                                        <span :class="{ 'is--warning': row.cut < 0 }">{{ row.cut }}</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-right-wrap">
+                <div class="layout-right-top kp-item">
+                    <div class="kp-item-title">考核指标完成情况</div>
+                    <div class="kp-item-content">
+                        <el-carousel ref="carouselEl" :autoplay="false" :interval="5000" arrow="never">
+                            <el-carousel-item v-for="(carouselItem, carouselIndex) in carousel" :key="carouselIndex">
+                                <div class="chart__container__top">
+                                    <div class="item" v-for="(item, index) in topAreaData(carouselIndex)" :key="item.typeName">
+                                        <div class="item__img">
+                                            <img :src="item.imgSrc" />
+                                        </div>
+                                        <div class="item-value-wrap">
+                                            <div class="item__typeName">{{ item.typeName }}({{ item.dw }})</div>
+                                            <div class="item__value">{{ item.value }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chart__container__bottom">
+                                    <div class="item" v-for="(item, index) in bottomAreaData(carouselIndex)" :key="item.typeName">
+                                        <div class="item__img">
+                                            <img :src="item.imgSrc" />
+                                        </div>
+                                        <div class="item-value-wrap">
+                                            <div class="item__typeName">{{ item.typeName }}({{ item.dw }})</div>
+                                            <div class="item__value">{{ item.value }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-carousel-item>
+                        </el-carousel>
+                        <div class="indicator">
+                            <div class="indicator-item indicator-prev" @click="handlePrevClick"></div>
+                            <div class="indicator-item indicator-next" @click="handleNextClick"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layout-right-bottom kp-item">
+                    <div class="kp-item-title">考评指标排名</div>
+                    <div class="kp-item-content">
+                        <div class="table-info">
+                            <span>考核指标</span>
+                            <div class="table-info-select">
+                                <el-select v-model="kpIndex">
+                                    <el-option
+                                            v-for="item in kpIndexData"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <el-table
+                                :data="kpIndexTableData"
+                                height="100%">
+                                <el-table-column
+                                    label="城市"
+                                    prop="city"
+                                    align="center">
+                                </el-table-column>
+                                <el-table-column
+                                    label="考核指标"
+                                    prop="kpIndex"
+                                    align="center">
+                                </el-table-column>
+                                <el-table-column
+                                    label="排名"
+                                    prop="rank"
+                                    align="center">
+                                    <template #default="{ row, $index }">
+                                        <span :style="$index < 5 ? { color: '#14E144' } : ''">{{ row.rank }}</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/vue.min.js"></script>
+    <script src="../js/element.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/select.js"></script>
+    <script src="../js/moment.min.js"></script>
+    <script src="../js/province.js"></script>
+    <script src="../js/config.js"></script>
+    <script>
+        const myApp = new Vue({
+            el: "#app",
+            data: {
+                userName: "管理员",
+                navList: [
+                    {
+                        iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                        name: "现状",
+                        location: 'xianzhuang.html'
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                        name: "预测",
+                        location: 'yuce.html'
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+                        name: "调度",
+                        location: 'diaodu.html'
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+                        name: "考评",
+                        location: 'kaoping.html',
+                        active: true,
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+                        name: "重点建筑监管"
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+                        name: "重点行业监管"
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                        name: "技术产品",
+                        location: 'chanpin.html'
+                    },
+                    {
+                        iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+                        iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+                        name: "数据查询",
+                        location: 'data-query.html'
+                    }
+                ],
+                dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+                dateTimer: null,
+                mapActive: 'china',
+                leftBtnClass: '',
+                rightBtnClass: '',
+                cate: 1,
+                taskTableData: [
+                    { year: "2021", task: 136254, real: 144429.2, cut: -8175.2 },
+                    { year: "2022", task: 139612.5, real: 146593.1, cut: -6980.6 },
+                    { year: "2023", task: 132873.7, real: 130216.2, cut: 2657.5 },
+                    { year: "2024", task: 135868.4, real: 144020.5, cut: -8152.1 },
+                    { year: "2025", task: 137875.6, real: 139254.4, cut: -1378.8 },
+                    { year: "2026", task: 123375.2, real: 127076.5, cut: -3701.3 },
+                    { year: "2027", task: 123884.1, real: 131317.1, cut: -7433 },
+                    { year: "2028", task: 123496.2, real: 124731.2, cut: -1235 },
+                    { year: "2029", task: 111675.5, real: 117259.3, cut: -5583.8 },
+                    { year: "2030", task: 113217, real: 107556.2, cut: 5660.9 }
+                ],
+                taskTypeOptions: [
+                    { label: '新建居住建筑', value: 1 },
+                    { label: '新建公共建筑', value: 2 },
+                    { label: '既有公共建筑改造', value: 3 },
+                    { label: '既有居住建筑', value: 4 },
+                    { label: '农村住宅', value: 5 },
+                    { label: '浅层地热能及空气源', value: 6 },
+                    { label: '太阳能光热', value: 9 },
+                    { label: '太阳能光伏', value: 10 },
+                    { label: '给排水及污水处理', value: 11 },
+                    { label: '园林绿化', value: 13 },
+                    { label: '建筑工业化', value: 14 },
+                    { label: '综合减碳量', value: -1 }
+                ],
+                unit: "万平方米",
+                carousel: [],
+                topAreaData: [],
+                bottomAreaData: [],
+                kpIndex: 1,
+                kpIndexData: [
+                    { label: "考评指标1", value: 1 },
+                    { label: "考评指标2", value: 2 }
+                ],
+                kpIndexTableData: []
+            },
+            methods: {
+                getCurrentDateTime() {
+                    if (this.dateTimer) {
+                        clearInterval(this.dateTimer)
+                    }
+                    this.dateTimer = setInterval(() => {
+                        this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+                    }, 1000)
+                },
+
+                handleNavClick(item) {
+                    window.location.href = item.location;
+                },
+
+                fullScreenClick() {
+                    const isFullScreen = () => {
+                        return !! (
+                            document.fullscreen ||
+                            document.mozFullScreen ||
+                            document.webkitIsFullScreen ||
+                            document.webkitFullScreen ||
+                            document.msFullScreen
+                        );
+                    }
+                    const de = document.documentElement;
+                    if (!isFullScreen()) {
+                        if (de.requestFullscreen) {
+                            de.requestFullscreen();
+                        } else if (de.mozRequestFullScreen) {
+                            de.mozRequestFullScreen();
+                        } else if (de.webkitRequestFullScreen) {
+                            de.webkitRequestFullScreen();
+                        }
+                    } else {
+                        if(document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if(document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if(document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
+                },
+
+                handleChinaClick() {},
+
+                /**
+                 * 获取考核指标完成情况
+                 */
+                fetchKHZBData() {
+                    const res = {
+                        dfNumber: 98,
+                        dfYear: 2030,
+                        zhibiao: [
+                            { value: "11.5", dw: "亿吨标准煤", typeName: "用能总量", imgSrc: '../assets/images/kaoping/用能总量.png' },
+                            { value: "23.5", dw: "万吨", typeName: "碳排放总量", imgSrc: '../assets/images/kaoping/碳排放总量.png' },
+                            { value: "55", dw: "%", typeName: "电力占比", imgSrc: '../assets/images/kaoping/电力占比.png' },
+                            { value: "100", dw: "%", typeName: "新建建筑标准执行率", imgSrc: '../assets/images/kaoping/新建建筑标准执行率.png' },
+                            { value: "100", dw: "%", typeName: "绿色建筑占新建建筑比例", imgSrc: '../assets/images/kaoping/绿色建筑占新建建筑比例.png' },
+                            { value: "30", dw: "%", typeName: "星级绿色建筑占比", imgSrc: '../assets/images/kaoping/星级绿色建筑占比.png' },
+                            { value: "10", dw: "平方米", typeName: "公共建筑改造面积", imgSrc: '../assets/images/kaoping/公共建筑改造面积.png'},
+                            { value: "2", dw: "亿平方米", typeName: "城镇居住建筑改造面积", imgSrc: '../assets/images/kaoping/城镇居住建筑改造面积.png'},
+                            { value: "10", dw: "亿千瓦", typeName: "建筑光伏一体化新增装机容量", imgSrc: '../assets/images/kaoping/建筑光伏一体化新增装机容量.png'},
+                            { value: "1", dw: "亿平方米", typeName: "太阳能光热建筑新增集热器面积", imgSrc: '../assets/images/kaoping/太阳能光热建筑新增集热器面积.png'},
+                            { value: "9", dw: "亿平方米", typeName: "地热能建筑应用面积", imgSrc: '../assets/images/kaoping/地热能建筑应用面积.png'},
+                            { value: "1", dw: "亿平方米", typeName: "空气热源应用面积", imgSrc: '../assets/images/kaoping/空气热源应用面积.png'},
+                            { value: "30", dw: "%", typeName: "装配式建筑占新建建筑比例", imgSrc: '../assets/images/kaoping/装配式建筑占新建建筑比例.png'},
+                            { value: "70", dw: "%", typeName: "绿色建材推广比例", imgSrc: '../assets/images/kaoping/绿色建材推广比例.png'},
+                            { value: "8", dw: "%", typeName: "城市公共供水管网漏损率", imgSrc: '../assets/images/kaoping/城市公共供水管网漏损率.png'},
+                            { value: "35", dw: "%", typeName: "建筑垃圾资源化利用", imgSrc: '../assets/images/kaoping/建筑垃圾资源化利用.png'},
+                            { value: "38.5", dw: "%", typeName: "城市建成区绿地率", imgSrc: '../assets/images/kaoping/城市建成区绿地率.png'},
+                            { value: "60", dw: "%", typeName: "城市可再生水利用率", imgSrc: '../assets/images/kaoping/城市可再生水利用率.png'}
+                        ]
+                    }
+                    const { zhibiao } = res;
+                    const carousel = Math.ceil(zhibiao.length / 6)
+                    // 全部指标数据
+                    const indexDataList = zhibiao;
+                    // 获取上半部分的数据(第一页0,3 第二页6,9)
+                    const getTopAreaData = carouselIndex => indexDataList.slice(carouselIndex * 6, carouselIndex * 6 + 3)
+                    // 获取下半部分的数据(第一页3,6 第二页9,12)
+                    const getBottomAreaData = carouselIndex => indexDataList.slice(carouselIndex * 6 + 3, carouselIndex * 6 + 6)
+                    this.carousel = carousel;
+                    this.topAreaData = getTopAreaData;
+                    this.bottomAreaData = getBottomAreaData;
+                },
+
+                handlePrevClick() {
+                    this.$refs['carouselEl'].prev();
+                },
+
+                handleNextClick() {
+                    this.$refs['carouselEl'].next();
+                },
+
+                /**
+                 * 获取考评指标排名
+                 */
+                fetchKPIndexRank() {
+                    const kpIndexTableData = this.provinceData.map((city, index) => {
+                        return {
+                            city,
+                            kpIndex: Math.ceil(Math.random() * 10000),
+                            rank: index + 1
+                        }
+                    })
+                    this.kpIndexTableData = kpIndexTableData
+                },
+
+                handleHomeClick() {
+                    window.location.href = 'index.html'
+                }
+            },
+            computed: {
+                navLeft() {
+                    return this.navList.slice(0, 4)
+                },
+                navRight() {
+                    return this.navList.slice(4)
+                },
+                provinceData() {
+                    return provinceData
+                }
+            },
+            watch: {
+                mapActive: {
+                    immediate: true,
+                    handler(mapActive) {
+                        if (mapActive === 'china') {
+                            this.leftBtnClass = 'area-group-item area-group-item--active'
+                            this.rightBtnClass = 'area-group-item left-active'
+                        } else {
+                            this.leftBtnClass = 'area-group-item right-active'
+                            this.rightBtnClass = 'area-group-item area-group-item--active'
+                        }
+                    }
+                }
+            },
+            mounted() {
+                this.getCurrentDateTime();
+                this.fetchKHZBData();
+                this.fetchKPIndexRank();
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

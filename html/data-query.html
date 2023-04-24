@@ -16,7 +16,7 @@
   <!-- header -->
   <div class="sys-header">
     <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
-    <div class="home">
+    <div class="home" @click="handleHomeClick">
       <div class="home-icon iconfont">&#xe751;</div>
       <span class="home-text">首页</span>
     </div>
@@ -105,6 +105,7 @@
 <script src="../js/echarts.min.js"></script>
 <script src="../js/moment.min.js"></script>
 <script src="../js/china.js"></script>
+<script src="../js/config.js"></script>
 <script>
   const myApp = new Vue({
     el: "#app",
@@ -126,12 +127,14 @@
         {
           iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
           iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
-          name: "调度"
+          name: "调度",
+          location: 'diaodu.html'
         },
         {
           iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
           iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
-          name: "考评"
+          name: "考评",
+          location: 'kaoping.html'
         },
         {
           iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
@@ -6832,6 +6835,10 @@
             document.webkitExitFullscreen();
           }
         }
+      },
+
+      handleHomeClick() {
+        window.location.href = 'index.html'
       }
     },
     computed: {

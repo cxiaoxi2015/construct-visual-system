@@ -16,7 +16,7 @@
     <!-- header -->
     <div class="sys-header">
         <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
-        <div class="home">
+        <div class="home" @click="handleHomeClick">
             <div class="home-icon iconfont">&#xe751;</div>
             <span class="home-text">首页</span>
         </div>
@@ -273,6 +273,7 @@
 <script src="../js/moment.min.js"></script>
 <script src="../js/china.js"></script>
 <script src="../js/province.js"></script>
+<script src="../js/config.js"></script>
 <script>
     const myApp = new Vue({
         el: "#app",
@@ -295,12 +296,14 @@
                 {
                     iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
                     iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
-                    name: "调度"
+                    name: "调度",
+                    location: 'diaodu.html'
                 },
                 {
                     iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
                     iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
-                    name: "考评"
+                    name: "考评",
+                    location: 'kaoping.html'
                 },
                 {
                     iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
@@ -550,9 +553,9 @@
                     },
                     grid: {
                         top: '20%',
-                        left: '5%',
-                        right: '8%',
-                        bottom: '15%',
+                        left: '3%',
+                        right: '5%',
+                        bottom: '5%',
                         containLabel: true
                     },
                     xAxis: {
@@ -693,9 +696,9 @@
                     },
                     grid: {
                         top: '25%',
-                        left: '5%',
-                        right: '8%',
-                        bottom: '15%',
+                        left: '3%',
+                        right: '5%',
+                        bottom: '5%',
                         containLabel: true
                     },
                     legend: {
@@ -834,7 +837,7 @@
             },
 
             /**
-             * 绘制用能增速图表
+             * 绘制排放强度图表
              */
             drawPFQDChart() {
                 const nhzlData = {
@@ -876,10 +879,10 @@
                         }
                     },
                     grid: {
-                        top: '30%',
-                        left: '5%',
+                        top: '25%',
+                        left: '3%',
                         right: '5%',
-                        bottom: '15%',
+                        bottom: '5%',
                         containLabel: true
                     },
                     xAxis: [
@@ -1296,6 +1299,10 @@
                         document.webkitExitFullscreen();
                     }
                 }
+            },
+
+            handleHomeClick() {
+                window.location.href = 'index.html'
             }
         },
         computed: {

@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>城乡建设领域碳排放监测管理平台</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/elementUI.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/page/diaodu.css">
+</head>
+<body>
+<div id="app">
+  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+  <!-- header -->
+  <div class="sys-header">
+    <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
+    <div class="home" @click="handleHomeClick">
+      <div class="home-icon iconfont">&#xe751;</div>
+      <span class="home-text">首页</span>
+    </div>
+    <div class="nav">
+      <ul class="nav-left">
+        <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"
+               :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name">{{ item.name }}</div>
+        </li>
+      </ul>
+      <div class="sys-title-placeholder"></div>
+      <ul class="nav-right">
+        <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"
+               :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+          <dl class="nav-name" v-else>
+            <dt>{{ item.name.substring(0, 4) }}</dt>
+            <dd>{{ item.name.substring(4) }}</dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div class="header-right-line"></div>
+    <div class="header-right">
+      <div class="header-right-top">
+        <img class="avatar"
+             src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+        <div class="text">
+          <span>欢迎您！</span>
+          <a>{{ userName }}</a>
+        </div>
+      </div>
+      <div class="header-right-bottom">{{ dateTime }}</div>
+    </div>
+  </div>
+  <div class="collapse">
+    <span>展开</span>
+    <span class="iconfont">&#xe62d;</span>
+  </div>
+  <!-- 系统内容部分 -->
+  <div class="container">
+    <div class="layout-left-wrap">
+      <div class="layout-item layout-left-top">
+        <div class="layout-item-title">各地方任务调配</div>
+        <div class="layout-item-content">
+          <div class="operation">
+            <div class="operation-left">
+              <div class="operation-item"
+                   :class="{ 'operation-item--active': item.type === dpActive }"
+                   v-for="(item, index) in dpSettingList"
+                   :key="index">{{ item.label }}</div>
+            </div>
+            <div class="operation-right">
+              <div class="operation-item">导入</div>
+              <div class="operation-item">导出</div>
+              <div class="operation-item">下载模板</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <template v-if="tabActive === 1">
+              <el-table
+                height="100%"
+                :data="taskSettingTableData"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%;">
+                <el-table-column prop="specialWork" label="专项工作" align="center" width="180" fixed="left"></el-table-column>
+                <el-table-column prop="specificItem" label="具体项目" align="center" width="200" fixed="left"></el-table-column>
+                <el-table-column prop="localClimate" label="地区" align="center" width="180"></el-table-column>
+                <el-table-column prop="taskDesc" label="任务说明" align="center" width="240"></el-table-column>
+                <el-table-column prop="ratio" label="建筑面积占比%" align="center" width="130"></el-table-column>
+                <el-table-column
+                  v-for="column in taskSettingTableColumn"
+                  :key="column.prop"
+                  :label="column.label"
+                  :prop="column.prop"
+                  min-width="130"
+                  align="center">
+                  <template #default="{ row }">
+                    <el-input v-model="row[column.prop]"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="cost" label="单位增量成本" width="130"></el-table-column>
+              </el-table>
+            </template>
+            <template v-if="tabActive === 2">
+              <el-table
+                :data="jtlTableData"
+                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+                height="100%">
+                <el-table-column
+                  prop="year"
+                  label="年度"
+                  width="100"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="total"
+                  label="合计"
+                  width="100"
+                  show-overflow-tooltip
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="xjjz"
+                  label="新建居住建筑"
+                  show-overflow-tooltip
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="xjgj"
+                  label="新建公共建筑"
+                  show-overflow-tooltip
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="jygjgz"
+                  label="既有公共建筑改造"
+                  width="130"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="jyjjgz"
+                  label="既有居住建筑改造"
+                  width="130"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="nf"
+                  label="农房"
+                  width="80"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="kqdry"
+                  label="空气地热源"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="solarPhotothermal"
+                  label="太阳能光热"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="solarPhotoelectricity"
+                  label="太阳能光伏"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="gpswrcl"
+                  label="给排水及污水处理"
+                  width="130"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="yllh"
+                  label="园林绿化"
+                  align="center"></el-table-column>
+                <el-table-column
+                  prop="jzgyh"
+                  label="建筑工业化"
+                  align="center"></el-table-column>
+              </el-table>
+            </template>
+          </div>
+        </div>
+        <div class="tab">
+          <div class="tab-item"
+               :class="{ 'tab-item--active': tabActive === tab.value }"
+               v-for="(tab, tabIndex) in tabList"
+               :key="tabIndex"
+               @click="handleTabClick(tab)">{{ tab.tabName }}</div>
+        </div>
+      </div>
+      <div class="layout-item layout-left-bottom">
+        <div class="layout-item-title">各省碳达峰专项工作调度</div>
+        <div class="layout-item-content" id="gzdd"></div>
+      </div>
+    </div>
+    <div class="layout-right-wrap">
+      <div class="layout-item layout-right-top">
+        <div class="layout-item-title">项目库</div>
+        <div class="layout-item-content">
+          <el-table
+            :data="projectBankTableData"
+            height="100%">
+            <el-table-column
+              :label="key"
+              :prop="key"
+              align="center"
+              width="140"
+              v-for="(item, key) in tableHeader"
+              :fixed="key === '省份' && 'left'"
+              :key="item">
+              <template #header>
+                <div>{{ key }}</div>
+                <div class="column__unit"
+                     v-if="item && item !== '——' && item !== '单位'">({{ item }})</div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="layout-item layout-right-bottom">
+        <div class="layout-item-title">全国达峰方案执行情况监测</div>
+        <div class="layout-item-content" id="qkjc"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/vue.min.js"></script>
+  <script src="../js/element.js"></script>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/echarts.min.js"></script>
+  <script src="../js/moment.min.js"></script>
+  <script src="../js/province.js"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    const myApp = new Vue({
+      el: "#app",
+      data: {
+        userName: "管理员",
+        navList: [
+          {
+            iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+            name: "现状",
+            location: 'xianzhuang.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+            name: "预测",
+            location: 'yuce.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+            name: "调度",
+            location: 'diaodu.html',
+            active: true,
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+            name: "考评",
+            location: 'kaoping.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
+            name: "重点建筑监管"
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
+            name: "重点行业监管"
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+            name: "技术产品",
+            location: 'chanpin.html'
+          },
+          {
+            iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
+            iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+            name: "数据查询",
+            location: 'data-query.html'
+          }
+        ],
+        dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+        dateTimer: null,
+        mapActive: 'china',
+        leftBtnClass: '',
+        rightBtnClass: '',
+        tabActive: 1,
+        tabList: [
+          { tabName: "任务设定", value: 1 },
+          { tabName: "减碳量CO₂", value: 2 },
+          { tabName: "成本计算", value: 3 },
+        ],
+        dpActive: 1,
+        dpSettingList: [
+          { label: "在线设定", type: 1 },
+          { label: "计算", type: 2 }
+        ],
+        taskSettingTableData: [],
+        taskSettingTableColumn: [
+          { label: '2021-2025', prop: '2021-2025' },
+          { label: '2026-2030', prop: '2026-2030' },
+          { label: '2031-2035', prop: '2031-2035' },
+          { label: '2036-2040', prop: '2036-2040' },
+          { label: '2041-2060', prop: '2041-2060' }
+        ],
+        // 减碳量表格数据
+        jtlTableData: [],
+        // 项目库表格数据
+        projectBankTableData: [],
+        tableHeader: []
+      },
+      methods: {
+        getCurrentDateTime() {
+          if (this.dateTimer) {
+            clearInterval(this.dateTimer)
+          }
+          this.dateTimer = setInterval(() => {
+            this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+          }, 1000)
+        },
+
+        handleNavClick(item) {
+          window.location.href = item.location;
+        },
+
+        fullScreenClick() {
+          const isFullScreen = () => {
+            return !! (
+                    document.fullscreen ||
+                    document.mozFullScreen ||
+                    document.webkitIsFullScreen ||
+                    document.webkitFullScreen ||
+                    document.msFullScreen
+            );
+          }
+          const de = document.documentElement;
+          if (!isFullScreen()) {
+            if (de.requestFullscreen) {
+              de.requestFullscreen();
+            } else if (de.mozRequestFullScreen) {
+              de.mozRequestFullScreen();
+            } else if (de.webkitRequestFullScreen) {
+              de.webkitRequestFullScreen();
+            }
+          } else {
+            if(document.exitFullscreen) {
+              document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            }
+          }
+        },
+
+        /**
+         * 任务调配tab切换
+         * @param tab
+         */
+        handleTabClick(tab) {
+          this.tabActive = tab.value;
+        },
+
+        /**
+         * 获取在线设定表格数据
+         */
+        fetchDataSettingOnline() {
+          this.taskSettingTableData = [
+            {
+              id: '12987124',
+              // 专项工作
+              specialWork: '既有建筑节能改造',
+              // 具体项目
+              specificItem: '居住建筑',
+              // 地区,没有的为空字符串就可以
+              localClimate: '严寒地区',
+              // 任务说明
+              taskDesc: '改造面积（万平方米）',
+              // 占比
+              ratio: '',
+              '2021-2025': '300万㎡',
+              '2026-2030': '300万㎡',
+              '2031-2035': '300万㎡',
+              '2036-2040': '300万㎡',
+              '2041-2060': '1200万㎡',
+              // 单位增量成本
+              cost: '2400万㎡'
+            }
+          ]
+        },
+
+        objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+            if (columnIndex === 0) {
+              return {
+                rowspan: row.findTotal,
+                colspan: 1,
+              }
+            } else if (columnIndex === 1) {
+              // 具体项目列处理
+              if (rowIndex === 0) {
+                return {
+                  rowspan: 3,
+                  colspan: 1,
+                }
+              } else if ([1, 2].includes(rowIndex)) {
+                return {
+                  rowspan: 0,
+                  colspan: 1
+                }
+              } else if ([12, 17].includes(rowIndex)) {
+                return {
+                  rowspan: 5,
+                  colspan: 1
+                }
+              } else if ([13, 14, 15 ,16, 18, 19, 20, 21].includes(rowIndex)) {
+                return {
+                  rowspan: 0,
+                  colspan: 1
+                }
+              }
+            } else if (columnIndex === 3) {
+              // 任务说明列处理
+              if (rowIndex === 0) {
+                return {
+                  rowspan: 3,
+                  colspan: 1
+                }
+              } else if ([1, 2].includes(rowIndex)) {
+                return {
+                  rowspan: 0,
+                  colspan: 1
+                }
+              } else if (rowIndex === 12) {
+                return {
+                  rowspan: 10,
+                  colspan: 1
+                }
+              } else if (rowIndex > 12) {
+                return {
+                  rowspan: 0,
+                  colspan: 1
+                }
+              }
+            }
+        },
+
+        fetchJTLData() {
+          const keyMap = {
+            rows: 'rows',
+            range: 'year',
+            list: 'children',
+            sum: 'total',
+            sum1: 'xjjz',
+            sum2: 'xjgj',
+            sum3: 'jygjgz',
+            sum4: 'jyjjgz',
+            sum5: 'nf',
+            sum6: 'kqdry',
+            sum9: 'solarPhotothermal',
+            sum10: 'solarPhotoelectricity',
+            sum11: 'gpswrcl',
+            sum13: 'yllh',
+            sum14: 'jzgyh'
+          }
+          const childKeyMap = {
+            year: 'year',
+            cost1: 'xjjz',
+            cost2: 'xjgj',
+            cost3: 'jygjgz',
+            cost4: 'jyjjgz',
+            cost5: 'nf',
+            cost6: 'kqdry',
+            cost9: 'solarPhotothermal',
+            cost10: 'solarPhotoelectricity',
+            cost11: 'gpswrcl',
+            cost13: 'yllh',
+            cost14: 'jzgyh'
+          }
+          const jtlTableData = [
+            {
+              list: [],
+              range: "2021-2025",
+              rows: 1,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2026-2030",
+              rows: 2,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2031-2035",
+              rows: 3,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2036-2040",
+              rows: 4,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2041-2045",
+              rows: 5,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2046-2050",
+              rows: 6,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2051-2055",
+              rows: 7,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            },
+            {
+              list: [],
+              range: "2056-2060",
+              rows: 8,
+              sum: 0,
+              sum1: 0,
+              sum2: 0,
+              sum3: 0,
+              sum4: 0,
+              sum5: 0,
+              sum6: 0,
+              sum7: 0,
+              sum9: 0,
+              sum10: 0,
+              sum11: 0,
+              sum13: 0,
+              sum14: 0
+            }
+          ]
+          this.jtlTableData = jtlTableData.map(item => {
+            const dataItem = {}
+            for (const key in item) {
+              if (key === 'list') {
+                dataItem.children = item.list.map((childItem, childIndex) => {
+                  const childDataItem = { rows: `childItem-${childIndex}` }
+                  for (const childKey in childItem) {
+                    childDataItem[childKeyMap[childKey]] = childItem[childKey]
+                  }
+                  return childDataItem
+                })
+              } else {
+                dataItem[keyMap[key]] = item[key]
+              }
+            }
+            return dataItem
+          })
+        },
+
+        fetchProjectBankData() {
+          const tableHeader = {
+            "省份": "单位",
+                    "新建居住建筑标准": "——",
+                    "新建公共建筑标准": "——",
+                    "既有公共建筑改造": "万平方米",
+                    "既有居住建筑改造": "万平方米",
+                    "空气热源": "万平米",
+                    "地热能": "万平米",
+                    "太阳能光热": "万平米",
+                    "太阳能光伏": "万千瓦",
+                    "给排水": "%",
+                    "装配式建筑占比": "%",
+                    "建成区绿地率": "%"
+          }
+          const tableData = [
+            {
+              "省份": "北京市",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 3882,
+              "既有居住建筑改造": 2640,
+              "空气热源": 155,
+              "地热能": 1398,
+              "太阳能光热": 11181,
+              "太阳能光伏": 171,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "天津市",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 2459,
+              "既有居住建筑改造": 1672,
+              "空气热源": 98,
+              "地热能": 885,
+              "太阳能光热": 7082,
+              "太阳能光伏": 108,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "河北省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 13231,
+              "既有居住建筑改造": 8997,
+              "空气热源": 529,
+              "地热能": 4763,
+              "太阳能光热": 38105,
+              "太阳能光伏": 582,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "山西省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 6192,
+              "既有居住建筑改造": 4210,
+              "空气热源": 248,
+              "地热能": 2229,
+              "太阳能光热": 17832,
+              "太阳能光伏": 272,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "内蒙古自治区",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 4265,
+              "既有居住建筑改造": 2900,
+              "空气热源": 171,
+              "地热能": 1535,
+              "太阳能光热": 12282,
+              "太阳能光伏": 188,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "辽宁省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 7553,
+              "既有居住建筑改造": 5136,
+              "空气热源": 302,
+              "地热能": 2719,
+              "太阳能光热": 21752,
+              "太阳能光伏": 332,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "吉林省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 4269,
+              "既有居住建筑改造": 2903,
+              "空气热源": 171,
+              "地热能": 1537,
+              "太阳能光热": 12295,
+              "太阳能光伏": 188,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "黑龙江省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 5648,
+              "既有居住建筑改造": 3841,
+              "空气热源": 226,
+              "地热能": 2033,
+              "太阳能光热": 16266,
+              "太阳能光伏": 249,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "上海市",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 4410,
+              "既有居住建筑改造": 2999,
+              "空气热源": 176,
+              "地热能": 1588,
+              "太阳能光热": 12702,
+              "太阳能光伏": 194,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "江苏省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 15029,
+              "既有居住建筑改造": 10219,
+              "空气热源": 601,
+              "地热能": 5410,
+              "太阳能光热": 43282,
+              "太阳能光伏": 661,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "浙江省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 11450,
+              "既有居住建筑改造": 7786,
+              "空气热源": 458,
+              "地热能": 4122,
+              "太阳能光热": 32976,
+              "太阳能光伏": 504,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "安徽省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 10822,
+              "既有居住建筑改造": 7359,
+              "空气热源": 433,
+              "地热能": 3896,
+              "太阳能光热": 31168,
+              "太阳能光伏": 476,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "福建省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 7366,
+              "既有居住建筑改造": 5009,
+              "空气热源": 295,
+              "地热能": 2652,
+              "太阳能光热": 21215,
+              "太阳能光伏": 324,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "江西省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 8013,
+              "既有居住建筑改造": 5449,
+              "空气热源": 321,
+              "地热能": 2885,
+              "太阳能光热": 23079,
+              "太阳能光伏": 353,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "山东省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 18004,
+              "既有居住建筑改造": 12243,
+              "空气热源": 720,
+              "地热能": 6481,
+              "太阳能光热": 51852,
+              "太阳能光伏": 792,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "河南省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 17621,
+              "既有居住建筑改造": 11982,
+              "空气热源": 705,
+              "地热能": 6343,
+              "太阳能光热": 50748,
+              "太阳能光伏": 775,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "湖北省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 10241,
+              "既有居住建筑改造": 6964,
+              "空气热源": 410,
+              "地热能": 3687,
+              "太阳能光热": 29495,
+              "太阳能光伏": 451,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "湖南省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 11783,
+              "既有居住建筑改造": 8012,
+              "空气热源": 471,
+              "地热能": 4242,
+              "太阳能光热": 33935,
+              "太阳能光伏": 518,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "广东省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 22346,
+              "既有居住建筑改造": 15195,
+              "空气热源": 894,
+              "地热能": 8045,
+              "太阳能光热": 64357,
+              "太阳能光伏": 983,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "广西壮族自治区",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 8889,
+              "既有居住建筑改造": 6045,
+              "空气热源": 356,
+              "地热能": 3200,
+              "太阳能光热": 25601,
+              "太阳能光伏": 391,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "海南省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 1788,
+              "既有居住建筑改造": 1216,
+              "空气热源": 72,
+              "地热能": 644,
+              "太阳能光热": 5149,
+              "太阳能光伏": 79,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "重庆市",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 5684,
+              "既有居住建筑改造": 3865,
+              "空气热源": 227,
+              "地热能": 2046,
+              "太阳能光热": 16371,
+              "太阳能光伏": 250,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "四川省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 14838,
+              "既有居住建筑改造": 10090,
+              "空气热源": 594,
+              "地热能": 5342,
+              "太阳能光热": 42734,
+              "太阳能光伏": 653,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "贵州省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 6838,
+              "既有居住建筑改造": 4650,
+              "空气热源": 274,
+              "地热能": 2462,
+              "太阳能光热": 19694,
+              "太阳能光伏": 301,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "云南省",
+              "新建居住建筑标准": '65%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 8372,
+              "既有居住建筑改造": 5693,
+              "空气热源": 335,
+              "地热能": 3014,
+              "太阳能光热": 24111,
+              "太阳能光伏": 368,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "西藏自治区",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 647,
+              "既有居住建筑改造": 440,
+              "空气热源": 26,
+              "地热能": 233,
+              "太阳能光热": 1863,
+              "太阳能光伏": 28,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "陕西省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 7010,
+              "既有居住建筑改造": 4767,
+              "空气热源": 280,
+              "地热能": 2524,
+              "太阳能光热": 20188,
+              "太阳能光伏": 308,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "甘肃省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 4437,
+              "既有居住建筑改造": 3017,
+              "空气热源": 177,
+              "地热能": 1597,
+              "太阳能光热": 12778,
+              "太阳能光伏": 195,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "青海省",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 1051,
+              "既有居住建筑改造": 714,
+              "空气热源": 42,
+              "地热能": 378,
+              "太阳能光热": 3025,
+              "太阳能光伏": 46,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "宁夏回族自治区",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 1277,
+              "既有居住建筑改造": 869,
+              "空气热源": 51,
+              "地热能": 460,
+              "太阳能光热": 3679,
+              "太阳能光伏": 56,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+            {
+              "省份": "新疆维吾尔自治区",
+              "新建居住建筑标准": '75%',
+              "新建公共建筑标准": '72%',
+              "既有公共建筑改造": 4584,
+              "既有居住建筑改造": 3117,
+              "空气热源": 183,
+              "地热能": 1650,
+              "太阳能光热": 13203,
+              "太阳能光伏": 202,
+              "给排水": '7%',
+              "装配式建筑占比": '39%',
+              "建成区绿地率": '40%'
+            },
+
+          ]
+          this.tableHeader = tableHeader;
+          this.projectBankTableData = tableData;
+        },
+
+        /**
+         * 绘制情况监测图表
+         */
+        drawQKJCChart() {
+          const ynzsData = []
+          for (let year = 2021; year <= 2030; year++) {
+            ynzsData.push({
+              year,
+              plan: (Math.random() * 10).toFixed(1),
+              actual: (Math.random() * 10).toFixed(1)
+            })
+          }
+          const yearData = [], tjData = [], cfData = []
+          ynzsData.forEach(item => {
+            yearData.push(item.year)
+            tjData.push(item.plan)
+            cfData.push(item.actual)
+          })
+          const myChart = echarts.init(document.getElementById('qkjc'));
+          const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+              trigger: 'axis',
+              confine: true,
+              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+              formatter: function(params){
+                return `<div class="cx-tooltip">累计减碳能力: ${params[0].value}</div>`
+              },
+              axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                  axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                      color: '#fff'
+                    },
+                    lineStyle: {
+                      type: 'dashed'
+                    }
+                  }
+                },
+                lineStyle: {
+                  type: 'dashed'
+                }
+              }
+            },
+            grid: {
+              top: '25%',
+              left: '3%',
+              right: '3%',
+              bottom: '10%',
+              containLabel: true
+            },
+            legend: {
+              top: "3%",
+              right: '2%',
+              textStyle: {
+                color: "#fff",
+                fontSize: 14
+              },
+              itemGap: 26,
+              itemWidth: 25,
+              itemHeight: 4,
+              icon: 'rectangle',
+              data: ['全国2030达峰情景', '实际工作进展情景']
+            },
+            xAxis: {
+              type: 'category',
+              data: yearData,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                lineStyle: {
+                  color: 'rgba(255, 255, 255, .05)'
+                }
+              },
+              axisLabel: {
+                margin: 10,
+                fontSize: '.1rem',
+                formatter: "{value}年",
+                color: '#fff'
+              }
+            },
+            yAxis: {
+              type: "value",
+              name: '单位:万吨',
+              nameTextStyle: {
+                color: "#fff",
+                fontSize: "",
+                padding: [0, 0, 0, -20],
+              },
+              show: true,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                show: false,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .09)"
+                }
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .09)"
+                }
+              },
+              axisLabel: {
+                fontSize: '.12rem',
+                color: '#fff'
+              }
+            },
+            series: [
+              {
+                name: "全国2030达峰情景",
+                type: "line",
+                data: tjData,
+                symbolSize: 5,
+                symbol: "circle",
+                smooth: true,
+                yAxisIndex: 0,
+                showSymbol: false,
+                lineStyle: {
+                  width: 3,
+                  color: '#D3B15F',
+                },
+                itemStyle: {
+                  color: "rgba(211, 177, 95, 1)",
+                  borderColor: "rgba(211, 177, 95, 0.8)",
+                  borderWidth: 5,
+                }
+              },
+              {
+                name: "实际工作进展情景",
+                type: "line",
+                data: cfData,
+                symbolSize: 5,
+                symbol: "circle",
+                smooth: true,
+                showSymbol: false,
+                lineStyle: {
+                  width: 3,
+                  color: "#00DCFF",
+                },
+                itemStyle: {
+                  color: "rgba(0, 220, 255, 1)",
+                  borderColor: "rgba(0, 220, 255, 0.8)",
+                  borderWidth: 5,
+                }
+              }
+            ]
+          };
+          myChart.setOption(option)
+        },
+
+        /**
+         * 绘制工作调度图表
+         */
+        drawGZDDChart(showDataZoom = true) {
+          const nhzlData = {
+            gonggong: [],
+            juzhu: [],
+            year: []
+          }
+          this.provinceData.forEach((province, index) => {
+            nhzlData.gonggong.push(index / 3 === 0 ? (Math.random() * 100).toFixed(2) - 100 : (Math.random() * 100).toFixed(2))
+            nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
+            nhzlData.year.push(province)
+          })
+          const myChart = echarts.init(document.getElementById('gzdd'));
+          const dataZoom = showDataZoom && [
+            {
+              type: 'slider',
+              startValue: 0,
+              endValue: 12,
+              bottom: '20',
+              left: '30',
+              height: 10,
+              borderColor: '#1479A1',
+              textStyle: {
+                color: '#05D5FF',
+              },
+              backgroundColor: '#032E5C',
+              dataBackground: {
+                lineStyle: { color: 'rgba(250, 84, 28, .3)' },
+                areaStyle: { color: 'rgba(250, 84, 28, .5)' }
+              },
+              moveHandleStyle: {
+                color: 'rgba(38, 203, 251, 1)',
+                borderColor: 'rgba(38, 203, 251, 1)'
+              },
+              fillerColor: 'rgba(250, 84, 28, .1)'
+            }
+          ]
+          const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+              trigger: 'axis',
+              confine: true,
+              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+              formatter: function (params) {
+                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
+              },
+              axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                  axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                      color: '#fff'
+                    },
+                    lineStyle: {
+                      type: 'dashed'
+                    }
+                  }
+                },
+                lineStyle: {
+                  type: 'dashed'
+                }
+              }
+            },
+            grid: {
+              top: '20%',
+              left: '2%',
+              right: '2%',
+              bottom: '15%',
+              containLabel: true
+            },
+            xAxis: [
+              {
+                type: "category",
+                axisTick: {
+                  show: true
+                },
+                axisLine: {
+                  lineStyle: {
+                    color: 'rgba(255, 255, 255, .05)'
+                  }
+                },
+                data: nhzlData.year,
+                axisLabel: {
+                  margin: 10,
+                  fontSize: '.12rem',
+                  formatter: "{value}",
+                  color: '#fff'
+                }
+              },
+            ],
+            yAxis: {
+              type: "value",
+              name: '单位：万吨(对全国达峰贡献量=各省达峰方案情景的峰值-各省达峰方案情景2030年排放值（2030年前达峰的是正值，2030之后达峰的是负值)',
+              position: 'left',
+              nameTextStyle: {
+                color: "#fff",
+                fontSize: "0.13rem",
+                padding: [0, 0, 0, 750],
+              },
+              show: true,
+              axisTick: {
+                show: false,
+              },
+              axisLine: {
+                show: false,
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "rgba(255, 255, 255, .15)"
+                }
+              },
+              axisLabel: {
+                fontSize: '.12rem',
+                color: '#fff'
+              }
+            },
+            dataZoom,
+            series: {
+              name: "用能强度",
+              type: "bar",
+              barWidth: 12,
+              itemStyle: {
+                borderWidth: 1,
+                color: data => {
+                  return parseFloat(data.value) < 0 ? '#0B7062' : '#FCA805'
+                },
+                borderColor: data => {
+                  return parseFloat(data.value) < 0 ? '#15FED1' : '#F3A603'
+                },
+                borderRadius: 2
+              },
+              data: nhzlData.gonggong,
+            }
+          };
+          myChart.setOption(option)
+        },
+
+        handleHomeClick() {
+          window.location.href = 'index.html'
+        }
+      },
+      computed: {
+        navLeft() {
+          return this.navList.slice(0, 4)
+        },
+        navRight() {
+          return this.navList.slice(4)
+        },
+        provinceData() {
+          return provinceData
+        }
+      },
+      watch: {
+        mapActive: {
+          immediate: true,
+          handler(mapActive) {
+            if (mapActive === 'china') {
+              this.leftBtnClass = 'area-group-item area-group-item--active'
+              this.rightBtnClass = 'area-group-item left-active'
+            } else {
+              this.leftBtnClass = 'area-group-item right-active'
+              this.rightBtnClass = 'area-group-item area-group-item--active'
+            }
+          }
+        }
+      },
+      mounted() {
+        this.getCurrentDateTime();
+        this.fetchDataSettingOnline();
+        this.fetchJTLData();
+        this.fetchProjectBankData();
+        this.$nextTick(() => {
+          this.drawQKJCChart();
+          this.drawGZDDChart();
+        })
+      }
+    })
+  </script>
+</div>
+</body>
+</html>

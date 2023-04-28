@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>城乡建设领域碳排放监测管理平台</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/elementUI.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/page/hangye.css">
+</head>
+<body>
+<div id="app" v-cloak>
+  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+  <!-- header -->
+  <div class="sys-header">
+    <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
+    <div class="home" @click="handleHomeClick">
+      <div class="home-icon iconfont">&#xe751;</div>
+      <span class="home-text">首页</span>
+    </div>
+    <div class="nav">
+      <ul class="nav-left">
+        <li v-for="(item, index) in navLeft"
+            :class="[item.navName, item.active && 'nav-active']"
+            :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
+          <div class="nav-name">{{ item.name }}</div>
+        </li>
+      </ul>
+      <div class="sys-title-placeholder"></div>
+      <ul class="nav-right">
+        <li v-for="(item, index) in navRight" :class="[item.active && 'nav-active', item.navName]" :key="index" @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
+          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+          <dl class="nav-name" v-else>
+            <dt>{{ item.name.substring(0, 4) }}</dt>
+            <dd>{{ item.name.substring(4) }}</dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div class="header-right-line"></div>
+    <div class="header-right">
+      <div class="header-right-top">
+        <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+        <div class="text">
+          <span>欢迎您！</span>
+          <a>{{ userName }}</a>
+        </div>
+      </div>
+      <div class="header-right-bottom">{{ dateTime }}</div>
+    </div>
+  </div>
+
+  <!-- 系统内容部分 -->
+  <div class="container">
+    <div class="layout-left">
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>企业碳核查测算</span>
+        </div>
+        <div class="hy-item-content">
+          <div class="category-group">
+            <div class="category-item" :class="{ 'is-active': measurement === 1 }" @click="handleMeasurementClick(1)">
+              <div class="category-item-layout">
+                <div class="item-name">批发和零售贸易业、</div>
+                <div class="item-name">餐饮业</div>
+              </div>
+            </div>
+            <div class="category-item" :class="{ 'is-active': measurement === 2 }" @click="handleMeasurementClick(2)">
+              <div class="category-item-layout">
+                <div class="item-name">其他服务业</div>
+              </div>
+            </div>
+          </div>
+          <div class="operation-btn">开始计算</div>
+        </div>
+      </div>
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>碳核查标准</span>
+        </div>
+        <div class="hy-item-content">
+          <el-table
+            :data="carbonVerificationStandardsTableData"
+            height="100%"
+            style="width: 100%">
+            <el-table-column
+              label="单位"
+              prop="company">
+            </el-table-column>
+            <el-table-column
+              label="合理值"
+              prop="value1">
+              <template #default="{ row }">
+                <span style="color: #ffe400">{{ row.value1 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="引导值"
+              prop="value2">
+              <template #default="{ row }">
+                <span style="color: #14e144">{{ row.value2 }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>碳核查指南</span>
+        </div>
+        <ul class="hy-item-content">
+          <li v-for="(item, index) in carbonVerificationGuidelines" :key="index">{{ item.detail }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layout-middle">
+      <div class="map-wrap">
+        <div id="mapContainer"></div>
+      </div>
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>项目库</span>
+        </div>
+        <div class="hy-item-content">
+          <el-table
+            :data="projectTableData"
+            height="100%"
+            style="width: 100%"
+            tooltip-effect="light">
+            <el-table-column
+              label="序号"
+              type="index"
+              width="80"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="证书编号"
+              prop="certificateNum"
+              show-overflow-tooltip
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="企业名称"
+              prop="company"
+              show-overflow-tooltip
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="排放量"
+              show-overflow-tooltip
+              align="center"
+              width="80">
+              <template #default="{ row }">
+                <span style="color: #ffe400;">{{ row.emissions }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="核查结构"
+              prop="verificationAgency"
+              show-overflow-tooltip
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="操作"
+              align="center"
+              width="100">
+              <template #default="{ row }">
+                <div class="operation-btn">查 看</div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </div>
+    <div class="layout-right">
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>各行业接入企业数量</span>
+        </div>
+        <div class="hy-item-content">
+          <div class="industry-item" v-for="(item, index) in industryList" :key="index">
+            <div class="icon-img"></div>
+            <dl class="industry-item-layout">
+              <dt>{{ item.industryName }}</dt>
+              <dd>{{ item.value }}栋</dd>
+            </dl>
+            <div class="line"></div>
+            <div class="area">{{ item.area }}万平方米</div>
+          </div>
+        </div>
+      </div>
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>各省项目入库情况</span>
+        </div>
+        <div class="hy-item-content">
+          <el-table
+            :data="projectToBankTableData"
+            height="100%"
+            style="width: 100%">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="80"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="省份"
+              prop="name"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="数量"
+              prop="value"
+              align="center">
+              <template #default="{ row }">
+                <span :class="[row.value > 100 && 'err-item']">{{ row.value }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="hy-item">
+        <div class="hy-item-title">
+          <span>各类型建筑用能强度</span>
+        </div>
+        <div class="hy-item-content" id="ynqd"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/vue.min.js"></script>
+<script src="../js/element.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/select.js"></script>
+<script src="../js/echarts.min.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/china.js"></script>
+<script src="../js/config.js"></script>
+<script>
+  const myApp = new Vue({
+    el: "#app",
+    data: {
+      userName: "管理员",
+      navList: [
+        {
+          navName: "xianzhuang",
+          name: "现状",
+          location: 'xianzhuang.html',
+        },
+        {
+          navName: "yuce",
+          name: "预测",
+          location: 'yuce.html'
+        },
+        {
+          navName: "diaodu",
+          name: "调度",
+          location: 'diaodu.html'
+        },
+        {
+          navName: "kaoping",
+          name: "考评",
+          location: 'kaoping.html'
+        },
+        {
+          navName: "jianzhu",
+          name: "重点建筑监管",
+          location: "jianzhu.html"
+        },
+        {
+          navName: "hangye",
+          name: "重点行业监管",
+          location: "hangye.html",
+          active: true
+        },
+        {
+          navName: "chanpin",
+          name: "技术产品",
+          location: 'chanpin.html'
+        },
+        {
+          navName: "chaxun",
+          name: "数据查询",
+          location: 'data-query.html'
+        }
+      ],
+      dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+      dateTimer: null,
+      resData: {},
+      region: 'china',
+      year: 2021,
+      measurement: 1,
+      carbonVerificationStandardsTableData: [
+        {
+          company: "医院",
+          value1: 123456,
+          value2: 789453
+        },
+        {
+          company: "学校",
+          value1: 3360,
+          value2: 7893
+        },
+        {
+          company: "宾馆",
+          value1: 7453,
+          value2: 2353
+        }
+      ],
+      carbonVerificationGuidelines: [
+        { detail: "上海市温室气体排放核算与报告指南" },
+        { detail: "海南省规划碳排放环境影响评价技术指南" },
+        { detail: "河南省工业企业碳排放核查规范" },
+        { detail: "海南省建设项目碳排放环境影响评价技术指南" },
+        { detail: "贵州省统计局碳排放统计核算工作方案" },
+        { detail: "天津市建筑物温室气体排放查技术导则" },
+        { detail: "黑龙江省建筑物温室气体排放查技术导则" }
+      ],
+      projectTableData: [
+        {
+          id: "1001",
+          certificateNum: "cabr-01-（2022）-cgp-052",
+          company: "江西汇丰管业有限公司",
+          emissions: "1500t",
+          verificationAgency: "中国建筑科学研究院有限公司"
+        },
+        {
+          id: "1002",
+          certificateNum: "cabr-01-（2022）-cgp-051",
+          company: "江西汇丰管业有限公司江西汇丰管业有限公司",
+          emissions: "1200t",
+          verificationAgency: "中国建筑科学研究院有限公司"
+        },
+        {
+          id: "1003",
+          certificateNum: "bmc-2022cgp101902101",
+          company: "重庆硕克斯节能科技有限公司",
+          emissions: "1100t",
+          verificationAgency: "建筑材料工业技术情报研究所"
+        },
+        {
+          id: "1004",
+          certificateNum: "gttcj202200077",
+          company: "广州市建筑集团混泥土有限公司",
+          emissions: "1500t",
+          verificationAgency: "广州检验检测认证集团有限公司"
+        }
+      ],
+      // 各行业接入企业数量
+      industryList: [
+        {
+          imgSrc: "../../assets/images/hangye/文旅.png",
+          industryName: "文旅",
+          value: 1300,
+          area: 235
+        },
+        {
+          imgSrc: "../../assets/images/hangye/卫生.png",
+          industryName: "卫生",
+          value: 1000,
+          area: 200
+        },
+        {
+          imgSrc: "../../assets/images/hangye/教育.png",
+          industryName: "教育",
+          value: 310,
+          area: 500
+        }
+      ],
+      // 各省项目入库情况
+      projectToBankTableData: [
+        {
+          name: "北京",
+          value: 111
+        },
+        {
+          name: "天津",
+          value: 79
+        },
+        {
+          name: "河北省",
+          value: 225
+        },
+        {
+          name: "陕西省",
+          value: 40
+        },
+      ]
+    },
+    methods: {
+      getCurrentDateTime() {
+        if (this.dateTimer) {
+          clearInterval(this.dateTimer)
+        }
+        this.dateTimer = setInterval(() => {
+          this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+        }, 1000)
+      },
+
+      handleNavClick(item) {
+        window.location.href = item.location;
+      },
+
+      fullScreenClick() {
+        const isFullScreen = () => {
+          return !! (
+                  document.fullscreen ||
+                  document.mozFullScreen ||
+                  document.webkitIsFullScreen ||
+                  document.webkitFullScreen ||
+                  document.msFullScreen
+          );
+        }
+        const de = document.documentElement;
+        if (!isFullScreen()) {
+          if (de.requestFullscreen) {
+            de.requestFullscreen();
+          } else if (de.mozRequestFullScreen) {
+            de.mozRequestFullScreen();
+          } else if (de.webkitRequestFullScreen) {
+            de.webkitRequestFullScreen();
+          }
+        } else {
+          if(document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if(document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if(document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      },
+
+      handleHomeClick() {
+        window.location.href = 'index.html'
+      },
+
+      handleClickArea1() {
+        window.open("http://carbonv2.57ut.cn:807/v4/ent/index.html")
+      },
+
+      handleClickArea2() {
+        window.open("http://carbonv2.57ut.cn:807/v4/person/index.html")
+      },
+
+      /**
+       * 绘制地图
+       */
+      drawMapChart() {
+        const { map } = this.resData;
+        const { dw, maps, title, value } = map;
+        this.mapTitle = title;
+        this.mapUnit = dw;
+        this.mapValue = value.toString().split("");
+        const tooltipDw = maps.length && maps[0].dw;
+        const that = this;
+        const mapsKeyMap = {}
+        let min = 0, max = 0;
+        maps.forEach(item => {
+          if (!min || item.value < min) {
+            min = item.value;
+          }
+          if (!max || item.value > max) {
+            max = item.value;
+          }
+          mapsKeyMap[item.region] = item;
+        })
+        const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+        const currentYear = this.year;
+        const loadMap = (features, mapData, zoom, provinceName) => {
+          const geoCoordMap = {}
+          features.forEach(item => {
+            const {properties} = item
+            const {cp, name} = properties
+            geoCoordMap[name] = cp
+          })
+          const option = {
+            silent: false,
+            tooltip: {
+              trigger: "item",
+              show: true,
+              textStyle: {
+                fontSize: 14,
+                color: "#fff",
+              },
+              borderWidth: 3,
+              borderColor: 'rgba(10, 113, 174, 0.8)',
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              extraCssText: "padding: 0;",
+              formatter: function (params) {
+                if (params.data) {
+                  return `
+                    <div class="map-tooltip">
+                        <div class="map-tooltip-header" style="border-bottom: 1px solid #5CB2E3; height: 40px; display: flex;align-items: center; padding: 0 10px;">
+                            <div class="header-icon" style="width: 5px;height: 5px; border-radius: 50%; background: #1CD5FF; margin-right: 5px;"></div>
+                            <div class="header-text">${ params.data.name }</div>
+                        </div>
+                        <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
+                            <div class="content-item">年度: ${currentYear}年</div>
+                            <div class="content-item">${title}: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> ${tooltipDw}</div>
+                        </div>
+                    </div>
+                  `
+                } else {
+                  return ''
+                }
+              }
+            },
+            geo: {
+              map: provinceName,
+              roam: false,
+              zoom,
+              itemStyle: {
+                borderColor: '#84B2FD',
+                color: 'transparent',
+                borderWidth: 8,
+              },
+              regions: [
+                {
+                  name: '南海诸岛',
+                  itemStyle: {
+                    normal: {
+                      opacity: 0
+                    }
+                  },
+                  label: {
+                    show: false
+                  }
+                }
+              ]
+            },
+            visualMap: {
+              min,
+              max,
+              calculable: true,
+              inRange: {
+                color: ['#115C9E', '#16EB9C']
+              },
+              padding: [0, 0, 50, 50],
+              textStyle: {
+                color: '#fff'
+              },
+              text: ['高', '低'],
+            },
+            series: [{
+              map: provinceName,
+              type: 'map',
+              zoom,
+              roam: false,
+              coordinateSystem: 'geo',
+              selectedMode: 'single',
+              showLegendSymbol: true,
+              itemStyle: {
+                borderWidth: 1,
+                borderColor: '#84B2FD',
+                color: 'transparent'
+              },
+              data: mapData,
+              emphasis: {
+                //当鼠标放上去  地区区域是否显示名称
+                label: {
+                  show: true,
+                  color: "#fff",
+                  backgroundColor: "rgba(0, 0, 0, .25)",
+                },
+                itemStyle: {
+                  color: '#fcf565'
+                },
+              },
+              select: {
+                label: {
+                  show: true,
+                  color: "#fff"
+                }
+              },
+              label: {
+                show: true,
+                color: '#fff',
+                position: 'top',
+                fontSize: 12,
+                padding: 10
+              }
+            }]
+          }
+          myChart.setOption(option)
+        }
+        if (this.region === "china") {
+          $.get(`../assets/mapJson/全国.json`, function (data) {
+            // echarts.registerMap('china', data) 显示南海九段线
+            echarts.getMap("china").geoJson.features;
+            loadMap(data.features, data.features.map(item => {
+              if (mapsKeyMap.hasOwnProperty(item.properties.name)) {
+                return {
+                  name: item.properties.name,
+                  value: mapsKeyMap[item.properties.name].value
+                }
+              } else {
+                return {
+                  name: item.properties.name,
+                  value: 0
+                }
+              }
+            }), 1.2, 'china')
+          })
+          myChart.on('click',  params => {
+            const { name: provinceName } = params;
+            this.region = provinceName
+            this.handleChange();
+          })
+        } else {
+          $.get(`../assets/mapJson/${that.region}.json`, function (data) {
+            echarts.registerMap(that.region, data);
+            loadMap(data.features, data.features.map(item => {
+              if (mapsKeyMap.hasOwnProperty(item.properties.name)) {
+                return {
+                  name: item.properties.name,
+                  value: mapsKeyMap[item.properties.name].value
+                }
+              } else {
+                return {
+                  name: item.properties.name,
+                  value: 0
+                }
+              }
+            }), 0.9, that.region)
+          })
+        }
+      },
+
+      /**
+       * 绘制各类型建筑用能强度图表
+       */
+      drawYNQDChart() {
+        const myChart = echarts.init(document.getElementById('ynqd'));
+        const option = {
+          backgroundColor: 'transparent',
+          tooltip: {
+            trigger: 'axis',
+            confine: true,
+            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+            formatter: function (params) {
+              return `<div class="cx-tooltip">强度: ${params[0].value}</div>`
+            }
+          },
+          grid: {
+            top: '5%',
+            left: '5%',
+            right: '5%',
+            bottom: '12%',
+            containLabel: true
+          },
+          xAxis: {
+            name: '单位：kgce/㎡',
+            nameLocation: 'start',
+            nameTextStyle: {
+              color: "#fff",
+              fontSize: ".1rem"
+            },
+            type: "value",
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              margin: -5,
+              fontSize: '.1rem',
+              formatter: "{value}",
+              color: '#fff'
+            },
+            splitLine: {
+              show: false,
+              lineStyle: {
+                color: "#707070"
+              }
+            }
+          },
+          yAxis: {
+            type: "category",
+            show: true,
+            axisTick: {
+              show: false,
+            },
+            axisLine: {
+              show: false,
+              lineStyle: {
+                color: "rgba(255, 255, 255, .09)"
+              }
+            },
+            splitLine: {
+              show: false,
+              lineStyle: {
+                color: "#707070"
+              }
+            },
+            axisLabel: {
+              fontSize: '.12rem',
+              color: '#fff'
+            },
+            data: ["宾馆饭馆", "教育建筑", "医疗卫生教育"]
+          },
+          series: [
+            {
+              type: "bar",
+              stack: "1",
+              barWidth: 12,
+              barBorderRadius: 30,
+              itemStyle: {
+                normal: {
+                  color: function (params) {
+                    return {
+                      type: "linear",
+                      x: 1,
+                      y: 0,
+                      x2: 0,
+                      y2: 0,
+                      colorStops: [{
+                        offset: 0,
+                        color: "rgba(247, 193, 0, 0.8)" // 0% 处的颜色
+                      },
+                        {
+                          offset: 0.9,
+                          color: "#FFC100" // 100% 处的颜色
+                        }
+                      ]
+                    }
+                  },
+                },
+              },
+              data: [100, 90, 86]
+            }
+          ]
+        }
+        myChart.setOption(option)
+      },
+
+      handleMeasurementClick(measurement) {
+        this.measurement = measurement;
+      }
+    },
+    computed: {
+      navLeft() {
+        return this.navList.slice(0, 4)
+      },
+      navRight() {
+        return this.navList.slice(4)
+      }
+    },
+    mounted() {
+      this.getCurrentDateTime();
+      const that = this;
+      this.$nextTick(() => {
+        const loading = this.$loading({
+          text: "数据加载中...",
+          background: 'rgba(0, 0, 0, 0.25)'
+        });
+        $.get(`${severUrl}/Newxz/index`, {
+          year: that.year,
+          cate: "1",
+          dq: "1",
+          type: "100",
+          mold: "1",
+          isfirst: 1
+        }, function(data) {
+          loading.close();
+          that.resData = data;
+          that.drawMapChart();
+          that.drawYNQDChart();
+        })
+      })
+    }
+  })
+</script>
+</body>
+</html>

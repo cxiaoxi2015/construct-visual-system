@@ -22,15 +22,18 @@
     </div>
     <div class="nav">
       <ul class="nav-left">
-        <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+        <li v-for="(item, index) in navLeft"
+            :class="[item.navName, item.active && 'nav-active']"
+            :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
           <div class="nav-name">{{ item.name }}</div>
         </li>
       </ul>
       <div class="sys-title-placeholder"></div>
       <ul class="nav-right">
-        <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-          <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+        <li v-for="(item, index) in navRight" :class="[item.active && 'nav-active', item.navName]" :key="index" @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
           <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
           <dl class="nav-name" v-else>
             <dt>{{ item.name.substring(0, 4) }}</dt>
@@ -113,48 +116,42 @@
       userName: "管理员",
       navList: [
         {
-          iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+          navName: "xianzhuang",
           name: "现状",
           location: 'xianzhuang.html'
         },
         {
-          iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+          navName: "yuce",
           name: "预测",
           location: 'yuce.html'
         },
         {
-          iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+          navName: "diaodu",
           name: "调度",
           location: 'diaodu.html'
         },
         {
-          iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+          navName: "kaoping",
           name: "考评",
           location: 'kaoping.html'
         },
         {
-          iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
-          name: "重点建筑监管"
+          navName: "jianzhu",
+          name: "重点建筑监管",
+          location: "jianzhu.html"
         },
         {
-          iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
-          name: "重点行业监管"
+          navName: "hangye",
+          name: "重点行业监管",
+          location: "hangye.html"
         },
         {
-          iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+          navName: "chanpin",
           name: "技术产品",
           location: 'chanpin.html'
         },
         {
-          iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
-          iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+          navName: "chaxun",
           name: "数据查询",
           location: 'data-query.html',
           active: true

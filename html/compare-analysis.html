@@ -22,15 +22,18 @@
         </div>
         <div class="nav">
             <ul class="nav-left">
-                <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-                    <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                <li v-for="(item, index) in navLeft"
+                    :class="[item.navName, item.active && 'nav-active']"
+                    :key="index"
+                    @click="handleNavClick(item)">
+                    <div class="nav-icon"></div>
                     <div class="nav-name">{{ item.name }}</div>
                 </li>
             </ul>
             <div class="sys-title-placeholder"></div>
             <ul class="nav-right">
-                <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-                    <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                <li v-for="(item, index) in navRight" :class="[item.active && 'nav-active', item.navName]" :key="index" @click="handleNavClick(item)">
+                    <div class="nav-icon"></div>
                     <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
                     <dl class="nav-name" v-else>
                         <dt>{{ item.name.substring(0, 4) }}</dt>
@@ -63,7 +66,9 @@
                     <div class="title">对比范围</div>
                     <div class="item-box">
                         <div class="category padding">
-                            <div class="category-title">
+                            <div class="category-title"
+                                 :class="{ 'category-title--active': subCategoryActive === '10' }"
+                                 @click="handleSubCategoryClick('10')">
                                 <span class="prefix-icon"></span>
                                 <span class="label">运行能耗</span>
                             </div>
@@ -72,7 +77,8 @@
                                     <div class="sub-category-item"
                                          :class="{ 'sub-category-item--active': item.value === subCategoryActive }"
                                          v-for="(item, index) in subCategoriesTop"
-                                         :key="index">
+                                         :key="index"
+                                         @click="handleSubCategoryClick(item.value)">
                                         <span class="prefix-icon"></span>
                                         <span class="label">{{ item.label }}</span>
                                     </div>
@@ -81,7 +87,8 @@
                                     <div class="sub-category-item"
                                          :class="{ 'sub-category-item--active': item.value === subCategoryActive }"
                                          v-for="(item, index) in subCategoriesBottom"
-                                         :key="index">
+                                         :key="index"
+                                         @click="handleSubCategoryClick(item.value)">
                                         <span class="prefix-icon"></span>
                                         <span class="label">{{ item.label }}</span>
                                     </div>
@@ -89,11 +96,15 @@
                             </div>
                         </div>
                         <div class="category-layout-wrap">
-                            <div class="category">
+                            <div class="category"
+                                 :class="{ 'category--active': subCategoryActive === '20' }"
+                                 @click="handleSubCategoryClick('20')">
                                 <span class="prefix-icon"></span>
                                 <span class="label">建筑业能耗</span>
                             </div>
-                            <div class="category">
+                            <div class="category"
+                                 :class="{ 'category--active': subCategoryActive === '30' }"
+                                 @click="handleSubCategoryClick('30')">
                                 <span class="prefix-icon"></span>
                                 <span class="label">基础设施能耗</span>
                             </div>
@@ -106,20 +117,23 @@
                         <div class="item-box-layout">
                             <div class="index-item"
                                  v-for="(item, index) in compareIndexDataListTop"
-                                 :style="getIndexItemStyle(index)"
-                                 :key="index">{{ item.label }}</div>
+                                 :style="getIndexItemStyle(item.value)"
+                                 :key="index"
+                                 @click="handleQuotaClick(item.value)">{{ item.label }}</div>
                         </div>
                         <div class="item-box-layout">
                             <div class="index-item"
                                  v-for="(item, index) in compareIndexDataListMid"
-                                 :style="getIndexItemStyle(index + 5)"
-                                 :key="index">{{ item.label }}</div>
+                                 :style="getIndexItemStyle(item.value)"
+                                 :key="index"
+                                 @click="handleQuotaClick(item.value)">{{ item.label }}</div>
                         </div>
                         <div class="item-box-layout">
                             <div class="index-item"
                                  v-for="(item, index) in compareIndexDataListBottom"
-                                 :style="getIndexItemStyle(index + 10)"
-                                 :key="index">{{ item.label }}</div>
+                                 :style="getIndexItemStyle(item.value)"
+                                 :key="index"
+                                 @click="handleQuotaClick(item.value)">{{ item.label }}</div>
                         </div>
                     </div>
                 </div>
@@ -139,7 +153,7 @@
                     <!-- 按省对比 -->
                     <div class="compare-box province" v-if="compare === 1">
                         <div class="province-item"
-                             :class="{ 'province-item--active': item === provinceActive }"
+                             :class="{ 'province-item--active': provinceActive.includes(item)  }"
                              v-for="item in provinceData"
                              :key="item"
                              @click="handleProvinceClick(item)">
@@ -153,7 +167,7 @@
                             <div class="pinyin">{{ item.title }}</div>
                             <div class="city-container">
                                 <div class="city"
-                                     :class="{ 'active': city.city === cityActive }"
+                                     :class="{ 'active': cityActive.includes(city.city) }"
                                      v-for="city in item.lists"
                                      :key="city.code"
                                      @click="handleCityClick(city)">{{ city.city }}</div>
@@ -177,6 +191,7 @@
                             type="year"
                             placeholder="选择年"
                             :disabled="!yearStart"
+                            :picker-options="pickerOptions"
                             @click.native="onYearEndClick">
                         </el-date-picker>
                     </div>
@@ -198,9 +213,15 @@
                 </div>
             </div>
             <div class="layout-wrap-operation">
-                <div class="computed-btn">计 算</div>
+                <div class="computed-btn" @click="handleButtonClick">计 算</div>
             </div>
         </div>
+
+        <el-dialog
+            :title="dialogTitle"
+            :visible.sync="resultVisible">
+            <div id="result" style="width: 100%; height: 4rem;"></div>
+        </el-dialog>
     </div>
 </div>
 
@@ -209,6 +230,7 @@
 <script src="../js/jquery.min.js"></script>
 <script src="../js/select.js"></script>
 <script src="../js/moment.min.js"></script>
+<script src="../js/echarts.min.js"></script>
 <script src="../js/province.js"></script>
 <script src="../js/cityData.js"></script>
 <script src="../js/config.js"></script>
@@ -219,69 +241,63 @@
             userName: "管理员",
             navList: [
                 {
-                    iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                    navName: "xianzhuang",
                     name: "现状",
                     location: 'xianzhuang.html',
                     active: true
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                    navName: "yuce",
                     name: "预测",
                     location: 'yuce.html'
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+                    navName: "diaodu",
                     name: "调度",
                     location: 'diaodu.html'
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+                    navName: "kaoping",
                     name: "考评",
                     location: 'kaoping.html'
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
-                    name: "重点建筑监管"
+                    navName: "jianzhu",
+                    name: "重点建筑监管",
+                    location: "jianzhu.html"
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
-                    name: "重点行业监管"
+                    navName: "hangye",
+                    name: "重点行业监管",
+                    location: "hangye.html"
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                    navName: "chanpin",
                     name: "技术产品",
                     location: 'chanpin.html'
                 },
                 {
-                    iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
-                    iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+                    navName: "chaxun",
                     name: "数据查询",
                     location: 'data-query.html'
                 }
             ],
             dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
             dateTimer: null,
-            subCategoryActive: 1,
+            subCategoryActive: '1',
             subCategories: [
-                { label: "城镇居住建筑", value: 1 },
-                { label: "公共建筑", value: 2 },
-                { label: "教育建筑", value: 3 },
-                { label: "体育建筑", value: 4 },
-                { label: "综合建筑", value: 5 },
-                { label: "办公建筑", value: 6 },
-                { label: "商场建筑", value: 7 },
-                { label: "文化建筑", value: 8 },
-                { label: "其他建筑", value: 9 },
-                { label: "医疗卫生", value: 10 },
-                { label: "集中供暖", value: 11 },
-                { label: "农村住宅", value: 12 },
+                { label: "城镇居住建筑", value: '1' },
+                { label: "公共建筑", value: '2' },
+                { label: "教育建筑", value: '2-1' },
+                { label: "体育建筑", value: '2-2' },
+                { label: "综合建筑", value: '2-3' },
+                { label: "办公建筑", value: '2-4' },
+                { label: "商场建筑", value: '2-5' },
+                { label: "文化建筑", value: '2-6' },
+                { label: "其他建筑", value: '2-7' },
+                { label: "医疗卫生", value: '2-8' },
+                { label: "集中供暖", value: '4' },
+                { label: "农村住宅", value: '3' },
             ],
             compareIndexDataList: [
                 { label: "单位面积用能强度", value: 1 },
@@ -305,6 +321,7 @@
             opacityStyle: {},
             yearStart: "",
             yearEnd: "",
+            quota: "",
             computedMethod: 1,
             methodList: [
                 { label: "平均值", value: 1 },
@@ -312,8 +329,10 @@
                 { label: "中位数", value: 3 },
                 { label: "高位数", value: 4 }
             ],
-            cityActive: "",
-            provinceActive: ""
+            cityActive: [],
+            provinceActive: [],
+            resultVisible: false,
+            dialogTitle: "对比结果"
         },
         methods: {
             getCurrentDateTime() {
@@ -329,14 +348,17 @@
                 window.location.href = item.location;
             },
 
-            getIndexItemStyle(index) {
-                if ([1, 3, 5, 6, 7, 9, 13, 15].includes(index + 1)) {
+            getIndexItemStyle(value) {
+                if (this.quota === value) {
                     return {
+                        border: '2px solid #107acc',
                         background: '#107acc'
                     }
-                } else if ([2, 10, 12].includes(index + 1)) {
+                } else if (this.quotaDisabled.includes(value)) {
                     return {
-                        background: '#999999'
+                        border: '2px solid #999999',
+                        background: '#999999',
+                        cursor: 'not-allowed',
                     }
                 } else {
                     return {
@@ -360,14 +382,22 @@
              * 切换省份
              */
             handleProvinceClick(province) {
-                this.provinceActive = province;
+                if (this.provinceActive.includes(province)) {
+                    this.provinceActive.splice(this.provinceActive.indexOf(province), 1)
+                } else {
+                    this.provinceActive.push(province)
+                }
             },
 
             /**
              * 切换城市
              */
             handleCityClick({ city }) {
-                this.cityActive = city;
+                if (this.cityActive.includes(city)) {
+                    this.cityActive.splice(this.cityActive.indexOf(city), 1)
+                } else {
+                    this.cityActive.push(city)
+                }
             },
 
             /**
@@ -409,6 +439,177 @@
 
             handleHomeClick() {
                 window.location.href = 'index.html'
+            },
+
+            /**
+             * 计算
+             */
+            handleButtonClick() {
+                if (!this.subCategoryActive) {
+                    return this.$message.warning("请选择对比范围")
+                }
+                if (!this.quota) {
+                    return this.$message.warning("请选择对比指标")
+                }
+                if (this.compare === 1 && !this.provinceActive.length) {
+                    return this.$message.warning("请选择对比省份/直辖市")
+                }
+                if (this.compare === 2 && !this.cityActive.length) {
+                    return this.$message.warning("请选择对比城市")
+                }
+                if (!this.yearStart || !this.yearEnd) {
+                    return this.$message.warning("请选择对比年度范围")
+                }
+                if (!this.computedMethod) {
+                    return this.$message.warning("请选择对比方法")
+                }
+                const that = this;
+                $.get(`${severUrl}/Newxz/compare`, {
+                    type: this.subCategoryActive,
+                    region: this.compare === 1
+                        ? this.provinceActive.join(',')
+                        : this.cityActive.join(','),
+                    method: this.computedMethod,
+                    year1: moment(this.yearStart).format('YYYY'),
+                    year2: moment(this.yearEnd).format('YYYY'),
+                    quota: this.quota
+                }, function(data) {
+                    that.resultVisible = true;
+                    that.$nextTick(() => {
+                        that.drawCompareChart(data);
+                    })
+                })
+            },
+
+            /**
+             * 切换对比范围
+             */
+            handleSubCategoryClick(cate) {
+                this.subCategoryActive = cate;
+                this.quota = "";
+            },
+
+            drawCompareChart(data) {
+                const { dw, legend, tip, title, x_name, y_data } = data;
+                this.dialogTitle = title;
+                const xNameData = []
+                for (let i = 0; i < x_name.length; i++) {
+                    xNameData.push(x_name[i])
+                }
+                const colorRange = [['#F5804D', '#FCCB05'], ['#09BCB7', '#8BD46E'], ['#6851F1', '#248FF7']]
+                const seriesData = legend.map((item, index) => {
+                    return {
+                        name: item,
+                        type: "bar",
+                        barWidth: 10,
+                        itemStyle: {
+                            borderWidth: 2,
+                            color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                {
+                                    offset: 0,
+                                    color: index < 3 ? colorRange[index][0] : colorRange[index % 3][0],
+                                },
+                                {
+                                    offset: 1,
+                                    color: index < 3 ? colorRange[index][1] : colorRange[index % 3][1],
+                                }
+                            ]),
+                            borderRadius: 3
+                        },
+                        data: y_data[index],
+                    }
+                })
+                const myChart = echarts.init(document.getElementById('result'));
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        confine: true,
+                        extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                        formatter: function (params) {
+                            return `<div class="cx-tooltip">${tip}: ${params[0].value}${dw}</div>`
+                        }
+                    },
+                    grid: {
+                        top: '15%',
+                        left: '3%',
+                        right: '3%',
+                        bottom: '2%',
+                        containLabel: true
+                    },
+                    legend: {
+                        x: 'right',
+                        y: 'top',
+                        padding: [20, 30, 0, 0],
+                        itemGap: 34,
+                        data: legend,
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: '.12rem'
+                        },
+                        itemWidth: 10,
+                        itemHeight: 4
+                    },
+                    xAxis: [
+                        {
+                            type: "category",
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, .05)'
+                                }
+                            },
+                            data: xNameData,
+                            axisLabel: {
+                                margin: 10,
+                                fontSize: '.1rem',
+                                formatter: "{value}",
+                                color: '#fff'
+                            }
+                        },
+                    ],
+                    yAxis: [
+                        {
+                            type: "value",
+                            name: `单位：${dw}`,
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "0.14rem",
+                                padding: [0, 0, 0, 30],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .09)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        },
+                    ],
+                    series: seriesData
+                }
+                myChart.setOption(option)
+            },
+
+            handleQuotaClick(quota) {
+                if (!this.quotaDisabled.includes(quota)) {
+                    this.quota = quota;
+                }
             }
         },
         computed: {
@@ -435,11 +636,27 @@
             },
             cityData() {
                 return cityData
+            },
+            quotaDisabled() {
+                if (['20', '30'].includes(this.subCategoryActive)) {
+                    return [1, 3, 4, 6, 9, 10, 12, 13, 14 ]
+                } else {
+                    return [5, 7, 8, 11, 15]
+                }
+            },
+            pickerOptions() {
+                if (this.yearStart) {
+                    const yearStart = new Date(this.yearStart).getFullYear();
+                    return {
+                        disabledDate(time) {
+                            return time.getFullYear() < yearStart
+                        }
+                    }
+                }
             }
         },
         mounted() {
             this.getCurrentDateTime();
-
             $('.compare-box').on('mouseenter', '.city', function() {
                 $('.pinyin-hover').removeClass('pinyin-hover');
                 $(this)
@@ -454,7 +671,6 @@
             })
             this.$nextTick(() => {
                 $('.city').click(function () {
-                    console.log('city hover')
                     // $('.pinyin-hover').removeClass('pinyin-hover');
                     $(this)
                         .parent('.city-container')

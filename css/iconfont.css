@@ -1,16 +1,40 @@
 @font-face {
-  font-family: 'iconfont';  /* Project id 3262723 */
-  src: url('//at.alicdn.com/t/c/font_3262723_6398jlgjdll.woff2?t=1681985361327') format('woff2'),
-  url('//at.alicdn.com/t/c/font_3262723_6398jlgjdll.woff?t=1681985361327') format('woff'),
-  url('//at.alicdn.com/t/c/font_3262723_6398jlgjdll.ttf?t=1681985361327') format('truetype');
+  font-family: "iconfont"; /* Project id 3262723 */
+  src: url('iconfont/iconfont.woff2?t=1682435722861') format('woff2'),
+       url('iconfont/iconfont.woff?t=1682435722861') format('woff'),
+       url('iconfont/iconfont.ttf?t=1682435722861') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
-  font-size: .24rem;
+  font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-youbian:before {
+  content: "\e622";
+}
+
+.icon-jinru:before {
+  content: "\e615";
+}
+
+.icon-shijian:before {
+  content: "\e638";
+}
+
+.icon-didiandingwei_o:before {
+  content: "\ebba";
+}
+
+.icon-jihua:before {
+  content: "\e643";
+}
+
+.icon-zuobiao:before {
+  content: "\e64b";
 }
 
 .icon-shouye:before {

@@ -1,0 +1,602 @@
+/**
+ * 重点行业监管
+ */
+$hoverColor: #efe526;
+@mixin transition {
+  transition: all .2s linear;
+}
+@mixin bg($img) {
+  background-image: $img;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+@mixin zoom-in {
+  background-position: center center;
+  animation: zoomIn .2s linear forwards;
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+#app {
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/images/xianzhuang/bj.png") no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  .sys-title {
+    position: absolute;
+    top: 0.16rem;
+    left: 50%;
+    transform: translateX(-52%);
+    font-size: .34rem;
+    font-weight: bold;
+    color: #DAF9FF;
+    text-align: center;
+  }
+  .sys-header {
+    padding: .11rem .27rem .2rem .17rem;
+    display: flex;
+    .full-screen {
+      height: .64rem;
+      line-height: .64rem;
+      margin-right: .26rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+      }
+    }
+    .home {
+      display: flex;
+      align-items: center;
+      width: .9rem;
+      height: .64rem;
+      margin-right: .25rem;
+      @include transition;
+      &:hover {
+        cursor: pointer;
+        color: $hoverColor;
+        .home-text {
+          color: $hoverColor !important;
+        }
+      }
+      &-icon {
+        font-size: 0.28rem;
+        margin-right: 0.09rem;
+      }
+      &-text {
+        font-size: .2rem;
+        color: #fff;
+      }
+    }
+    .nav {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      .sys-title-placeholder {
+        width: 5.95rem;
+      }
+    }
+    .nav-left,
+    .nav-right {
+      display: flex;
+      flex: 1;
+      li {
+        flex: 1;
+        height: .64rem;
+        margin-right: .23rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @include transition;
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url("../../assets/images/xianzhuang/nav.png") no-repeat center center;
+          background-size: 100% 100%;
+        }
+        &:hover {
+          cursor: pointer;
+          color: $hoverColor;
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+        }
+        &.nav-active {
+          color: $hoverColor;
+          &::before {
+            @include zoom-in;
+            background-image: url("../../assets/images/xianzhuang/nav-active.png");
+          }
+        }
+        .nav-icon {
+          margin-bottom: 3px;
+          width: 0.2rem;
+          height: 0.18rem;
+          background-repeat: no-repeat;
+          background-size: contain;
+          transform: scale(1.1);
+        }
+        .nav-name {
+          text-align: center;
+        }
+      }
+    }
+    .header-right-line {
+      width: .1rem;
+      height: .65rem;
+      background: url("../../assets/images/xianzhuang/area-split-line.png") no-repeat;
+      background-size: contain;
+      margin-right: .18rem;
+    }
+    .header-right {
+      height: .64rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      &-top {
+        display: flex;
+        align-items: center;
+        .avatar {
+          width: 30px;
+          height: 30px;
+          border: 1px solid #01FAFE;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+        .text {
+          font-size: .12rem;
+          font-weight: bold;
+          color: #ccc;
+          display: flex;
+          align-items: center;
+          a {
+            color: #fff;
+          }
+        }
+      }
+      &-bottom {
+        font-size: .14rem;
+        font-weight: bold;
+        color: #01FAFE;
+      }
+    }
+  }
+  .container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    padding: 0.11rem;
+    position: relative;
+    .layout-left,
+    .layout-right {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      .hy-item {
+        &:first-child {
+          height: 3.7rem;
+        }
+        &:last-child {
+          flex: 1;
+          overflow: hidden;
+        }
+      }
+    }
+    .layout-left {
+      .hy-item {
+        &:first-child {
+          .hy-item-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            .category-group {
+              display: flex;
+              margin-bottom: 0.37rem;
+              .category-item {
+                width: 1.55rem;
+                height: 1.79rem;
+                position: relative;
+                &:first-child {
+                  margin-right: 0.45rem;
+                  @include bg(url('../../assets/images/hangye/批发和零售贸易与餐饮业.png'));
+                  background-size: 100% 100%;
+                  &:hover {
+                    cursor: pointer;
+                    @include bg(url('../../assets/images/hangye/批发和零售贸易与餐饮业-hover.png'));
+                    background-size: 100% 100%;
+                    .item-name {
+                      color: #f4e925;
+                    }
+                  }
+                  &.is-active {
+                    @include bg(url('../../assets/images/hangye/批发和零售贸易与餐饮业-hover.png'));
+                    background-size: 100% 100%;
+                    .item-name {
+                      color: #f4e925;
+                    }
+                  }
+                }
+                &:last-child {
+                  @include bg(url('../../assets/images/hangye/其他服务业.png'));
+                  background-size: 100% 100%;
+                  &:hover {
+                    cursor: pointer;
+                    @include bg(url('../../assets/images/hangye/其他服务业-hover.png'));
+                    background-size: 100% 100%;
+                    .item-name {
+                      color: #f4e925;
+                    }
+                  }
+                  &.is-active {
+                    @include bg(url('../../assets/images/hangye/其他服务业-hover.png'));
+                    background-size: 100% 100%;
+                    .item-name {
+                      color: #f4e925;
+                    }
+                  }
+                  .category-item-layout {
+                    bottom: 0.55rem;
+                  }
+                }
+                .category-item-layout {
+                  width: 100%;
+                  position: absolute;
+                  bottom: 0.45rem;
+                  .item-name {
+                    color: #10c5fb;
+                    font-size: 0.14rem;
+                    font-weight: bold;
+                    text-align: center;
+                  }
+                }
+              }
+            }
+            .operation-btn {
+              width: 3.51rem;
+              height: 0.46rem;
+              font-size: 0.2rem;
+              font-weight: bold;
+              color: rgba(255, 255, 255, 0.85);
+              text-align: center;
+              line-height: 0.42rem;
+              border: 2px solid #02b9ee;
+              box-shadow: inset 0 0 15px 1px #02b9ee;
+              border-radius: 4px;
+              &:hover {
+                cursor: pointer;
+                border: 2px solid #eee528;
+                box-shadow: inset 0 0 15px 1px #eee528;
+                border-radius: 4px;
+              }
+            }
+          }
+        }
+        &:nth-child(2) {
+          height: 2.24rem;
+          .hy-item-content {
+            padding: 0 4px;
+          }
+          .el-table {
+            background-color: transparent;
+            &::before {
+              background-color: transparent;
+            }
+            .cell {
+              font-weight: bold;
+              color: #f7fbfd;
+            }
+            tr {
+              background-color: transparent;
+              transition: all .2s linear;
+            }
+            .el-table__cell {
+              background-color: transparent;
+              color: #fff;
+              padding: 0;
+              height: 0.42rem;
+            }
+            .el-table__header {
+              .el-table__cell {
+                padding-left: 0.25rem;
+                border-bottom: 1px solid #44a7d9;
+                height: 0.45rem;
+              }
+            }
+            .el-table__body {
+              .el-table__cell {
+                border-bottom: 1px dashed #44a7d9;
+                padding-left: 0.25rem;
+              }
+              tr {
+                &:last-child {
+                  .el-table__cell {
+                    border-bottom: none !important;
+                  }
+                }
+              }
+            }
+          }
+        }
+        &:last-child {
+          .hy-item-content {
+            padding: 0.15rem 4px;
+            overflow-y: auto;
+            li {
+              line-height: 0.4rem;
+              border-bottom: 1px dashed #44a7d9;
+              padding-left: 0.3rem;
+              transition: all .2s linear;
+              &:last-child {
+                border-bottom: none;
+              }
+              &:hover {
+                cursor: pointer;
+                color: #f5dc07;
+              }
+            }
+          }
+        }
+      }
+    }
+    .layout-middle {
+      width: 8.1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0 15px;
+      .map-wrap {
+        height: 6.59rem;
+        @include bg(url('../../assets/images/xianzhuang/map-container.png'));
+        background-size: 100% 100%;
+        position: relative;
+        margin-bottom: 20px;
+        #mapContainer {
+          height: 100%;
+          @include bg(url('../../assets/images/xianzhuang/map-grid.png'));
+          background-size: 100% 100%;
+        }
+      }
+      .hy-item {
+        flex: 1;
+        overflow: hidden;
+        .el-table {
+          background-color: transparent;
+          &::before {
+            background-color: transparent;
+          }
+          .cell {
+            font-weight: bold;
+            color: #f7fbfd;
+            padding: 0 0.08rem;
+            font-size: 0.12rem;
+            transform: scale(1.1);
+          }
+          tr {
+            background-color: transparent;
+            transition: all .2s linear;
+          }
+          .el-table__cell {
+            background-color: transparent;
+            color: #fff;
+            padding: 0;
+            height: 0.42rem;
+          }
+          .el-table__header {
+            .el-table__cell {
+              border-bottom: 1px solid #44a7d9;
+              height: 0.45rem;
+            }
+          }
+          .el-table__body {
+            .el-table__cell {
+              border-bottom: 1px dashed #44a7d9;
+            }
+            tr {
+              &:last-child {
+                .el-table__cell {
+                  border-bottom: none !important;
+                }
+              }
+            }
+          }
+        }
+        .operation-btn {
+          display: inline-block;
+          padding: 0 0.1rem;
+          border: 2px solid #1eab8f;
+          border-radius: 2px;
+          transform: scale(0.9);
+          &:hover {
+            cursor: pointer;
+            background: #15ad90;
+          }
+        }
+      }
+    }
+    .layout-right {
+      .hy-item {
+        &:first-child {
+          .hy-item-content {
+            padding: 0.24rem 0.27rem;
+          }
+          .industry-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.18rem;
+            margin-bottom: 0.25rem;
+            @include bg(url('../../assets/images/hangye/行业介入企业数量.png'));
+            background-size: 100% 100%;
+            padding-left: 0.15rem;
+            height: 0.75rem;
+            .icon-img {
+              width: 0.54rem;
+              height: 0.54rem;
+              margin-right: 0.24rem;
+            }
+            .industry-item-layout {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              font-weight: bold;
+              height: 0.54rem;
+              dd {
+                color: #1cf272;
+              }
+            }
+            .line {
+              position: relative;
+              top: 5px;
+              margin: 0 0.15rem;
+              width: 3px;
+              height: 0.54rem;
+              background: url("../../assets/images/hangye/行业条目间隙.png") no-repeat bottom;
+            }
+            .area {
+              display: flex;
+              align-items: flex-end;
+              height: 0.54rem;
+              font-weight: bold;
+              color: #f4e925;
+            }
+            &:first-child {
+              .icon-img {
+                @include bg(url('../../assets/images/hangye/文旅.png'));
+                background-size: 100% 100%;
+              }
+            }
+            &:nth-child(2) {
+              .icon-img {
+                @include bg(url('../../assets/images/hangye/卫生.png'));
+                background-size: 100% 100%;
+              }
+            }
+            &:last-child {
+              margin-bottom: 0;
+              .icon-img {
+                @include bg(url('../../assets/images/hangye/教育.png'));
+                background-size: 100% 100%;
+              }
+            }
+          }
+        }
+        &:nth-child(2) {
+          height: 2.7rem;
+          .el-table {
+            background-color: transparent;
+            &::before {
+              background-color: transparent;
+            }
+            .cell {
+              font-weight: bold;
+              color: #f7fbfd;
+              .err-item {
+                color: #ff6261;
+              }
+            }
+            tr {
+              background-color: transparent;
+              transition: all .2s linear;
+            }
+            .el-table__cell {
+              background-color: transparent;
+              color: #fff;
+              padding: 0;
+              height: 0.42rem;
+            }
+            .el-table__header {
+              .el-table__cell {
+                padding-left: 0.25rem;
+                border-bottom: 1px solid #44a7d9;
+                height: 0.45rem;
+              }
+            }
+            .el-table__body {
+              .el-table__cell {
+                border-bottom: 1px dashed #44a7d9;
+                padding-left: 0.25rem;
+              }
+              tr {
+                &:hover {
+                  cursor: pointer;
+                  .cell {
+                    color: #f5dc07;
+                  }
+                }
+                &:last-child {
+                  .el-table__cell {
+                    border-bottom: none !important;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .hy-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      &-title {
+        font-size: 0.2rem;
+        font-weight: bold;
+        height: 0.48rem;
+        line-height: 0.48rem;
+        padding-left: 0.35rem;
+        border: 1px solid #007ac7;
+        margin-bottom: -1px;
+        box-shadow: inset 0 0 5px 1px #007ac7;
+        position: relative;
+        &::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          margin-top: -4px;
+          left: 15px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #0FD7FE;
+          animation: title-icon 1s linear infinite alternate-reverse;
+          @keyframes title-icon {
+            0% {
+              box-shadow: 0 0 5px 2px #0FD7FE;
+            }
+            100% {
+              box-shadow: 0 0 8px 2px #0FD7FE;
+            }
+          }
+        }
+      }
+      &-content {
+        flex: 1;
+        overflow: hidden;
+        border: 1px solid #007ac7;
+        box-shadow: inset 0 0 5px 1px #007ac7;
+      }
+    }
+  }
+}

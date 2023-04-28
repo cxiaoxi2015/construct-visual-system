@@ -175,4 +175,69 @@
   background-image: url("../assets/images/xianzhuang/left-btn.png");
 }
 
+.nav-icon {
+  transform: scale(1.2);
+}
+
+.nav-name {
+  font-size: 0.16rem;
+}
+
+.nav li .nav-icon {
+  background: url("../assets/images/xianzhuang/xianzhuang-icon.png") no-repeat;
+  background-size: cover;
+}
+.nav li.xianzhuang .nav-icon {
+  background-image: url("../assets/images/xianzhuang/xianzhuang-icon.png");
+}
+.nav li.xianzhuang.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/xianzhuang-active-icon.png");
+}
+.nav li.yuce .nav-icon {
+  background-image: url("../assets/images/xianzhuang/yuce-icon.png");
+}
+.nav li.yuce.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/yuce-active-icon.png");
+}
+.nav li.diaodu .nav-icon {
+  background-image: url("../assets/images/xianzhuang/diaodu-icon.png");
+}
+.nav li.diaodu.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/diaodu-active-icon.png");
+}
+.nav li.kaoping .nav-icon {
+  background-image: url("../assets/images/xianzhuang/kaoping-icon.png");
+}
+.nav li.kaoping.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/kaoping-active-icon.png");
+}
+.nav li.jianzhu .nav-icon {
+  background-image: url("../assets/images/xianzhuang/jianzhu-icon.png");
+}
+.nav li.jianzhu.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/jianzhu-active-icon.png");
+}
+.nav li.hangye .nav-icon {
+  background-image: url("../assets/images/xianzhuang/hangye-icon.png");
+}
+.nav li.hangye.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/hangye-active-icon.png");
+}
+.nav li.chanpin .nav-icon {
+  background-image: url("../assets/images/xianzhuang/chanpin-icon.png");
+}
+.nav li.chanpin.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/chanpin-active-icon.png");
+}
+.nav li.chaxun .nav-icon {
+  background-image: url("../assets/images/xianzhuang/shuju-icon.png");
+}
+.nav li.chaxun.nav-active .nav-icon {
+  background-image: url("../assets/images/xianzhuang/shuju-active-icon.png");
+}
+
+[v-clock] {
+  display: none;
+}
+
 /*# sourceMappingURL=index.css.map */

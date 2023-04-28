@@ -23,15 +23,18 @@
             </div>
             <div class="nav">
                 <ul class="nav-left">
-                    <li v-for="(item, index) in navLeft" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-                        <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <li v-for="(item, index) in navLeft"
+                        :class="[item.navName, item.active && 'nav-active']"
+                        :key="index"
+                        @click="handleNavClick(item)">
+                        <div class="nav-icon"></div>
                         <div class="nav-name">{{ item.name }}</div>
                     </li>
                 </ul>
                 <div class="sys-title-placeholder"></div>
                 <ul class="nav-right">
-                    <li v-for="(item, index) in navRight" :class="{ 'nav-active': item.active }" :key="index" @click="handleNavClick(item)">
-                        <div class="nav-icon" :style="{ 'background-image': `url(${item.iconPath})`, '--bgActive': `url(${item.iconPathActive})` }"></div>
+                    <li v-for="(item, index) in navRight" :class="[item.active && 'nav-active', item.navName]" :key="index" @click="handleNavClick(item)">
+                        <div class="nav-icon"></div>
                         <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
                         <dl class="nav-name" v-else>
                             <dt>{{ item.name.substring(0, 4) }}</dt>
@@ -68,14 +71,15 @@
                 </div>
             </div>
             <div class="energy-group">
-                <div class="energy-group-item energy-group-item--active">用能</div>
-                <div class="energy-group-item">排放</div>
+                <div :class="cateLeftBtnClass"
+                     @click="handleCateClick('1')">用能</div>
+                <div :class="cateRightBtnClass"
+                     @click="handleCateClick('2')">排放</div>
             </div>
             <div class="area-line"></div>
             <div class="area-group">
-                <div :class="leftBtnClass"
-                     @click="handleMapChina">全国</div>
-                <div :class="rightBtnClass">各地</div>
+                <div :class="leftBtnClass" @click="handleDqClick('1')">全国</div>
+                <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>
             </div>
             <div class="cx-placeholder">
                 <div class="analyse" @click="handleCompareAnalysisClick">
@@ -91,7 +95,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item">
-                            能耗总量
+                            {{ leftTopTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseNHZL }, 'collapseNHZL']"
                                  @click="handleCollapseClick('NHZL')">
@@ -105,7 +109,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item">
-                            用能占比
+                            {{ leftMiddleTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseYNZB }, 'collapseYNZB']"
                                  @click="handleCollapseClick('YNZB')">
@@ -119,7 +123,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item">
-                            用能增速
+                            {{ leftBottomTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseYNZS }, 'collapseYNZS']"
                                  @click="handleCollapseClick('YNZS')">
@@ -134,21 +138,19 @@
             <div class="layout-ele">
                 <div class="map-wrap">
                     <div class="energy-consumption">
-                        <div class="energy-consumption-title">能耗</div>
+                        <div class="energy-consumption-title">{{ mapTitle }}</div>
                         <div class="energy-consumption-value">
-                            <div class="value-item">1</div>
-                            <div class="value-item">1</div>
-                            <div class="value-item">.</div>
-                            <div class="value-item">8</div>
+                            <div class="value-item" v-for="(item, index) in mapValue" :key="index">{{ item }}</div>
                         </div>
-                        <div class="energy-consumption-suffix">亿吨标准煤</div>
+                        <div class="energy-consumption-suffix">{{ mapUnit }}</div>
                     </div>
+                    <div class="map-back" v-show="region !== 'china'" @click="handleMapChina">返回全国</div>
                     <div class="map" id="mapContainer"></div>
                 </div>
                 <div class="category">
                     <div class="category-item"
                          :class="[
-                            item.value === category && 'category-item--active',
+                            item.value === type && 'category-item--active',
                             item.size === 'small' && 'category-item-small'
                          ]"
                          v-for="(item, index) in categories"
@@ -160,7 +162,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item in-right">
-                            用能结构
+                            {{ rightTopTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseYNJG }, 'collapseYNJG']"
                                  @click="handleCollapseClick('YNJG')">
@@ -174,7 +176,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item in-right">
-                            电气化率
+                            {{ rightMiddleTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseDQHL }, 'collapseDQHL']"
                                  @click="handleCollapseClick('DQHL')">
@@ -188,7 +190,7 @@
                 <div class="xz-item">
                     <div class="collapse-item-wrap">
                         <div class="xz-item-title collapse-item in-right">
-                            用能强度
+                            {{ rightBottomTitle }}
                             <div class="collapse-item-btn"
                                  :class="[{ 'is-collapsed': collapseYNQD }, 'collapseYNQD']"
                                  @click="handleCollapseClick('YNQD')">
@@ -198,10 +200,10 @@
                         </div>
                         <div class="chart-toggle-group" style="right: 0.25rem;">
                             <div class="group-item"
-                                 :class="[ynqdActive === 1 && 'group-item--active']"
+                                 :class="[mold === 1 && 'group-item--active']"
                                  @click="handleYNQDToggle(1)">人均</div>
                             <div class="group-item"
-                                 :class="[ynqdActive === 2 && 'group-item--active']"
+                                 :class="[mold === 2 && 'group-item--active']"
                                  @click="handleYNQDToggle(2)">面均</div>
                         </div>
                         <div class="chart-container" id="ynqd" v-if="loadChart.YNQD"></div>
@@ -226,74 +228,68 @@
                 userName: "管理员",
                 navList: [
                     {
-                        iconPath: "../../assets/images/xianzhuang/xianzhuang-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/xianzhuang-active-icon.png",
+                        navName: "xianzhuang",
                         name: "现状",
                         location: 'xianzhuang.html',
-                        active: true,
+                        active: true
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/yuce-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/yuce-active-icon.png",
+                        navName: "yuce",
                         name: "预测",
                         location: 'yuce.html'
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/diaodu-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/diaodu-active-icon.png",
+                        navName: "diaodu",
                         name: "调度",
                         location: 'diaodu.html'
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/kaoping-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/kaoping-active-icon.png",
+                        navName: "kaoping",
                         name: "考评",
                         location: 'kaoping.html'
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/jianzhu-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/jianzhu-active-icon.png",
-                        name: "重点建筑监管"
+                        navName: "jianzhu",
+                        name: "重点建筑监管",
+                        location: "jianzhu.html"
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/hangye-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/hangye-active-icon.png",
-                        name: "重点行业监管"
+                        navName: "hangye",
+                        name: "重点行业监管",
+                        location: "hangye.html"
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/chanpin-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/chanpin-active-icon.png",
+                        navName: "chanpin",
                         name: "技术产品",
                         location: 'chanpin.html'
                     },
                     {
-                        iconPath: "../../assets/images/xianzhuang/shuju-icon.png",
-                        iconPathActive: "../../assets/images/xianzhuang/shuju-active-icon.png",
+                        navName: "chaxun",
                         name: "数据查询",
                         location: 'data-query.html'
                     }
                 ],
-                year: 2023,
-                yearOptions: [ 2023, 2022, 2021, 2020, 2019 ],
-                category: 1,
+                year: "",
+                type: 100,
                 categories: [
-                    { categoryName: "城乡建设领域", value: 1, size: "medium" },
-                    { categoryName: "建筑运行", value: 2, size: "medium" },
-                    { categoryName: "城镇居建", value: 3, size: "small" },
-                    { categoryName: "公共建筑", value: 4, size: "small" },
-                    { categoryName: "农村居建", value: 5, size: "small" },
-                    { categoryName: "集中供暖", value: 6, size: "small" },
-                    { categoryName: "建筑业", value: 7, size: "medium" },
-                    { categoryName: "基础设施", value: 8, size: "medium" }
+                    { categoryName: "城乡建设领域", value: 100, size: "medium" },
+                    { categoryName: "建筑运行", value: 10, size: "medium" },
+                    { categoryName: "城镇居建", value: 1, size: "small" },
+                    { categoryName: "公共建筑", value: 2, size: "small" },
+                    { categoryName: "农村居建", value: 3, size: "small" },
+                    { categoryName: "集中供暖", value: 4, size: "small" },
+                    { categoryName: "建筑业", value: 20, size: "medium" },
+                    { categoryName: "基础设施", value: 30, size: "medium" }
                 ],
                 // 用能强度
-                ynqdActive: 1,
+                mold: 1,
                 dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
                 dateTimer: null,
-                currentYear: '2023',
-                mapActive: 'china',
+                region: 'china',
                 leftBtnClass: '',
                 rightBtnClass: '',
+                cateLeftBtnClass: "",
+                cateRightBtnClass: "",
                 collapseYNZB: true,
                 collapseNHZL: true,
                 collapseYNZS: true,
@@ -308,7 +304,19 @@
                     YNJG: true,
                     DQHL: true,
                     YNQD: true
-                }
+                },
+                resData: {},
+                mapTitle: "",
+                mapUnit: "",
+                mapValue: "",
+                cate: "1",
+                dq: "1",
+                leftTopTitle: "",
+                leftMiddleTitle: "",
+                leftBottomTitle: "",
+                rightTopTitle: "",
+                rightMiddleTitle: "",
+                rightBottomTitle: ""
             },
             methods: {
                 handleYearClick(yearDate) {
@@ -318,25 +326,33 @@
                     ele.hasClass('focus')
                         ? ele.removeClass('focus')
                         : ele.addClass('focus')
+                    this.handleChange();
                 },
 
                 handleCategoryClick({ value }) {
-                    this.category = value;
+                    this.type = value;
+                    this.handleChange();
                 },
 
                 /**
                  * 绘制能耗总量图表
                  */
                 drawNHZLChart(showDataZoom = true) {
+                    const { left_top } = this.resData;
+                    if (!left_top) {
+                        return;
+                    }
+                    const { dw, legend, title, x_name, y_data } = left_top;
+                    this.leftTopTitle = title;
                     const nhzlData = {
-                        gonggong: [],
-                        juzhu: [],
+                        tj: [],
+                        cf: [],
                         year: []
                     }
-                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
-                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
-                        nhzlData.year.push(year)
+                    for (let i = 0; i < x_name.length; i++) {
+                        nhzlData.tj.push(y_data[0][i])
+                        nhzlData.cf.push(y_data[1][i])
+                        nhzlData.year.push(x_name[i])
                     }
                     const myChart = echarts.init(document.getElementById('nhzl'));
                     const dataZoom = showDataZoom && [
@@ -372,11 +388,11 @@
                             },
                             confine: true,
                             formatter: function(params){
-                                let relVal = `${params[0].name}年`;
+                                let relVal = `${params[0].name}`;
                                 let prefix
                                 for (let i = 0, l = params.length; i < l; i++) {
                                     prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
-                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} 亿tce`;
+                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
                                 }
                                 return relVal;
                             }
@@ -393,7 +409,7 @@
                             y:'top',
                             padding: [20, 30, 0, 0],
                             itemGap: 34,
-                            data: ['统计', '拆分'],
+                            data: legend,
                             textStyle: {
                                 color: '#fff',
                                 fontSize: '.12rem'
@@ -416,7 +432,7 @@
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.1rem',
-                                    formatter: "{value}年",
+                                    formatter: "{value}",
                                     color: '#fff'
                                 }
                             },
@@ -424,7 +440,7 @@
                         yAxis: [
                             {
                                 type: "value",
-                                name: '单位：亿tce',
+                                name: `单位：${dw}`,
                                 nameTextStyle: {
                                     color: "#fff",
                                     fontSize: "",
@@ -454,7 +470,7 @@
                             {
                                 name: "统计",
                                 type: "bar",
-                                barWidth: 8,
+                                barWidth: 11,
                                 itemStyle: {
                                     borderWidth: 2,
                                     color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
@@ -469,12 +485,12 @@
                                     ]),
                                     borderRadius: 3
                                 },
-                                data: nhzlData.gonggong,
+                                data: nhzlData.tj,
                             },
                             {
                                 name: "拆分",
                                 type: "bar",
-                                barWidth: 8,
+                                barWidth: 11,
                                 barGap: "50%",
                                 label: {
                                     show: false
@@ -493,7 +509,7 @@
                                     ]),
                                     borderRadius: 3
                                 },
-                                data: nhzlData.juzhu,
+                                data: nhzlData.cf,
                             }
                         ]
                     };
@@ -504,11 +520,17 @@
                  * 绘制用能占比图表
                  */
                 drawYNZBChart(showDataZoom = true) {
+                    const { left_middle } = this.resData;
+                    if (!left_middle) {
+                        return;
+                    }
+                    const { dw, title, x_name, y_data } = left_middle;
+                    this.leftMiddleTitle = title;
                     const myChart = echarts.init(document.getElementById('ynzb'));
                     const seriesData = [], yearData = [];
-                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-                        yearData.push(year)
-                        seriesData.push((Math.random() * 10).toFixed(1))
+                    for (let i = 0; i < x_name.length; i++) {
+                        yearData.push(x_name[i])
+                        seriesData.push(y_data[i])
                     }
                     const dataZoom = showDataZoom && [
                         {
@@ -542,7 +564,7 @@
                             confine: true,
                             extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `<div class="cx-tooltip">占比: ${params[0].value}%</div>`
+                                return `<div class="cx-tooltip">占比: ${params[0].value}${dw}</div>`
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -575,13 +597,13 @@
                             axisLabel: {
                                 margin: 10,
                                 fontSize: '.1rem',
-                                formatter: "{value}年",
+                                formatter: "{value}",
                                 color: '#fff'
                             }
                         },
                         yAxis: {
                             type: "value",
-                            name: '单位：%',
+                            name: `单位：${dw}`,
                             nameTextStyle: {
                                 color: "#fff",
                                 fontSize: "",
@@ -632,20 +654,18 @@
                  * 绘制用能增速图表
                  */
                 drawYNZSChart(showDataZoom = true) {
-                    const ynzsData = []
-                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-                        ynzsData.push({
-                            year,
-                            plan: (Math.random() * 10).toFixed(1),
-                            actual: (Math.random() * 10).toFixed(1)
-                        })
+                    const { left_bottom } = this.resData;
+                    if (!left_bottom) {
+                        return;
                     }
+                    const { dw, legend, title, max, x_name, y_data } = left_bottom;
+                    this.leftBottomTitle = title;
                     const yearData = [], tjData = [], cfData = []
-                    ynzsData.forEach(item => {
-                        yearData.push(item.year)
-                        tjData.push(item.plan)
-                        cfData.push(item.actual)
-                    })
+                    for (let i = 0; i < x_name.length; i++) {
+                        yearData.push(x_name[i])
+                        tjData.push(y_data[0][i]),
+                        cfData.push(y_data[1][i])
+                    }
                     const myChart = echarts.init(document.getElementById('ynzs'));
                     const dataZoom = showDataZoom && [
                         {
@@ -678,7 +698,7 @@
                             confine: true,
                             extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `<div class="cx-tooltip">增速率: ${params[0].value}%</div>`
+                                return `<div class="cx-tooltip">增速率: ${params[0].value}${dw}</div>`
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -716,7 +736,7 @@
                             itemWidth: 25,
                             itemHeight: 4,
                             icon: 'rectangle',
-                            data: ['统计', '拆分']
+                            data: legend
                         },
                         xAxis: {
                             type: 'category',
@@ -732,7 +752,7 @@
                             axisLabel: {
                                 margin: 10,
                                 fontSize: '.1rem',
-                                formatter: "{value}年",
+                                formatter: "{value}",
                                 color: '#fff'
                             }
                         },
@@ -813,83 +833,21 @@
                  * 绘制用能结构图表
                  */
                 drawYNJGChart(showDataZoom = true) {
+                    const { right_top } = this.resData;
+                    if (!right_top) {
+                        return;
+                    }
+                    const { dw, legend, title, x_name, y_data } = right_top;
+                    this.rightTopTitle = title;
                     const myChart = echarts.init(document.getElementById('ynjg'));
                     const yearData = []
-                    for (let i = 2005; i < new Date().getFullYear() + 1; i++) {
-                        yearData.push(i)
+                    for (let i = 0; i < x_name.length; i++) {
+                        yearData.push(x_name[i])
                     }
-                    const res = {
-                        buildings: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        hot: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        jcss: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        czjj: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        legend: ["城镇居建", "农村居建", "公共建筑", "集中供热", "建筑业", "基础设施"],
-                        public: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        village: yearData.map(item => Math.ceil(Math.random() * 100)),
-                        dw: "万吨标准煤",
-                        memo: "城乡建设领域用能情况"
-                    }
-                    const data = {
-                        legendData: [],
-                        memo: "",
-                        dw: ""
-                    }
-
-                    const {
-                        buildings: jzyyn,
-                        hot: jzgn,
-                        jcss,
-                        public: ggjz,
-                        village: ncjj,
-                        legend,
-                        renjun_neng,
-                        renjun_co2,
-                        czjj,
-                        memo,
-                        dw
-                    } = res
-
-                    data.legendData = legend
-                    data.memo = memo
-                    data.dw = dw
-
-                    const mockData = []
-                    yearData.forEach((year, index) => {
-                        mockData.push({
-                            year,
-                            energyData: {
-                                czjj: czjj && czjj.length ? czjj[index] : '',
-                                ncjj: ncjj && ncjj.length ? ncjj[index] : '',
-                                ggjz: ggjz && ggjz.length ? ggjz[index] :'',
-                                jzgn: jzgn && jzgn.length ? jzgn[index] : '',
-                                jzyyn: jzyyn && jzyyn.length ? jzyyn[index] : '',
-                                jcss: jcss && jcss.length ? jcss[index] : ''
-                            }
-                        })
-                    })
-
-                    const areaData = [],
-                        seriesData = [],
-                        czjjData = [], ncjjData = [], ggjzData = [], jzgnData = [], jzyynData = [], jcssData = []
-
-                    mockData.forEach(item => {
-                        const { areaName, energyData } = item
-                        areaData.push(areaName)
-                        const { czjj, ncjj, ggjz, jzgn, jzyyn, jcss } = energyData
-                        czjjData.push(czjj)
-                        ncjjData.push(ncjj)
-                        ggjzData.push(ggjz)
-                        jzgnData.push(jzgn)
-                        jzyynData.push(jzyyn)
-                        jcssData.push(jcss)
-                    })
-                    const legendKeyMap = {
-                        "城镇居建": czjjData,
-                        "农村居建": ncjjData,
-                        "公共建筑": ggjzData,
-                        "集中供热": jzgnData,
-                        "建筑业": jzyynData,
-                        "基础设施": jcssData
+                    const seriesData = []
+                    const legendKeyMap = {}
+                    for (let i = 0; i < legend.length; i++) {
+                        legendKeyMap[legend[i]] = y_data[i]
                     }
 
                     const XJJJ_COLOR = '#32B7CA'
@@ -898,18 +856,18 @@
                     const JYGJGZ_COLOR = '#CF4A6F'
                     const KZSNY_COLOR = '#2477D1'
                     const JCSS_COLOR = '#20dc47'
-
                     const colorList = [XJJJ_COLOR, XJGJ_COLOR, JYJJGZ_COLOR,
                         JYGJGZ_COLOR, KZSNY_COLOR, JCSS_COLOR]
-                    data.legendData.forEach((name, index) => {
+                    const type = 0;
+                    legend.forEach((name, index) => {
                         seriesData.push({
                             name,
                             type:'bar',
                             barWidth: 11,
-                            stack: data.memo,
+                            stack: title,
                             data: legendKeyMap[name],
                             itemStyle: {
-                                color: data.type === 0 ? colorList[index] : colorList[data.type - 1],
+                                color: type === 0 ? colorList[index] : colorList[type - 1],
                                 areaStyle: {
                                     color: new echarts.graphic.LinearGradient(
                                         0,
@@ -971,7 +929,7 @@
                             itemWidth: 6,
                             itemHeight: 6,
                             icon: "circle",
-                            data: data.legendData
+                            data: legend
                         },
                         tooltip : {//过滤掉统计的series
                             trigger: 'axis',
@@ -984,7 +942,7 @@
                                 let prefix
                                 for (let i = 0, l = params.length; i < l; i++) {
                                     prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
-                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value || 0} %`;
+                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value || 0} ${dw}`;
                                 }
                                 return relVal;
                             },
@@ -1003,14 +961,14 @@
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.1rem',
-                                    formatter: "{value}年",
+                                    formatter: "{value}",
                                     color: '#fff'
                                 }
                             }
                         ],
                         yAxis : [
                             {
-                                name: '%',
+                                name: dw,
                                 nameTextStyle: {
                                     color: "#fff",
                                     fontSize: ".12rem",
@@ -1034,24 +992,22 @@
                         dataZoom,
                         series: seriesData
                     }
-                    myChart.setOption(option)
+                    myChart.setOption(option, true)
                 },
 
                 /**
                  * 绘制电气化率图表
                  */
                 drawDQHLChart(showDataZoom = true) {
-                    const nhzlData = {
-                        gonggong: [],
-                        juzhu: [],
-                        year: []
+                    const { right_middle } = this.resData;
+                    if (!right_middle) {
+                        return;
                     }
-                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
-                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
-                        nhzlData.year.push(year)
-                    }
+                    const { dw, legend, title, x_name, y_data } = right_middle;
+                    this.rightMiddleTitle = title;
                     const myChart = echarts.init(document.getElementById('dqhl'));
+                    const seriesData1 = y_data[0],
+                        seriesData2 = y_data[1]
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
@@ -1100,7 +1056,7 @@
                             }
                         },
                         grid: {
-                            top: showDataZoom ? '30%' : '25%',
+                            top: showDataZoom ? '30%' : '20%',
                             left: showDataZoom ? '5%' : '1%',
                             right: showDataZoom ?'5%' : '1.5%',
                             bottom: showDataZoom ? '15%' : '5%',
@@ -1110,7 +1066,7 @@
                             left: showDataZoom ? '5%' : '12px',
                             padding: [20, 30, 0, 0],
                             itemGap: 34,
-                            data: ['电力消耗总量亿kwh', '电气化率'],
+                            data: legend,
                             textStyle: {
                                 color: '#fff',
                                 fontSize: '.12rem'
@@ -1129,11 +1085,11 @@
                                         color: 'rgba(255, 255, 255, .05)'
                                     }
                                 },
-                                data: nhzlData.year,
+                                data: x_name,
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.1rem',
-                                    formatter: "{value}年",
+                                    formatter: "{value}",
                                     color: '#fff'
                                 }
                             },
@@ -1141,7 +1097,7 @@
                         yAxis: [
                             {
                                 type: "value",
-                                name: '单位：亿kwh',
+                                name: `单位：${dw[0]}`,
                                 position: 'left',
                                 nameTextStyle: {
                                     color: "#fff",
@@ -1168,7 +1124,7 @@
                             },
                             {
                                 type: "value",
-                                name: "单位：%",
+                                name: `单位：${dw[1]}`,
                                 position: 'right',
                                 nameTextStyle: {
                                     color: "#fff",
@@ -1201,7 +1157,7 @@
                         dataZoom,
                         series: [
                             {
-                                name: "电力消耗总量亿kwh",
+                                name: legend[0],
                                 type: "bar",
                                 barWidth: 8,
                                 itemStyle: {
@@ -1209,10 +1165,10 @@
                                     color: '#FCA805',
                                     borderRadius: 3
                                 },
-                                data: nhzlData.gonggong,
+                                data: seriesData1
                             },
                             {
-                                name: "电气化率",
+                                name: legend[1],
                                 type: 'line',
                                 smooth: true,
                                 symbolSize: 5,
@@ -1225,7 +1181,7 @@
                                     color: '#812340',
                                     borderColor: '#fff'
                                 },
-                                data: nhzlData.juzhu,
+                                data: seriesData2
                             }
                         ]
                     };
@@ -1236,15 +1192,16 @@
                  * 绘制用能强度图表
                  */
                 drawYNQDChart(showDataZoom = true) {
-                    const nhzlData = {
-                        gonggong: [],
-                        juzhu: [],
-                        year: []
+                    const { right_bottom } = this.resData;
+                    if (!right_bottom) {
+                        return;
                     }
-                    for (let year = 2005; year < new Date().getFullYear() + 1; year++) {
-                        nhzlData.gonggong.push((Math.random() * 100).toFixed(2))
-                        nhzlData.juzhu.push((Math.random() * 100).toFixed(2))
-                        nhzlData.year.push(year)
+                    const { dw, title, x_name, y_data } = right_bottom;
+                    this.rightBottomTitle = title;
+                    const seriesData = [], year = [];
+                    for (let i = 0; i < x_name.length; i++) {
+                        seriesData.push(y_data[i])
+                        year.push(x_name[i])
                     }
                     const myChart = echarts.init(document.getElementById('ynqd'));
                     const dataZoom = showDataZoom && [
@@ -1278,7 +1235,7 @@
                             confine: true,
                             extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `<div class="cx-tooltip">用能强度: ${params[0].value}kgce/㎡</div>`
+                                return `<div class="cx-tooltip">用能强度: ${params[0].value}${dw}</div>`
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -1316,18 +1273,18 @@
                                         color: 'rgba(255, 255, 255, .05)'
                                     }
                                 },
-                                data: nhzlData.year,
+                                data: year,
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.1rem',
-                                    formatter: "{value}年",
+                                    formatter: "{value}",
                                     color: '#fff'
                                 }
                             },
                         ],
                         yAxis: {
                             type: "value",
-                            name: '单位：kgce/㎡',
+                            name: `单位：${dw}`,
                             position: 'left',
                             nameTextStyle: {
                                 color: "#fff",
@@ -1356,21 +1313,21 @@
                         series: {
                             name: "用能强度",
                             type: "bar",
-                            barWidth: 8,
+                            barWidth: 11,
                             itemStyle: {
                                 borderWidth: 1,
                                 color: '#0B7062',
                                 borderColor: '#15FED1'
                             },
-                            data: nhzlData.gonggong,
+                            data: seriesData,
                         }
                     };
                     myChart.setOption(option)
                 },
 
                 handleYNQDToggle(yndqActive) {
-                    this.ynqdActive = yndqActive
-                    this.drawYNQDChart()
+                    this.mold = yndqActive
+                    this.handleChange();
                 },
 
                 getCurrentDateTime() {
@@ -1386,41 +1343,26 @@
                  * 绘制地图
                  */
                 drawMapChart() {
+                    const { map } = this.resData;
+                    const { dw, maps, title, value } = map;
+                    this.mapTitle = title;
+                    this.mapUnit = dw;
+                    this.mapValue = value.toString().split("");
+                    const tooltipDw = maps.length && maps[0].dw;
+                    const that = this;
+                    const mapsKeyMap = {}
+                    let min = 0, max = 0;
+                    maps.forEach(item => {
+                        if (!min || item.value < min) {
+                            min = item.value;
+                        }
+                        if (!max || item.value > max) {
+                            max = item.value;
+                        }
+                        mapsKeyMap[item.region] = item;
+                    })
                     const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
-                    const currentYear = this.currentYear
-                    const customerBatteryCityData = [
-                        {name: '北京市', value: 309.1},
-                        {name: '天津市', value: 208.4},
-                        {name: '河北省', value: 780.6},
-                        {name: '山西省', value: 406.3},
-                        {name: '内蒙古自治区', value: 4353.6},
-                        {name: '辽宁省', value: 504.4},
-                        {name: '吉林省', value: 261.5},
-                        {name: '黑龙江省', value: 759.8},
-                        {name: '上海市', value: 315.9},
-                        {name: '江苏省', value: 549.5},
-                        {name: '浙江省', value: 543.5},
-                        {name: '安徽省', value: 342.2},
-                        {name: '福建省', value: 323.1},
-                        {name: '江西省', value: 211.7},
-                        {name: '山东省', value: 808.5},
-                        {name: '河南省', value: 608.5},
-                        {name: '湖北省', value: 340.9},
-                        {name: '湖南省', value: 419.4},
-                        {name: '广东省', value: 967.2},
-                        {name: '广西壮族自治区', value: 2467.2},
-                        {name: '海南省', value: 71.4},
-                        {name: '重庆市', value: 210.5},
-                        {name: '四川省', value: 526.6},
-                        {name: '贵州省', value: 271.9},
-                        {name: '云南省', value: 245.5},
-                        {name: '西藏自治区', value: 0},
-                        {name: '陕西省', value: 356.7},
-                        {name: '甘肃省', value: 2172.7},
-                        {name: '青海省', value: 809.3},
-                        {name: '宁夏自治区', value: 1045.4},
-                        {name: '新疆维吾尔自治区', value: 3561.5}
-                    ]
+                    const currentYear = this.year;
                     const loadMap = (features, mapData, zoom, provinceName) => {
                         const geoCoordMap = {}
                         features.forEach(item => {
@@ -1451,12 +1393,12 @@
                                             </div>
                                             <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
                                                 <div class="content-item">年度: ${currentYear}年</div>
-                                                <div class="content-item">能耗: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> 吨标煤</div>
+                                                <div class="content-item">${title}: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> ${tooltipDw}</div>
                                             </div>
                                         </div>
                                     `
                                     } else {
-                                        return 'tooltip'
+                                        return ''
                                     }
                                 }
                             },
@@ -1467,8 +1409,49 @@
                                 itemStyle: {
                                     borderColor: '#84B2FD',
                                     color: 'transparent',
-                                    borderWidth: 3,
+                                    borderWidth: 8,
                                 },
+                                regions: [
+                                    {
+                                        name: '南海诸岛',
+                                        itemStyle: {
+                                            normal: {
+                                                opacity: 0
+                                            }
+                                        },
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                ]
+                            },
+                            visualMap: {
+                                min,
+                                max,
+                                calculable: true,
+                                inRange: {
+                                    color: ['#115C9E', '#16EB9C']
+                                },
+                                padding: [0, 0, 50, 50],
+                                textStyle: {
+                                    color: '#fff'
+                                },
+                                text: ['高', '低'],
+                            },
+                            series: [{
+                                map: provinceName,
+                                type: 'map',
+                                zoom,
+                                roam: false,
+                                coordinateSystem: 'geo',
+                                selectedMode: 'single',
+                                showLegendSymbol: true,
+                                itemStyle: {
+                                    borderWidth: 1,
+                                    borderColor: '#84B2FD',
+                                    color: 'transparent'
+                                },
+                                data: mapData,
                                 emphasis: {
                                     //当鼠标放上去  地区区域是否显示名称
                                     label: {
@@ -1493,76 +1476,61 @@
                                     fontSize: 12,
                                     padding: 10
                                 }
-                            },
-                            visualMap: {
-                                max: 5000,
-                                calculable: true,
-                                inRange: {
-                                    color: ['#115C9E', '#16EB9C']
-                                },
-                                padding: [0, 0, 50, 50],
-                                textStyle: {
-                                    color: '#fff'
-                                },
-                                text: ['高', '低'],
-                            },
-                            series: [{
-                                map: provinceName,
-                                zoom: this.zoom,
-                                geoIndex: 0,
-                                coordinateSystem: 'geo',
-                                selectedMode: 'single',
-                                showLegendSymbol: true,
-                                type: 'map',
-                                roam: false,
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        textStyle: {
-                                            color: "#fff",
-                                        }
-                                    },
-                                    emphasis: {
-                                        show: false,
-                                        textStyle: {
-                                            color: "#fff",
-                                        }
-                                    },
-                                },
-                                data: mapData
                             }]
                         }
                         myChart.setOption(option)
                     }
-                    $.get(`../assets/mapJson/全国.json`, function (data) {
-                        // echarts.registerMap('china', data) 显示南海九段线
-                        echarts.getMap("china").geoJson.features;
-                        loadMap(data.features, data.features.map(item => {
-                            return {
-                                name: item.properties.name,
-                                value: parseFloat((Math.random() * 1000).toFixed(2))
-                            }
-                        }), 1.2, 'china')
-                    })
-
-                    myChart.on('click',  params => {
-                        this.mapActive = "province"
-                        const { name: provinceName } = params;
-                        $.get(`../assets/mapJson/${provinceName}.json`, function (data) {
-                            echarts.registerMap(provinceName, data);
+                    if (this.region === "china") {
+                        $.get(`../assets/mapJson/全国.json`, function (data) {
+                            // echarts.registerMap('china', data) 显示南海九段线
+                            echarts.getMap("china").geoJson.features;
                             loadMap(data.features, data.features.map(item => {
-                                return {
-                                    name: item.properties.name,
-                                    value: parseFloat((Math.random() * 1000).toFixed(2))
+                                if (mapsKeyMap.hasOwnProperty(item.properties.name)) {
+                                    return {
+                                        name: item.properties.name,
+                                        value: mapsKeyMap[item.properties.name].value
+                                    }
+                                } else {
+                                    return {
+                                        name: item.properties.name,
+                                        value: 0
+                                    }
                                 }
-                            }), 0.9, provinceName)
+                            }), 1.2, 'china')
                         })
-                    })
+                        myChart.on('click',  params => {
+                            const { name: provinceName } = params;
+                            this.region = provinceName
+                            this.handleChange();
+                        })
+                    } else {
+                        $.get(`../assets/mapJson/${that.region}.json`, function (data) {
+                            echarts.registerMap(that.region, data);
+                            loadMap(data.features, data.features.map(item => {
+                                if (mapsKeyMap.hasOwnProperty(item.properties.name)) {
+                                    return {
+                                        name: item.properties.name,
+                                        value: mapsKeyMap[item.properties.name].value
+                                    }
+                                } else {
+                                    return {
+                                        name: item.properties.name,
+                                        value: 0
+                                    }
+                                }
+                            }), 0.9, that.region)
+                        })
+                    }
                 },
 
                 handleMapChina() {
-                    this.mapActive = 'china';
-                    this.drawMapChart();
+                    this.region = 'china';
+                    this.handleChange();
+                },
+
+                handleDqClick(dq) {
+                    this.dq = dq;
+                    this.handleChange();
                 },
 
                 handleNavClick(item) {
@@ -1570,7 +1538,7 @@
                 },
 
                 handleCompareAnalysisClick() {
-                    window.location.href = `compare-analysis.html?type=${this.mapActive}`
+                    window.location.href = `compare-analysis.html?type=${this.region}`
                 },
 
                 handleCollapseClick(field) {
@@ -1699,6 +1667,59 @@
 
                 handleHomeClick() {
                     window.location.href = 'index.html'
+                },
+
+                handleCateClick(cate) {
+                    this.cate = cate;
+                    this.handleChange();
+                },
+
+                handleChange() {
+                    const loading = this.$loading({
+                        text: "数据加载中...",
+                        background: 'rgba(0, 0, 0, 0.25)'
+                    });
+                    const { year, cate, type, mold } = this;
+                    const dq = this.dq;
+                    const that = this;
+                    let region;
+                    if (this.region !== "china") {
+                        if (this.region.indexOf("市") > -1) {
+                            region = this.region.replace("市", "")
+                        } else if (this.region.indexOf("省") > -1) {
+                            region = this.region.replace("省", "")
+                        } else if (this.region.indexOf("自治区") > -1) {
+                            const keyMap = {
+                                "内蒙古自治区": "内蒙古",
+                                "广西壮族自治区": "广西",
+                                "西藏自治区": "西藏",
+                                "宁夏回族自治区": "宁夏",
+                                "新疆维吾尔自治区": "新疆"
+                            }
+                            region = keyMap[this.region]
+                        } else {
+                            region = this.region;
+                        }
+                    }
+                    $.get(`${severUrl}/Newxz/index`, {
+                        year,
+                        cate,
+                        dq,
+                        type,
+                        mold,
+                        region,
+                        isfirst: 0,
+                    }, function(data) {
+                        loading.close();
+                        that.resData = data;
+                        that.drawNHZLChart();
+                        that.drawYNZBChart();
+                        that.drawYNZSChart();
+                        that.drawYNJGChart();
+                        that.drawDQHLChart();
+                        that.drawYNQDChart();
+                        that.drawMapChart();
+                    })
                 }
             },
             computed: {
@@ -1707,13 +1728,32 @@
                 },
                 navRight() {
                     return this.navList.slice(4)
+                },
+                yearOptions() {
+                    const yearOptions = []
+                    for (let i = 2005; i <= 2021; i++) {
+                        yearOptions.push(i)
+                    }
+                    return yearOptions
                 }
             },
             watch: {
-                mapActive: {
+                cate: {
                     immediate: true,
-                    handler(mapActive) {
-                        if (mapActive === 'china') {
+                    handler(cate) {
+                        if (cate === '1') {
+                            this.cateLeftBtnClass = 'energy-group-item energy-group-item--active'
+                            this.cateRightBtnClass = 'energy-group-item left-active'
+                        } else {
+                            this.cateLeftBtnClass = 'energy-group-item right-active'
+                            this.cateRightBtnClass = 'energy-group-item energy-group-item--active'
+                        }
+                    }
+                },
+                dq: {
+                    immediate: true,
+                    handler(dq) {
+                        if (dq === '1') {
                             this.leftBtnClass = 'area-group-item area-group-item--active'
                             this.rightBtnClass = 'area-group-item left-active'
                         } else {
@@ -1725,17 +1765,33 @@
             },
             mounted() {
                 this.getCurrentDateTime();
+                this.year = this.yearOptions.length && this.yearOptions[this.yearOptions.length - 1];
                 this.$nextTick(() => {
-                    this.drawNHZLChart();
-                    this.drawYNZBChart();
-                    this.drawYNZSChart();
-                    this.drawYNJGChart();
-                    this.drawDQHLChart();
-                    this.drawYNQDChart();
-                    this.drawMapChart();
-                })
-                $.get(`${severUrl}/Newxz/index`, function(data) {
-                    console.log(data);
+                    const that = this;
+                    const { year, cate, type, mold } = this;
+                    const dq = this.region === 'china' ? '1' : '2';
+                    const loading = this.$loading({
+                        text: "数据加载中...",
+                        background: 'rgba(0, 0, 0, 0.25)'
+                    });
+                    $.get(`${severUrl}/Newxz/index`, {
+                        year,
+                        cate,
+                        dq,
+                        type,
+                        mold,
+                        isfirst: 1
+                    }, function(data) {
+                        loading.close();
+                        that.resData = data;
+                        that.drawNHZLChart();
+                        that.drawYNZBChart();
+                        that.drawYNZSChart();
+                        that.drawYNJGChart();
+                        that.drawDQHLChart();
+                        that.drawYNQDChart();
+                        that.drawMapChart();
+                    })
                 })
             }
         })

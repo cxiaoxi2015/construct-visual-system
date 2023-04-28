@@ -189,3 +189,103 @@
     }
   }
 }
+
+.nav-icon {
+  transform: scale(1.2);
+}
+.nav-name {
+  font-size: 0.16rem;
+}
+
+.nav {
+  li {
+    .nav-icon {
+      background: url("../assets/images/xianzhuang/xianzhuang-icon.png") no-repeat;
+      background-size: cover;
+    }
+    &.xianzhuang {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/xianzhuang-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/xianzhuang-active-icon.png");
+        }
+      }
+    }
+    &.yuce {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/yuce-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/yuce-active-icon.png");
+        }
+      }
+    }
+    &.diaodu {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/diaodu-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/diaodu-active-icon.png");
+        }
+      }
+    }
+    &.kaoping {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/kaoping-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/kaoping-active-icon.png");
+        }
+      }
+    }
+    &.jianzhu {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/jianzhu-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/jianzhu-active-icon.png");
+        }
+      }
+    }
+    &.hangye {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/hangye-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/hangye-active-icon.png");
+        }
+      }
+    }
+    &.chanpin {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/chanpin-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/chanpin-active-icon.png");
+        }
+      }
+    }
+    &.chaxun {
+      .nav-icon {
+        background-image: url("../assets/images/xianzhuang/shuju-icon.png");
+      }
+      &.nav-active {
+        .nav-icon {
+          background-image: url("../assets/images/xianzhuang/shuju-active-icon.png");
+        }
+      }
+    }
+  }
+}
+
+[v-clock] {
+  display: none;
+}

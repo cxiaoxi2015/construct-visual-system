@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>城乡建设领域碳排放监测管理平台</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/elementUI.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/page/jianzhu.css">
+</head>
+<body>
+<div id="app">
+  <div class="sys-title">城乡建设领域碳排放监测管理平台</div>
+
+  <!-- header -->
+  <div class="sys-header">
+    <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
+    <div class="home" @click="handleHomeClick">
+      <div class="home-icon iconfont">&#xe751;</div>
+      <span class="home-text">首页</span>
+    </div>
+    <div class="nav">
+      <ul class="nav-left">
+        <li v-for="(item, index) in navLeft"
+            :class="[item.navName, item.active && 'nav-active']"
+            :key="index"
+            @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
+          <div class="nav-name">{{ item.name }}</div>
+        </li>
+      </ul>
+      <div class="sys-title-placeholder"></div>
+      <ul class="nav-right">
+        <li v-for="(item, index) in navRight" :class="[item.active && 'nav-active', item.navName]" :key="index" @click="handleNavClick(item)">
+          <div class="nav-icon"></div>
+          <div class="nav-name" v-if="item.name.length <= 4">{{ item.name }}</div>
+          <dl class="nav-name" v-else>
+            <dt>{{ item.name.substring(0, 4) }}</dt>
+            <dd>{{ item.name.substring(4) }}</dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div class="header-right-line"></div>
+    <div class="header-right">
+      <div class="header-right-top">
+        <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+        <div class="text">
+          <span>欢迎您！</span>
+          <a>{{ userName }}</a>
+        </div>
+      </div>
+      <div class="header-right-bottom">{{ dateTime }}</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <iframe src="http://103.48.232.102:7071/secc/stid/ce/ch"></iframe>
+  </div>
+</div>
+
+<script src="../js/vue.min.js"></script>
+<script src="../js/element.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/select.js"></script>
+<script src="../js/echarts.min.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/china.js"></script>
+<script src="../js/config.js"></script>
+<script>
+  const myApp = new Vue({
+    el: "#app",
+    data: {
+      userName: "管理员",
+      navList: [
+        {
+          navName: "xianzhuang",
+          name: "现状",
+          location: 'xianzhuang.html',
+        },
+        {
+          navName: "yuce",
+          name: "预测",
+          location: 'yuce.html'
+        },
+        {
+          navName: "diaodu",
+          name: "调度",
+          location: 'diaodu.html'
+        },
+        {
+          navName: "kaoping",
+          name: "考评",
+          location: 'kaoping.html'
+        },
+        {
+          navName: "jianzhu",
+          name: "重点建筑监管",
+          location: "jianzhu.html",
+          active: true
+        },
+        {
+          navName: "hangye",
+          name: "重点行业监管",
+          location: "hangye.html"
+        },
+        {
+          navName: "chanpin",
+          name: "技术产品",
+          location: 'chanpin.html'
+        },
+        {
+          navName: "chaxun",
+          name: "数据查询",
+          location: 'data-query.html'
+        }
+      ],
+      dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
+      dateTimer: null
+    },
+    methods: {
+      getCurrentDateTime() {
+        if (this.dateTimer) {
+          clearInterval(this.dateTimer)
+        }
+        this.dateTimer = setInterval(() => {
+          this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
+        }, 1000)
+      },
+
+      handleNavClick(item) {
+        window.location.href = item.location;
+      },
+
+      fullScreenClick() {
+        const isFullScreen = () => {
+          return !! (
+                  document.fullscreen ||
+                  document.mozFullScreen ||
+                  document.webkitIsFullScreen ||
+                  document.webkitFullScreen ||
+                  document.msFullScreen
+          );
+        }
+        const de = document.documentElement;
+        if (!isFullScreen()) {
+          if (de.requestFullscreen) {
+            de.requestFullscreen();
+          } else if (de.mozRequestFullScreen) {
+            de.mozRequestFullScreen();
+          } else if (de.webkitRequestFullScreen) {
+            de.webkitRequestFullScreen();
+          }
+        } else {
+          if(document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if(document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if(document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      },
+
+      handleHomeClick() {
+        window.location.href = 'index.html'
+      }
+    },
+    computed: {
+      navLeft() {
+        return this.navList.slice(0, 4)
+      },
+      navRight() {
+        return this.navList.slice(4)
+      }
+    },
+    mounted() {
+      this.getCurrentDateTime();
+    }
+  })
+</script>
+</body>
+</html>

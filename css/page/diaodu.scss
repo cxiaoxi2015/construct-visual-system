@@ -308,7 +308,7 @@ $unitTextColor: #a7a7a7;
       width: 8.84rem;
       margin-right: 0.15rem;
       .layout-left-top {
-        height: 6.48rem;
+        height: 5.48rem;
         margin-bottom: 0.15rem;
         position: relative;
         .tab {
@@ -520,7 +520,7 @@ $unitTextColor: #a7a7a7;
       display: flex;
       flex-direction: column;
       .layout-right-top {
-        height: 6.48rem;
+        height: 5.48rem;
         margin-bottom: 0.15rem;
         .layout-item-content {
           .el-table {
@@ -604,6 +604,7 @@ $unitTextColor: #a7a7a7;
     left: 8.44rem;
     z-index: 100;
     transition: all .2s linear;
+    user-select: none;
     &:hover {
       cursor: pointer;
       color: $hoverColor;
@@ -613,7 +614,13 @@ $unitTextColor: #a7a7a7;
       font-weight: bold;
       &.iconfont {
         position: relative;
+        transition: all .2s linear;
         top: 1px;
+      }
+    }
+    &.is-expand {
+      .iconfont {
+        transform: rotate(-180deg);
       }
     }
   }

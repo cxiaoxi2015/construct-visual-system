@@ -135,9 +135,11 @@
                 </el-table>
                 <div class="table-pagination">
                     <el-pagination
-                            background
-                            layout="prev, pager, next"
-                            :total="1000">
+                        :current-page.sync="page"
+                        :page-size="pageSize"
+                        :total="total"
+                        background
+                        layout="total, prev, pager, next">
                     </el-pagination>
                 </div>
             </div>
@@ -145,28 +147,28 @@
             <!-- 典型案例 -->
             <div class="classic-case" v-if="categoryActive === 3">
                 <div class="classic-case-box">
-                    <div class="classic-case-item" v-for="(item, index) in classicCaseDataList" :key="index"
+                    <div class="classic-case-item" v-for="(item, index) in classicCaseDataListView" :key="index"
                          @click="handleCheckDetail(item)">
                         <div class="img-wrap">
-                            <img :src="item.imgUrl" />
+                            <img :src="item.banner" />
                         </div>
                         <div class="item-info">
-                            <div class="publish-item">{{ item.publishTime }}</div>
+                            <div class="publish-item">{{ item.start_time_txt }}</div>
                             <div class="case-name">
-                                <span>{{ item.caseName }}</span>
+                                <span>{{ item.title }}</span>
                             </div>
                             <div class="info-layout-wrap">
                                 <div class="location">
                                     <span class="prefix-icon iconfont">&#xebba;</span>
-                                    <span class="info-text">{{ item.location }}</span>
+                                    <span class="info-text">{{ item.province_text }}</span>
                                 </div>
                                 <div class="category">
                                     <span class="prefix-icon iconfont">&#xe643;</span>
-                                    <span class="info-text">{{ item.category }}</span>
+                                    <span class="info-text">{{ item.cate_name }}</span>
                                 </div>
                                 <div class="status">
                                     <span class="prefix-icon iconfont">&#xe638;</span>
-                                    <span class="info-text">{{ item.status }}</span>
+                                    <span class="info-text">{{ item.status_txt }}</span>
                                 </div>
                             </div>
                             <div class="enter iconfont">&#xe615;</div>
@@ -176,9 +178,11 @@
 
                 <div class="table-pagination">
                     <el-pagination
-                            background
-                            layout="prev, pager, next"
-                            :total="1000">
+                        :current-page.sync="page"
+                        :page-size="pageSize"
+                        :total="total"
+                        background
+                        layout="total, prev, pager, next">
                     </el-pagination>
                 </div>
             </div>
@@ -334,62 +338,9 @@
             participate: 'all',
             status: 'all',
             province: 'all',
-            classicCaseDataList: [
-                {
-                    id: "1001",
-                    imgUrl: "https://e.thsi.cn/img/6891c161ec6c3b1",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "万科松花湖王子酒店空气源热泵应用",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                },
-                {
-                    id: "1002",
-                    imgUrl: "https://img0.baidu.com/it/u=3014051192,1186335591&fm=253&fmt=auto&app=138&f=JPEG?w=797&h=500",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "2023中国（西安）国际碳中和技术展览会",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                },
-                {
-                    id: "1003",
-                    imgUrl: "https://www.cma.gov.cn/2011xzt/2019zt/20190530/2019053007/201906/W020190606549422919113.jpg",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "2022中国（烟台）碳达峰碳中和能源 装备展览会",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                },
-                {
-                    id: "1004",
-                    imgUrl: "https://www.is-group.com.cn/wp-content/uploads/2019/11/eccbc87e4b5ce2fe2830-1.jpg",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "中国（广州）国际低碳科技与装备交易展览会",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                },
-                {
-                    id: "1005",
-                    imgUrl: "https://pic.rmb.bdstatic.com/bjh/news/1f4356282f95d6bb272399392741f5aa.jpeg@s_0,w_2000%7Cwm_2,t_55m+5a625Y+3L+aKleeov+WciA==,fc_ffffff,ff_U2ltSGVp,sz_50,x_32,y_32",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "全国建筑环境与能源应用技术交流大会",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                },
-                {
-                    id: "1006",
-                    imgUrl: "https://img0.baidu.com/it/u=2643987482,1967376750&fm=253&fmt=auto&app=138&f=JPEG?w=684&h=500",
-                    publishTime: "2020-12-30 16:30",
-                    caseName: "魏在现场年度节能第二季第五期案列二",
-                    location: "陕西省 西安市 市辖区",
-                    category: "城市设计与计划",
-                    status: "已结束"
-                }
-            ]
+            classicCaseDataList: [],
+            page: 1,
+            pageSize: 6
         },
         methods: {
             getCurrentDateTime() {
@@ -424,6 +375,8 @@
              */
             handleSysCategoryClick(category, subCategory) {
                 this[category.field] = subCategory.value;
+                this.page = 1;
+                this.fetchProductData();
             },
 
             getRowClassName({row}) {
@@ -476,6 +429,23 @@
 
             handleHomeClick() {
                 window.location.href = 'index.html'
+            },
+
+            fetchProductData() {
+                const loading = this.$loading({
+                    text: "数据加载中...",
+                    background: 'rgba(0, 0, 0, 0.25)'
+                });
+                const that = this;
+                $.get(`${severUrl}/Newxz/chanpin`, {
+                    year: this.year === "all" ? "" : this.year,
+                    join_type: this.participate === 'all' ? "" : this.participate,
+                    status: this.status === 'all' ? "" : this.status,
+                    region: this.province === 'all' ? "" : this.province,
+                }, function(data) {
+                    that.classicCaseDataList = data;
+                })
+                loading.close();
             }
         },
         computed: {
@@ -605,7 +575,7 @@
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
                                     {label: "线上参与", value: "1"},
-                                    {label: "线下参与", value: "2"}
+                                    {label: "线下参与", value: "0"}
                                 ]
                             },
                             {
@@ -613,8 +583,8 @@
                                 field: "status",
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
-                                    {label: "已结束", value: "1"},
-                                    {label: "未开始", value: "2"}
+                                    {label: "已结束", value: "0"},
+                                    {label: "未开始", value: "1"}
                                 ]
                             },
                             {
@@ -625,10 +595,17 @@
                             }
                         ]
                 }
+            },
+            total() {
+                return this.classicCaseDataList.length;
+            },
+            classicCaseDataListView() {
+                return this.classicCaseDataList.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
             }
         },
         mounted() {
             this.getCurrentDateTime();
+            this.fetchProductData();
         }
     })
 </script>

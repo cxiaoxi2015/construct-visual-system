@@ -77,7 +77,7 @@
                      @click="handleCateClick('2')">排放</div>
             </div>
             <div class="area-line"></div>
-            <div class="area-group">
+            <div class="area-group" v-if="region === 'china'">
                 <div :class="leftBtnClass" @click="handleDqClick('1')">全国</div>
                 <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>
             </div>
@@ -433,8 +433,9 @@
                                     margin: 10,
                                     fontSize: '.1rem',
                                     formatter: "{value}",
-                                    color: '#fff'
-                                }
+                                    color: '#fff',
+                                    rotate: 45
+                                },
                             },
                         ],
                         yAxis: [
@@ -598,7 +599,8 @@
                                 margin: 10,
                                 fontSize: '.1rem',
                                 formatter: "{value}",
-                                color: '#fff'
+                                color: '#fff',
+                                rotate: 45
                             }
                         },
                         yAxis: {
@@ -753,7 +755,8 @@
                                 margin: 10,
                                 fontSize: '.1rem',
                                 formatter: "{value}",
-                                color: '#fff'
+                                color: '#fff',
+                                rotate: 45
                             }
                         },
                         yAxis: {
@@ -791,37 +794,32 @@
                                 name: "统计",
                                 type: "line",
                                 data: tjData,
-                                symbolSize: 5,
-                                symbol: "circle",
                                 smooth: true,
-                                yAxisIndex: 0,
-                                showSymbol: false,
                                 lineStyle: {
-                                    width: 3,
-                                    color: '#D3B15F',
+                                    color: '#ffd918'
                                 },
+                                symbolSize: 5,
+                                symbol: 'circle',
                                 itemStyle: {
-                                    color: "rgba(211, 177, 95, 1)",
-                                    borderColor: "rgba(211, 177, 95, 0.8)",
-                                    borderWidth: 5,
+                                    barBorderRadius: [30, 30, 0, 0],
+                                    color: '#ffd918',
+                                    borderColor: '#fff'
                                 }
                             },
                             {
                                 name: "拆分",
                                 type: "line",
                                 data: cfData,
-                                symbolSize: 5,
-                                symbol: "circle",
                                 smooth: true,
-                                showSymbol: false,
                                 lineStyle: {
-                                    width: 3,
-                                    color: "#00DCFF",
+                                    color: '#00dcff'
                                 },
+                                symbolSize: 5,
+                                symbol: 'circle',
                                 itemStyle: {
-                                    color: "rgba(0, 220, 255, 1)",
-                                    borderColor: "rgba(0, 220, 255, 0.8)",
-                                    borderWidth: 5,
+                                    barBorderRadius: [30, 30, 0, 0],
+                                    color: '#00dcff',
+                                    borderColor: '#fff'
                                 }
                             }
                         ]
@@ -962,7 +960,8 @@
                                     margin: 10,
                                     fontSize: '.1rem',
                                     formatter: "{value}",
-                                    color: '#fff'
+                                    color: '#fff',
+                                    rotate: 45
                                 }
                             }
                         ],
@@ -1090,7 +1089,8 @@
                                     margin: 10,
                                     fontSize: '.1rem',
                                     formatter: "{value}",
-                                    color: '#fff'
+                                    color: '#fff',
+                                    rotate: 45
                                 }
                             },
                         ],
@@ -1144,7 +1144,8 @@
                                     margin: 10,
                                     color: "#A5B0B2",
                                     fontSize: '.12rem',
-                                    formatter: "{value}"
+                                    formatter: "{value}",
+                                    rotate: 45
                                 },
                                 splitLine: {
                                     show: true,
@@ -1278,7 +1279,8 @@
                                     margin: 10,
                                     fontSize: '.1rem',
                                     formatter: "{value}",
-                                    color: '#fff'
+                                    color: '#fff',
+                                    rotate: 45
                                 }
                             },
                         ],
@@ -1348,7 +1350,7 @@
                     this.mapTitle = title;
                     this.mapUnit = dw;
                     this.mapValue = value.toString().split("");
-                    const tooltipDw = maps.length && maps[0].dw;
+                    const tooltipDw = maps.length > 0 ? maps[0].dw : "";
                     const that = this;
                     const mapsKeyMap = {}
                     let min = 0, max = 0;

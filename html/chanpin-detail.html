@@ -60,6 +60,7 @@
     <div class="container">
         <div class="container-header">
             <div class="container-header-title">
+                <div class="back-btn iconfont" title="返回" @click="handleBackClick">&#xe6ff;</div>
                 <span>{{ headerTitle }} /</span>
                 <span>{{ headerTitleEN }}</span>
             </div>
@@ -74,32 +75,17 @@
         </div>
         <div class="container-header-line"></div>
         <div class="detail">
-            <div class="title">{{ title }}</div>
+            <div class="title">{{ detailData.title }}</div>
             <div class="publish">
-                <div class="publish-unit">{{ publishUnit }}</div>
-                <span class="publish-time">{{ publishTime }}</span>
-                <span class="publish-region">发布于{{ publishRegion }}</span>
+                <div class="publish-unit">{{ detailData.company_name }}</div>
+                <span class="publish-time">{{ detailData.start_time_txt }}</span>
             </div>
             <div class="detail-context">
-                <p class="sub-title">北京大兴国际机场——节能低碳技术（交通场站类）示范子项目</p>
-                <p class="text-bg bold">
-                    “中国公共建筑能效提升项目”是由住房和城乡建设部与联合国计划开发署(UNDP)联合实施的全球环境基金（GEF）赠款项目，以进一步完善中国公共建筑领域节能低碳政策与标准，促进高效节能低碳技术的应用，提高公共建筑整体能效水平。项目执行期为2018年10月至2022年10月。项目目标为累计减排5.57万吨二氧化碳，将温室气体排放年增长率由1.8%降至0.6%，并带动全国累计节约化石燃料6523万吨标煤，在中国公共建筑节能领域创造3600个工作岗位。项目从完善公共建筑能效政策制度框架、能效监测和评价机制建设、技术和融资机制示范与推广、能力建设和意识提升四个方面开展活动。项目实施了一系列技术示范子项目和市场化融资机制示范子项目，以推广节能低碳技术，促进创新型市场化融资机制的应用。本专题将分别介绍各示范子项目的示范情况和示范亮点。
+                <p class="text-bg bold" style="text-indent: 0.28rem;">
+                    {{ detailData.decription }}
                 </p>
-                <div>
-                    <div class="paragraph-title">一、示范子项目简介</div>
-                    <p class="bold">
-                        2020年9月，北京大兴国际机场确定为“中国公共建筑能效提升项目”节能低碳技术（交通场站类）示范子项目，通过开展对绿建设计中提出的多项节能示范技术实际运行情况的评估和调适，在实现每年5500吨二氧化碳减排的同时促进了地源热泵、飞机地面空调系统、智能照明、光伏发电等技术的推广。</p>
-                </div>
-                <div class="img-wrap">
-                    <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                         alt="">
-                    <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                         alt="">
-                    <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                         alt="">
-                    <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                         alt="">
-                </div>
+                <div v-html="detailData.intro" style="font-size: 0.2rem;text-indent: 0.28rem;line-height: 30px;"></div>
+                <div v-html="detailData.expect" style="font-size: 0.2rem;text-indent: 0.28rem;line-height: 30px;"></div>
             </div>
         </div>
     </div>
@@ -182,7 +168,8 @@
             title: "北京大兴国际机场 | 全球环境基金（GEF）“中国公共建筑能效提升项目”示范子项目系列之 一",
             publishUnit: "住房城乡建设部科技与产业化中心",
             publishTime: "2020-12-30 16:30",
-            publishRegion: "北京"
+            publishRegion: "北京",
+            detailData: {}
         },
         methods: {
             getCurrentDateTime() {
@@ -265,6 +252,29 @@
 
             handleHomeClick() {
                 window.location.href = 'index.html'
+            },
+
+            fetchProductData() {
+                const loading = this.$loading({
+                    text: "数据加载中...",
+                    background: 'rgba(0, 0, 0, 0.25)'
+                });
+                const that = this;
+                $.get(`${severUrl}/Newxz/chanpin`, {
+                    year: this.year === "all" ? "" : this.year,
+                    join_type: this.participate === 'all' ? "" : this.participate,
+                    status: this.status === 'all' ? "" : this.status,
+                    region: this.province === 'all' ? "" : this.province,
+                }, function(data) {
+                    const query = window.location.search
+                    const id = query.substring(query.indexOf('id=') + 3)
+                    that.detailData = data.find(item => item.id.toString() === id)
+                })
+                loading.close();
+            },
+
+            handleBackClick() {
+                window.location.href = 'chanpin.html';
             }
         },
         computed: {
@@ -418,6 +428,7 @@
         },
         mounted() {
             this.getCurrentDateTime();
+            this.fetchProductData();
         }
     })
 </script>

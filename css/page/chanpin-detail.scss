@@ -233,15 +233,34 @@ $activeColor: #d8d42f;
         height: 0.5rem;
         display: flex;
         align-items: center;
+        position: relative;
         span {
           font-size: 0.16rem;
           font-weight: bold;
-          &:first-child {
+          &:nth-child(2) {
             font-size: 0.3rem;
             margin-right: 0.17rem;
           }
           &:last-child {
             margin-top: 0.05rem;
+          }
+        }
+        .back-btn {
+          position: absolute;
+          left: -50px;
+          font-weight: bold;
+          font-size: 0.2rem;
+          width: 0.4rem;
+          height: 0.35rem;
+          line-height: 0.35rem;
+          text-align: center;
+          border: 2px solid #10c5fb;
+          background: #05427d;
+          border-radius: 4px;
+          transition: all .2s linear;
+          &:hover {
+            cursor: pointer;
+            background: #10579d;
           }
         }
       }

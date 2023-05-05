@@ -6836,6 +6836,18 @@
 
       handleHomeClick() {
         window.location.href = 'index.html'
+      },
+
+      fetchData() {
+        const loading = this.$loading({
+          text: "数据加载中...",
+          background: 'rgba(0, 0, 0, 0.25)'
+        });
+        const that = this;
+        $.get(`${severUrl}/Newxz/datasearch`, {}, function(data) {
+          console.log(data);
+        })
+        loading.close();
       }
     },
     computed: {
@@ -6893,6 +6905,7 @@
       this.tableData = this.originData.slice(this.page - 1, this.pageSize);
       this.total = this.originData.length
       this.defaultExpandedKeys = ['1-1']
+      this.fetchData();
     }
   })
 </script>

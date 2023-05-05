@@ -278,7 +278,7 @@ $activeColor: #d8d42f;
     }
     &-content {
       flex: 1;
-      overflow: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       padding: 0.4rem 0.85rem;
@@ -338,7 +338,7 @@ $activeColor: #d8d42f;
       }
       .classic-case {
         flex: 1;
-        overflow: hidden;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
         background: rgba(31,103,163,0.2);

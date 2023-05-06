@@ -194,18 +194,18 @@
         <div class="layout-item-content project-table-wrap">
           <el-table
             :data="projectBankTableData"
-            :height="projectBankTableHeight">
+            :height="projectBankTableHeight"
+            v-if="tableHeader.length">
             <el-table-column
-              :label="key"
-              :prop="key"
+              :prop="item.prop"
               align="center"
               width="140"
-              v-for="(item, key) in tableHeader"
-              :fixed="key === '省份' && 'left'"
-              :key="item">
+              v-for="item in tableHeader"
+              :fixed="item.fixed"
+              :key="item.prop">
               <template #header>
-                <div>{{ item }}</div>
-                <div class="column__unit">({{ dws[key] || "单位" }})</div>
+                <div>{{ item.label }}</div>
+                <div class="column__unit">({{ dws[item.prop] || "单位" }})</div>
               </template>
             </el-table-column>
           </el-table>
@@ -647,7 +647,18 @@
           const { right_top } = this.resData;
           const { datas, dws, names, title } = right_top;
           this.rightTopTitle = title;
-          this.tableHeader = names;
+          const tableHeader = []
+          for (const key in names) {
+            const tableColumn = {
+              label: names[key],
+              prop: key
+            }
+            if (key === "region") {
+              tableColumn.fixed = "left"
+            }
+            tableHeader.push(tableColumn)
+          }
+          this.tableHeader = tableHeader;
           this.dws = dws;
           this.projectBankTableData = datas;
         },

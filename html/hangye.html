@@ -741,6 +741,11 @@
 
       handleMeasurementClick(measurement) {
         this.measurement = measurement;
+        if (measurement === 1) {
+          window.open('http://carbonv2.57ut.cn:807/v4/ent/index.html')
+        } else {
+          window.open('http://carbonv2.57ut.cn:807/v4/person/index.html')
+        }
       }
     },
     computed: {

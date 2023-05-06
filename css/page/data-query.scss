@@ -391,6 +391,19 @@ $activeColor: #d8d42f;
             background-color: #01417c;
           }
         }
+        .no-data {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.32rem;
+          color: #a9a9a9;
+          .iconfont {
+            font-size: 0.68rem;
+            margin-bottom: 0.1rem;
+          }
+        }
       }
     }
   }

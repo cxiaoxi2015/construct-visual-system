@@ -211,7 +211,7 @@
             </div>
         </div>
         <div class="layout-ele layout-ele-right">
-            <div class="yc-item">
+            <div class="yc-item" style="height: 3.3rem; flex: none;">
                 <div class="scene-tab">
                     <div class="scene-tab-item"
                          :class="{ 'active': qj === item.typeValue }"
@@ -243,7 +243,7 @@
                     <div id="contributionRate" class="chart-container"></div>
                 </div>
             </div>
-            <div class="yc-item economic-cost">
+            <div class="yc-item economic-cost" style="height: 3.1rem; flex: none;">
                 <div class="scene-tab-panel">
                     <div class="yc-item-title">
                         <span>{{ rightBottomTitle }}</span>
@@ -353,10 +353,10 @@
                     typeName: "无政策情景",
                     typeValue: "1"
                 },
-                {
-                    typeName: "2030年达峰情景",
-                    typeValue: "2"
-                }
+                // {
+                //     typeName: "2030年达峰情景",
+                //     typeValue: "2"
+                // }
             ],
             sceneDataList: [],
             economicCostDataList: [],

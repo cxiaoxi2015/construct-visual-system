@@ -56,37 +56,21 @@
         </div>
     </div>
 
-    <div class="area-group">
-        <div :class="leftBtnClass"
-             @click="handleChinaClick">全国</div>
-        <div :class="rightBtnClass">各地</div>
-    </div>
-
     <!-- 系统内容部分 -->
     <div class="container">
         <div class="container-header-line"></div>
         <div class="container-detail">
             <div class="layout-left-wrap">
                 <div class="layout-left-top kp-item">
-                    <div class="kp-item-title">碳达峰曲线</div>
+                    <div class="kp-item-title">{{ resData.left_top.title }}</div>
                     <div class="kp-item-content">
                         <div class="data-item">
                             <div class="data-item-title">
                                 <div class="data-item-icon"></div>
-                                <span>达峰提前至</span>
+                                <span>{{ resData.left_top.name2 }}</span>
                             </div>
                             <div class="data-item-value">
-                                <span class="font">2029</span>
-                                <span class="suffix">年</span>
-                            </div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-title">
-                                <div class="data-item-icon"></div>
-                                <span>达峰指数</span>
-                            </div>
-                            <div class="data-item-value">
-                                <span class="font">98</span>
+                                <span class="font">{{ resData.left_top.value2 }}</span>
                             </div>
                         </div>
                     </div>
@@ -111,15 +95,6 @@
                                 :data="taskTableData"
                                 height="100%">
                                 <el-table-column
-                                        type="index"
-                                        fixed="left"
-                                        align="center"
-                                        width="60">
-                                    <template #default="{ row, $index }">
-                                        {{ $index + 1 }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
                                         label="年度"
                                         prop="year"
                                         align="center"
@@ -135,12 +110,11 @@
                                         width="170">
                                     <template #header="{ column, $index }">
                                         <div class="label">
-                                            <div class="label-text">{{ $index === 2 && '目标任务量' }}</div>
-                                            <div class="label-unit">({{ unit }})</div>
+                                            <div class="label-text">{{ $index === 1 && '目标减碳量' }}</div>
                                         </div>
                                     </template>
                                     <template #default="{ row }">
-                                        <span style="color: #FFE400;">{{ row.task }}</span>
+                                        <span style="color: #FFE400;">{{ row.task }}{{ unit }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -150,12 +124,11 @@
                                         width="150">
                                     <template #header="{ column, $index }">
                                         <div class="label">
-                                            <div class="label-text">{{ $index === 3 && '实际任务量' }}</div>
-                                            <div class="label-unit">({{ unit }})</div>
+                                            <div class="label-text">{{ $index === 2 && '实际减碳量' }}</div>
                                         </div>
                                     </template>
                                     <template #default="{ row }">
-                                        <span style="color: #14E144;">{{ row.real }}</span>
+                                        <span style="color: #14E144;">{{ row.real }}{{ unit }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -164,12 +137,11 @@
                                         align="center">
                                     <template #header="{ column, $index }">
                                         <div class="label">
-                                            <div class="label-text">{{ $index === 4 && '差值' }}</div>
-                                            <div class="label-unit">({{ unit }})</div>
+                                            <div class="label-text">{{ $index === 3 && '差值' }}</div>
                                         </div>
                                     </template>
                                     <template #default="{ row }">
-                                        <span :class="{ 'is--warning': row.cut < 0 }">{{ row.cut }}</span>
+                                        <span :class="{ 'is--warning': row.cut < 0 }">{{ row.cut }}{{ unit }}</span>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -179,7 +151,7 @@
             </div>
             <div class="layout-right-wrap">
                 <div class="layout-right-top kp-item">
-                    <div class="kp-item-title">考核指标完成情况</div>
+                    <div class="kp-item-title">{{ resData.right_top.title }}</div>
                     <div class="kp-item-content">
                         <el-carousel ref="carouselEl" :autoplay="false" :interval="5000" arrow="never">
                             <el-carousel-item v-for="(carouselItem, carouselIndex) in carousel" :key="carouselIndex">
@@ -318,18 +290,18 @@
                 mapActive: 'china',
                 leftBtnClass: '',
                 rightBtnClass: '',
-                cate: 1,
+                cate: -1,
                 taskTableData: [
-                    { year: "2021", task: 136254, real: 144429.2, cut: -8175.2 },
-                    { year: "2022", task: 139612.5, real: 146593.1, cut: -6980.6 },
-                    { year: "2023", task: 132873.7, real: 130216.2, cut: 2657.5 },
-                    { year: "2024", task: 135868.4, real: 144020.5, cut: -8152.1 },
-                    { year: "2025", task: 137875.6, real: 139254.4, cut: -1378.8 },
-                    { year: "2026", task: 123375.2, real: 127076.5, cut: -3701.3 },
-                    { year: "2027", task: 123884.1, real: 131317.1, cut: -7433 },
-                    { year: "2028", task: 123496.2, real: 124731.2, cut: -1235 },
-                    { year: "2029", task: 111675.5, real: 117259.3, cut: -5583.8 },
-                    { year: "2030", task: 113217, real: 107556.2, cut: 5660.9 }
+                    { year: "2021", task: 136, real: 149.2, cut: 13.2 },
+                    { year: "2022", task: 132.5, real: 143.1, cut: 10.6 },
+                    { year: "2023", task: 196.2, real: 131.2, cut: -65 },
+                    { year: "2024", task: 175.5, real: 159.3, cut: -16.2 },
+                    { year: "2025", task: 135.6, real: 392.4, cut: 256.8 },
+                    { year: "2026", task: 175.2, real: 716.5, cut: 541.3 },
+                    { year: "2027", task: 124.1, real: 313.1, cut: 189 },
+                    { year: "2028", task: 133.7, real: 216.2, cut: 82.5 },
+                    { year: "2029", task: 138.4, real: 144.5, cut: 6.1 },
+                    { year: "2030", task: 117, real: 106.2, cut: -10.8 }
                 ],
                 taskTypeOptions: [
                     { label: '新建居住建筑', value: 1 },
@@ -345,16 +317,17 @@
                     { label: '建筑工业化', value: 14 },
                     { label: '综合减碳量', value: -1 }
                 ],
-                unit: "万平方米",
+                unit: "万吨",
                 carousel: [],
                 topAreaData: [],
                 bottomAreaData: [],
                 kpIndex: 1,
                 kpIndexData: [
-                    { label: "考评指标1", value: 1 },
-                    { label: "考评指标2", value: 2 }
+                    { label: "年度减碳量", value: 1 },
+                    { label: "绿色建筑占比", value: 2 }
                 ],
-                kpIndexTableData: []
+                kpIndexTableData: [],
+                resData: {}
             },
             methods: {
                 getCurrentDateTime() {
@@ -406,31 +379,47 @@
                  * 获取考核指标完成情况
                  */
                 fetchKHZBData() {
-                    const res = {
-                        dfNumber: 98,
-                        dfYear: 2030,
-                        zhibiao: [
-                            { value: "11.5", dw: "亿吨标准煤", typeName: "用能总量", imgSrc: '../assets/images/kaoping/用能总量.png' },
-                            { value: "23.5", dw: "万吨", typeName: "碳排放总量", imgSrc: '../assets/images/kaoping/碳排放总量.png' },
-                            { value: "55", dw: "%", typeName: "电力占比", imgSrc: '../assets/images/kaoping/电力占比.png' },
-                            { value: "100", dw: "%", typeName: "新建建筑标准执行率", imgSrc: '../assets/images/kaoping/新建建筑标准执行率.png' },
-                            { value: "100", dw: "%", typeName: "绿色建筑占新建建筑比例", imgSrc: '../assets/images/kaoping/绿色建筑占新建建筑比例.png' },
-                            { value: "30", dw: "%", typeName: "星级绿色建筑占比", imgSrc: '../assets/images/kaoping/星级绿色建筑占比.png' },
-                            { value: "10", dw: "平方米", typeName: "公共建筑改造面积", imgSrc: '../assets/images/kaoping/公共建筑改造面积.png'},
-                            { value: "2", dw: "亿平方米", typeName: "城镇居住建筑改造面积", imgSrc: '../assets/images/kaoping/城镇居住建筑改造面积.png'},
-                            { value: "10", dw: "亿千瓦", typeName: "建筑光伏一体化新增装机容量", imgSrc: '../assets/images/kaoping/建筑光伏一体化新增装机容量.png'},
-                            { value: "1", dw: "亿平方米", typeName: "太阳能光热建筑新增集热器面积", imgSrc: '../assets/images/kaoping/太阳能光热建筑新增集热器面积.png'},
-                            { value: "9", dw: "亿平方米", typeName: "地热能建筑应用面积", imgSrc: '../assets/images/kaoping/地热能建筑应用面积.png'},
-                            { value: "1", dw: "亿平方米", typeName: "空气热源应用面积", imgSrc: '../assets/images/kaoping/空气热源应用面积.png'},
-                            { value: "30", dw: "%", typeName: "装配式建筑占新建建筑比例", imgSrc: '../assets/images/kaoping/装配式建筑占新建建筑比例.png'},
-                            { value: "70", dw: "%", typeName: "绿色建材推广比例", imgSrc: '../assets/images/kaoping/绿色建材推广比例.png'},
-                            { value: "8", dw: "%", typeName: "城市公共供水管网漏损率", imgSrc: '../assets/images/kaoping/城市公共供水管网漏损率.png'},
-                            { value: "35", dw: "%", typeName: "建筑垃圾资源化利用", imgSrc: '../assets/images/kaoping/建筑垃圾资源化利用.png'},
-                            { value: "38.5", dw: "%", typeName: "城市建成区绿地率", imgSrc: '../assets/images/kaoping/城市建成区绿地率.png'},
-                            { value: "60", dw: "%", typeName: "城市可再生水利用率", imgSrc: '../assets/images/kaoping/城市可再生水利用率.png'}
-                        ]
+                    const { right_top } = this.resData;
+                    const { data } = right_top;
+                    const imgKeyMap = {
+                        "用能总量": "../assets/images/kaoping/用能总量.png",
+                        "碳排放总量": "../assets/images/kaoping/碳排放总量.png",
+                        "电力占比": "../assets/images/kaoping/电力占比.png",
+                        "新建建筑标准执行率": "../assets/images/kaoping/新建建筑标准执行率.png",
+                        "绿色建筑占新建建筑比例": "../assets/images/kaoping/绿色建筑占新建建筑比例.png",
+                        "星级绿色建筑占比": "../assets/images/kaoping/星级绿色建筑占比.png",
+                        "公共建筑改造面积": "../assets/images/kaoping/公共建筑改造面积.png",
+                        "城镇居住建筑改造面积": "../assets/images/kaoping/城镇居住建筑改造面积.png",
+                        "建筑光伏一体化新增装机容量": "../assets/images/kaoping/建筑光伏一体化新增装机容量.png",
+                        "太阳能光热建筑新增集热器面积": "../assets/images/kaoping/太阳能光热建筑新增集热器面积.png",
+                        "地热能建筑应用面积": "../assets/images/kaoping/地热能建筑应用面积.png",
+                        "空气热源应用面积": "../assets/images/kaoping/空气热源应用面积.png",
+                        "装配式建筑占新建建筑比例": "../assets/images/kaoping/装配式建筑占新建建筑比例.png",
+                        "绿色建材推广比例": "../assets/images/kaoping/绿色建材推广比例.png",
+                        "城市公共供水管网漏损率": "../assets/images/kaoping/城市公共供水管网漏损率.png",
+                        "建筑垃圾资源化利用": "../assets/images/kaoping/建筑垃圾资源化利用.png",
+                        "城市建成区绿地率": "../assets/images/kaoping/城市建成区绿地率.png",
+                        "城市可再生水利用率": "../assets/images/kaoping/城市可再生水利用率.png"
                     }
-                    const { zhibiao } = res;
+                    const zhibiao = []
+                    data.forEach(item => {
+                        item.top.forEach(subItem => {
+                            zhibiao.push({
+                                typeName: subItem.name,
+                                value: subItem.value,
+                                dw: subItem.dw,
+                                imgSrc: imgKeyMap[subItem.name]
+                            })
+                        })
+                        item.bottom.forEach(subItem => {
+                            zhibiao.push({
+                                typeName: subItem.name,
+                                value: subItem.value,
+                                dw: subItem.dw,
+                                imgSrc: imgKeyMap[subItem.name]
+                            })
+                        })
+                    })
                     const carousel = Math.ceil(zhibiao.length / 6)
                     // 全部指标数据
                     const indexDataList = zhibiao;
@@ -496,8 +485,19 @@
             },
             mounted() {
                 this.getCurrentDateTime();
-                this.fetchKHZBData();
-                this.fetchKPIndexRank();
+                this.$nextTick(() => {
+                    const that = this;
+                    const loading = this.$loading({
+                        text: "数据加载中...",
+                        background: 'rgba(0, 0, 0, 0.25)'
+                    });
+                    $.get(`${severUrl}/Newkp/index`, {}, function(data) {
+                        loading.close();
+                        that.resData = data;
+                        that.fetchKHZBData();
+                        that.fetchKPIndexRank();
+                    })
+                })
             }
         })
     </script>

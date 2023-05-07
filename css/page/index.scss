@@ -449,6 +449,9 @@ $unitTextColor: #a7a7a7;
             background-size: 100% 100%;
             white-space: nowrap;
             transition: all .2s linear;
+            &:first-child {
+              padding: 0.2rem 0.15rem;
+            }
             &:hover {
               cursor: pointer;
               color: #d8d335;
@@ -656,4 +659,15 @@ $unitTextColor: #a7a7a7;
       }
     }
   }
+}
+.el-message {
+  font-size: 0.14rem;
+}
+.el-message--warning {
+  background-color: #011e51;
+  border-color: #011e51;
+}
+.el-message--warning .el-message__icon,
+.el-message--warning .el-message__content {
+  color: #f4e925;
 }

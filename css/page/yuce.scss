@@ -233,10 +233,8 @@ $hoverColor: #efe526;
         @include button-style;
         &.area-group-item--active {
           &:first-child {
+            margin-right: 0;
             background-image: url("../../assets/images/xianzhuang/left-btn-active.png");
-          }
-          &:last-child {
-            background-image: url("../../assets/images/xianzhuang/right-btn-active.png");
           }
         }
         &.left-active {
@@ -265,6 +263,9 @@ $hoverColor: #efe526;
         white-space: nowrap;
         transition: all .2s linear;
         margin-right: 0.35rem;
+        &:first-child {
+          padding: 0.15rem 0.12rem;
+        }
         &:last-child {
           margin-right: 0;
         }

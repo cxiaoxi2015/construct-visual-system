@@ -98,41 +98,84 @@
 
             <!-- 低碳技术 -->
             <div class="table-detail" v-if="categoryActive === 1">
-                <el-table
+                <div class="table-wrap">
+                    <el-table
                         :data="tableData"
                         :row-class-name="getRowClassName"
                         @selection-change="handleSelectionChange"
+                        height="100%"
                         style="width: 100%">
-                    <el-table-column
-                            type="selection"
-                            width="55"
-                            align="center">
-                    </el-table-column>
-                    <el-table-column
-                            prop="buildingName"
-                            label="建筑名称"
-                            max-width="150"></el-table-column>
-                    <el-table-column
-                            prop="buildingArea"
-                            label="建筑面积(㎡)"
-                            sortable
-                            max-width="130">
-                    </el-table-column>
-                    <el-table-column
-                            prop="measure"
-                            label="措施类别"
-                            max-width="110"></el-table-column>
-                    <el-table-column
-                            prop="planTime"
-                            label="计划完成时间"
-                            max-width="130"
-                            sortable></el-table-column>
-                    <el-table-column
-                            prop="measureDesc"
-                            label="技术措施具体描述"
-                            show-overflow-tooltip
-                            min-width="200"></el-table-column>
-                </el-table>
+                        <el-table-column
+                                type="selection"
+                                width="55"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                prop="buildingName"
+                                label="建筑名称"
+                                max-width="150"></el-table-column>
+                        <el-table-column
+                                prop="buildingArea"
+                                label="建筑面积(㎡)"
+                                sortable
+                                max-width="130">
+                        </el-table-column>
+                        <el-table-column
+                                prop="measure"
+                                label="措施类别"
+                                max-width="110"></el-table-column>
+                        <el-table-column
+                                prop="planTime"
+                                label="计划完成时间"
+                                max-width="130"
+                                sortable></el-table-column>
+                        <el-table-column
+                                prop="measureDesc"
+                                label="技术措施具体描述"
+                                show-overflow-tooltip
+                                min-width="200"></el-table-column>
+                    </el-table>
+                </div>
+                <div class="table-pagination">
+                    <el-pagination
+                        :current-page.sync="page"
+                        :page-size="pageSize"
+                        :total="total"
+                        background
+                        layout="total, prev, pager, next">
+                    </el-pagination>
+                </div>
+            </div>
+
+            <!-- 低碳产品 -->
+            <div class="table-detail" v-if="categoryActive === 2">
+                <div class="table-wrap">
+                    <el-table
+                            :data="tableData"
+                            :row-class-name="getRowClassName"
+                            @selection-change="handleSelectionChange"
+                            style="width: 100%"
+                            height="100%">
+                        <el-table-column
+                            prop="category"
+                            label="分类"
+                            width="150"
+                            align="center"></el-table-column>
+                        <el-table-column
+                            prop="region"
+                            label="地区">
+                        </el-table-column>
+                        <el-table-column
+                            prop="name"
+                            label="产品名称"></el-table-column>
+                        <el-table-column
+                            prop="company"
+                            label="厂家"></el-table-column>
+                        <el-table-column
+                            prop="value"
+                            label="碳排放因子(tCO₂e/单位)"></el-table-column>
+                    </el-table>
+                </div>
                 <div class="table-pagination">
                     <el-pagination
                         :current-page.sync="page"
@@ -175,7 +218,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="table-pagination">
                     <el-pagination
                         :current-page.sync="page"
@@ -267,6 +309,10 @@
             jzgn: "all",
             jsfl: "all",
             sydq: "all",
+            // 产品种类
+            cpzl: "all",
+            // 地区分类
+            dqfl: "all",
             tableData: [
                 {
                     id: "1001",
@@ -391,6 +437,161 @@
 
             handleCategoryClick(category) {
                 this.categoryActive = category.type
+                if (category.type === 1) {
+                    this.tableData = [
+                        {
+                            id: "1001",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1002",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1003",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1004",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1005",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1006",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1007",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        },
+                        {
+                            id: "1008",
+                            buildingName: "新郑农商银行港区支行",
+                            buildingArea: "2062",
+                            measure: "其他",
+                            planTime: "2019-09-12",
+                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
+                        }
+                    ]
+                } else if (category.type === 2) {
+                    this.tableData = [
+                        {
+                            category: "混凝土",
+                            region: "湖南",
+                            name: "混凝土C35",
+                            company: "湖州南浔圣船混凝土有限公司",
+                            value: 0.363
+                        },
+                        {
+                            category: "混凝土",
+                            region: "重庆",
+                            name: "混凝土C40",
+                            company: "重庆华筑混凝土有限公司",
+                            value: 0.41
+                        },
+                        {
+                            category: "混凝土",
+                            region: "湖南",
+                            name: "混凝土C45",
+                            company: "湖南鸿基伟业混凝土有限公司",
+                            value: 0.441
+                        },
+                        {
+                            category: "混凝土",
+                            region: "内蒙古",
+                            name: "混凝土C50",
+                            company: "内蒙古博嘉建材有限公司",
+                            value: 0.464
+                        },
+                        {
+                            category: "砂浆",
+                            region: "重庆",
+                            name: "砌筑水泥砂浆M5",
+                            company: "重庆盈龙祥混凝土有限公司",
+                            value: 0.165
+                        },
+                        {
+                            category: "砂浆",
+                            region: "重庆",
+                            name: "砌筑水泥砂浆M7.5",
+                            company: "重庆富沛新型建材有限公司",
+                            value: 0.181
+                        },
+                        {
+                            category: "砂浆",
+                            region: "贵州",
+                            name: "砌筑水泥砂浆M10",
+                            company: "贵州开莱绿色建筑材料有限公司",
+                            value: 0.2
+                        },
+                        {
+                            category: "砂浆",
+                            region: "贵州",
+                            name: "砌筑水泥砂浆M15",
+                            company: "贵州开迪绿色建筑材料有限公司",
+                            value: 0.232
+                        },
+                        {
+                            category: "砂浆",
+                            region: "福建",
+                            name: "抹灰水泥砂浆1:2",
+                            company: "厦门中永翔建材有限责任公司",
+                            value: 0.405
+                        },
+                        {
+                            category: "砂浆",
+                            region: "广东",
+                            name: "抹灰水泥砂浆1:3",
+                            company: "汕头市润都混凝土有限公司",
+                            value: 0.277
+                        },
+                        {
+                            category: "砂浆",
+                            region: "安徽",
+                            name: "抹灰混合砂浆1:1:6",
+                            company: "萧县步强新型建材科技有限公司",
+                            value: 0.285
+                        },
+                        {
+                            category: "砂浆",
+                            region: "四川",
+                            name: "抹灰石灰砂浆1:2.5",
+                            company: "四川统揽建设集团有限公司",
+                            value: 0.342
+                        }
+                    ]
+                }
             },
 
             handleCheckDetail(item) {
@@ -462,6 +663,12 @@
                 return provinceData
             },
             sysCategories() {
+                const provinceData = this.provinceData.map(item => {
+                    return {
+                        label: item,
+                        value: item
+                    }
+                })
                 switch (this.categoryActive) {
                     case 1:
                         return [
@@ -510,81 +717,49 @@
                     case 2:
                         return [
                             {
-                                label: "建筑功能",
-                                field: "jzgn",
+                                label: "产品种类",
+                                field: "cpzl",
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
-                                    {label: "办公建筑", value: "1"},
-                                    {label: "商场建筑", value: "2"},
-                                    {label: "宾馆饭店", value: "3"},
-                                    {label: "文化建筑", value: "4"},
-                                    {label: "医疗卫生", value: "5"},
-                                    {label: "体育建筑", value: "6"},
-                                    {label: "综合建筑", value: "7"},
-                                    {label: "教育建筑", value: "8"},
-                                    {label: "其他", value: "9"}
+                                    {label: "混凝土", value: "1"},
+                                    {label: "水泥及胶凝材料", value: "2"},
+                                    {label: "砂浆", value: "3"},
+                                    {label: "石灰", value: "4"},
+                                    {label: "石膏", value: "5"},
+                                    {label: "砌体", value: "6"},
+                                    {label: "钢金属", value: "7"},
+                                    {label: "其他金属", value: "8"},
+                                    {label: "建筑门窗", value: "9"},
+                                    {label: "建筑玻璃", value: "10"},
+                                    {label: "建筑涂料", value: "11"},
+                                    {label: "陶瓷制品", value: "12"},
+                                    {label: "木质材料", value: "13"},
+                                    {label: "保温材料", value: "14"},
+                                    {label: "防水卷材", value: "15"},
+                                    {label: "塑料给水管", value: "16"},
+                                    {label: "导线", value: "17"},
+                                    {label: "其他", value: "18"}
                                 ]
                             },
                             {
-                                label: "技术分类",
-                                field: "jsfl",
+                                label: "地区分类",
+                                field: "province",
                                 fixed: [{label: "全部", value: "all"}],
-                                categories: [
-                                    {label: "采暖通风", value: "1"},
-                                    {label: "空调系统", value: "2"},
-                                    {label: "生活热水系统", value: "3"},
-                                    {label: "配供电系统", value: "4"},
-                                    {label: "照明插座系统", value: "5"},
-                                    {label: "监测与控制系统", value: "6"}
-                                ]
-                            },
-                            {
-                                label: "使用地区",
-                                field: "sydq",
-                                fixed: [{label: "全部", value: "all"}],
-                                categories: [
-                                    {label: "严寒", value: "1"},
-                                    {label: "寒冷", value: "2"},
-                                    {label: "夏热冬冷", value: "3"},
-                                    {label: "温和", value: "4"},
-                                    {label: "夏热冬暖", value: "5"}
-                                ]
+                                categories: provinceData
                             }
                         ]
                     case 3:
-                        const provinceData = this.provinceData.map(item => {
-                            return {
-                                label: item,
-                                value: item
-                            }
-                        })
                         return [
                             {
                                 label: "年份",
                                 field: "year",
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
-                                    {label: "2023年", value: "2023"},
+                                    {label: "2019年", value: "2019"},
+                                    {label: "2020年", value: "2020"},
+                                    {label: "2021年", value: "2021"},
                                     {label: "2022年", value: "2022"},
-                                    {label: "2021年", value: "2021"}
-                                ]
-                            },
-                            {
-                                label: "参与方式",
-                                field: "participate",
-                                fixed: [{label: "全部", value: "all"}],
-                                categories: [
-                                    {label: "线上参与", value: "1"},
-                                    {label: "线下参与", value: "0"}
-                                ]
-                            },
-                            {
-                                label: "状态",
-                                field: "status",
-                                fixed: [{label: "全部", value: "all"}],
-                                categories: [
-                                    {label: "已结束", value: "0"},
-                                    {label: "未开始", value: "1"}
+                                    {label: "2023年", value: "2023"}
                                 ]
                             },
                             {

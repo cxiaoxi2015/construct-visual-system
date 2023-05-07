@@ -290,48 +290,52 @@ $activeColor: #d8d42f;
         background: rgba(31,103,163,0.2);
         border: 2px solid;
         border-image: linear-gradient(90deg, #0F9DED, #B3E1FB, #129EED) 2 2;
-        .el-table {
-          background-color: transparent;
-          &::before {
+        .table-wrap {
+          flex: 1;
+          overflow: hidden;
+          .el-table {
             background-color: transparent;
-          }
-          .cell {
-            font-weight: bold;
-          }
-          tr {
-            background-color: transparent;
-            transition: all .2s linear;
-            &:hover {
-              .el-table__cell {
-                color: $activeColor;
+            &::before {
+              background-color: transparent;
+            }
+            .cell {
+              font-weight: bold;
+            }
+            tr {
+              background-color: transparent;
+              transition: all .2s linear;
+              &:hover {
+                .el-table__cell {
+                  color: $activeColor;
+                }
+              }
+              &:last-child {
+                .el-table__cell {
+                  border-bottom: none !important;
+                }
+              }
+              &.row-selected {
+                .cell {
+                  color: $activeColor;
+                }
               }
             }
-            &:last-child {
-              .el-table__cell {
-                border-bottom: none !important;
-              }
-            }
-            &.row-selected {
-              .cell {
-                color: $activeColor;
-              }
-            }
-          }
-          .el-table__cell {
-            background-color: transparent;
-            color: #fff;
-            border-bottom: 1px solid #44A7D9;
-            padding: 0;
-            height: 0.57rem;
-          }
-          .el-table__header {
             .el-table__cell {
-              border-bottom-color: #44A7D9;
+              background-color: transparent;
+              color: #fff;
+              border-bottom: 1px solid #44A7D9;
+              padding: 0;
+              height: 0.57rem;
             }
-          }
-          .el-table__body {
-            .el-table__cell {
-              border-bottom-color: #44A7D9;
+            .el-table__header {
+              .el-table__cell {
+                border-bottom-color: #44A7D9;
+              }
+            }
+            .el-table__body {
+              .el-table__cell {
+                border-bottom-color: #44A7D9;
+              }
             }
           }
         }
@@ -552,4 +556,7 @@ $activeColor: #d8d42f;
 }
 .el-pagination.is-background .el-pager li:not(.disabled):hover {
   color: $activeColor;
+}
+.table-pagination .el-pagination__total {
+  color: #fff;
 }

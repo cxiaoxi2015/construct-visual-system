@@ -62,147 +62,131 @@
   <!-- 系统内容部分 -->
   <div class="container">
     <div class="layout-left-wrap">
-      <div class="layout-item layout-left-top">
-        <div class="layout-item-title">各地方任务调配</div>
-        <div class="layout-item-content">
-          <div class="operation">
-            <div class="operation-left">
-              <div class="operation-item"
-                   :class="{ 'operation-item--active': item.type === dpActive }"
-                   v-for="(item, index) in dpSettingList"
-                   :key="index">{{ item.label }}</div>
+      <div class="layout-left-top-wrap">
+        <div class="layout-item layout-left-top" :class="{ 'layout-left-top--expand': isExpand }">
+          <div class="layout-item-title">各地方任务调配</div>
+          <div class="layout-item-content">
+            <div class="operation" v-if="tabActive === 1">
+              <div class="operation-left">
+                <div class="operation-item operation-item--active">在线设定</div>
+                <div class="operation-item" @click="handleComputedClick">计算</div>
+              </div>
+              <div class="operation-right">
+                <div class="operation-item">导入</div>
+                <div class="operation-item">导出</div>
+                <div class="operation-item">下载模板</div>
+              </div>
             </div>
-            <div class="operation-right">
-              <div class="operation-item">导入</div>
-              <div class="operation-item">导出</div>
-              <div class="operation-item">下载模板</div>
+            <div class="table-wrap">
+              <template v-if="tabActive === 1">
+                <el-table
+                  height="100%"
+                  :data="taskSettingTableData"
+                  :span-method="objectSpanMethod"
+                  border
+                  style="width: 100%;">
+                  <el-table-column prop="specialWork" label="专项工作" align="center" width="180" fixed="left"></el-table-column>
+                  <el-table-column prop="specificItem" label="具体项目" align="center" width="200" fixed="left"></el-table-column>
+                  <el-table-column prop="localClimate" label="地区" align="center" width="180"></el-table-column>
+                  <el-table-column prop="taskDesc" label="任务说明" align="center" width="240"></el-table-column>
+                  <el-table-column
+                    v-for="column in taskSettingTableColumn"
+                    :key="column.prop"
+                    :label="column.label"
+                    :prop="column.prop"
+                    min-width="130"
+                    align="center">
+                    <template #default="{ row }">
+                      <el-input v-model="row[column.prop]"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="cost" label="单位成本" width="130"></el-table-column>
+                  <el-table-column prop="energySaving" label="单位节能量" width="130"></el-table-column>
+                </el-table>
+              </template>
+              <template v-if="tabActive === 2">
+                <el-table
+                  height="100%"
+                  :data="taskSettingTableData2"
+                  :span-method="objectSpanMethod"
+                  border
+                  style="width: 100%;"
+                  v-if="computedFlag">
+                  <el-table-column prop="specialWork" label="专项工作" align="center" width="180" fixed="left"></el-table-column>
+                  <el-table-column prop="specificItem" label="具体项目" align="center" width="200" fixed="left"></el-table-column>
+                  <el-table-column prop="localClimate" label="地区" align="center" width="180"></el-table-column>
+                  <el-table-column prop="taskDesc" label="任务说明" align="center" width="240"></el-table-column>
+                  <el-table-column
+                          v-for="column in taskSettingTableColumn"
+                          :key="column.prop"
+                          :label="column.label"
+                          :prop="column.prop"
+                          min-width="130"
+                          align="center">
+                    <template #default="{ row }">
+                      {{ row[column.prop] }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="no-computed" v-else>
+                  <div class="iconfont">&#xe66d;</div>
+                  请完成计算后查看
+                </div>
+              </template>
+              <template v-else>
+                <el-table
+                  height="100%"
+                  :data="taskSettingTableData3"
+                  :span-method="objectSpanMethod"
+                  border
+                  style="width: 100%;"
+                  v-if="computedFlag">
+                  <el-table-column prop="specialWork" label="专项工作" align="center" width="180" fixed="left"></el-table-column>
+                  <el-table-column prop="specificItem" label="具体项目" align="center" width="200" fixed="left"></el-table-column>
+                  <el-table-column prop="localClimate" label="地区" align="center" width="180"></el-table-column>
+                  <el-table-column prop="taskDesc" label="任务说明" align="center" width="240"></el-table-column>
+                  <el-table-column
+                          v-for="column in taskSettingTableColumn"
+                          :key="column.prop"
+                          :label="column.label"
+                          :prop="column.prop"
+                          min-width="130"
+                          align="center">
+                    <template #default="{ row }">
+                      {{ row[column.prop] }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="no-computed" v-else>
+                  <div class="iconfont">&#xe66d;</div>
+                  请完成计算后查看
+                </div>
+              </template>
             </div>
           </div>
-          <div class="table-wrap">
-            <template v-if="tabActive === 1">
-              <el-table
-                height="100%"
-                :data="taskSettingTableData"
-                :span-method="objectSpanMethod"
-                border
-                style="width: 100%;">
-                <el-table-column prop="specialWork" label="专项工作" align="center" width="180" fixed="left"></el-table-column>
-                <el-table-column prop="specificItem" label="具体项目" align="center" width="200" fixed="left"></el-table-column>
-                <el-table-column prop="localClimate" label="地区" align="center" width="180"></el-table-column>
-                <el-table-column prop="taskDesc" label="任务说明" align="center" width="240"></el-table-column>
-                <el-table-column prop="ratio" label="建筑面积占比%" align="center" width="130"></el-table-column>
-                <el-table-column
-                  v-for="column in taskSettingTableColumn"
-                  :key="column.prop"
-                  :label="column.label"
-                  :prop="column.prop"
-                  min-width="130"
-                  align="center">
-                  <template #default="{ row }">
-                    <el-input v-model="row[column.prop]"></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="cost" label="单位增量成本" width="130"></el-table-column>
-              </el-table>
-            </template>
-            <template v-if="tabActive === 2">
-              <el-table
-                :data="jtlTableData"
-                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-                height="100%">
-                <el-table-column
-                  prop="year"
-                  label="年度"
-                  width="100"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="total"
-                  label="合计"
-                  width="100"
-                  show-overflow-tooltip
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="xjjz"
-                  label="新建居住建筑"
-                  show-overflow-tooltip
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="xjgj"
-                  label="新建公共建筑"
-                  show-overflow-tooltip
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="jygjgz"
-                  label="既有公共建筑改造"
-                  width="130"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="jyjjgz"
-                  label="既有居住建筑改造"
-                  width="130"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="nf"
-                  label="农房"
-                  width="80"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="kqdry"
-                  label="空气地热源"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="solarPhotothermal"
-                  label="太阳能光热"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="solarPhotoelectricity"
-                  label="太阳能光伏"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="gpswrcl"
-                  label="给排水及污水处理"
-                  width="130"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="yllh"
-                  label="园林绿化"
-                  align="center"></el-table-column>
-                <el-table-column
-                  prop="jzgyh"
-                  label="建筑工业化"
-                  align="center"></el-table-column>
-              </el-table>
-            </template>
+          <div class="tab">
+            <div class="tab-item"
+                 :class="{ 'tab-item--active': tabActive === tab.value }"
+                 v-for="(tab, tabIndex) in tabList"
+                 :key="tabIndex"
+                 @click="handleTabClick(tab)">{{ tab.tabName }}</div>
           </div>
         </div>
-        <div class="tab">
-          <div class="tab-item"
-               :class="{ 'tab-item--active': tabActive === tab.value }"
-               v-for="(tab, tabIndex) in tabList"
-               :key="tabIndex"
-               @click="handleTabClick(tab)">{{ tab.tabName }}</div>
-        </div>
       </div>
-      <div class="layout-item layout-left-bottom">
-        <div class="layout-item-title">{{ leftBottomTitle }}</div>
-        <div class="layout-item-content" id="gzdd"></div>
-      </div>
-    </div>
-    <div class="layout-right-wrap">
       <div class="layout-item layout-right-top">
         <div class="layout-item-title">{{ rightTopTitle }}</div>
         <div class="layout-item-content project-table-wrap">
           <el-table
-            :data="projectBankTableData"
-            :height="projectBankTableHeight"
-            v-if="tableHeader.length">
+                  :data="projectBankTableData"
+                  :height="projectBankTableHeight"
+                  v-if="tableHeader.length">
             <el-table-column
-              :prop="item.prop"
-              align="center"
-              width="140"
-              v-for="item in tableHeader"
-              :fixed="item.fixed"
-              :key="item.prop">
+                    :prop="item.prop"
+                    align="center"
+                    width="140"
+                    v-for="item in tableHeader"
+                    :fixed="item.fixed"
+                    :key="item.prop">
               <template #header>
                 <div>{{ item.label }}</div>
                 <div class="column__unit">({{ dws[item.prop] || "单位" }})</div>
@@ -211,9 +195,11 @@
           </el-table>
         </div>
       </div>
-      <div class="layout-item layout-right-bottom">
-        <div class="layout-item-title">{{ rightBottomTitle }}</div>
-        <div class="layout-item-content" id="qkjc"></div>
+    </div>
+    <div class="layout-right-wrap">
+      <div class="layout-item layout-left-bottom">
+        <div class="layout-item-title">{{ leftBottomTitle }}</div>
+        <div class="layout-item-content" id="gzdd"></div>
       </div>
     </div>
   </div>
@@ -290,6 +276,8 @@
           { label: "计算", type: 2 }
         ],
         taskSettingTableData: [],
+        taskSettingTableData2: [],
+        taskSettingTableData3: [],
         taskSettingTableColumn: [
           { label: '2021-2025', prop: '2021-2025' },
           { label: '2026-2030', prop: '2026-2030' },
@@ -297,6 +285,8 @@
           { label: '2036-2040', prop: '2036-2040' },
           { label: '2041-2060', prop: '2041-2060' }
         ],
+        // 是否已经进行计算
+        computedFlag: false,
         // 减碳量表格数据
         jtlTableData: [],
         // 项目库表格数据
@@ -367,28 +357,45 @@
          * 获取在线设定表格数据
          */
         fetchDataSettingOnline() {
-          this.taskSettingTableData = [
-            {
-              id: '12987124',
-              // 专项工作
-              specialWork: '既有建筑节能改造',
-              // 具体项目
-              specificItem: '居住建筑',
-              // 地区,没有的为空字符串就可以
-              localClimate: '严寒地区',
-              // 任务说明
-              taskDesc: '改造面积（万平方米）',
-              // 占比
-              ratio: '',
-              '2021-2025': '300万㎡',
-              '2026-2030': '300万㎡',
-              '2031-2035': '300万㎡',
-              '2036-2040': '300万㎡',
-              '2041-2060': '1200万㎡',
-              // 单位增量成本
-              cost: '2400万㎡'
+          const { left_top } = this.resData;
+          let resData = left_top.table1;
+          const dataTemp = resData.slice(0, 10)
+          resData.splice(0, 10)
+          this.taskSettingTableData = resData.concat(dataTemp)
+          const specialWorkList = []
+          for (let i = 0; i < this.taskSettingTableData.length; i++) {
+            const { specialWork, localClimate } = this.taskSettingTableData[i]
+            let findTotal = 0
+            if (!specialWorkList.includes(specialWork)) {
+              findTotal = 1
+              for (let j = 0; j < this.taskSettingTableData.length; j++) {
+                const { specialWork: _specialWork, localClimate: _localClimate } = this.taskSettingTableData[j]
+                if (specialWork === _specialWork && i !== j) {
+                  findTotal++
+                }
+              }
+              specialWorkList.push(specialWork)
             }
-          ]
+            this.taskSettingTableData[i].findTotal = findTotal
+          }
+          this.taskSettingTableData2 = this.taskSettingTableData.map(item => {
+            const dataItem = {}
+            for (const key in item) {
+              dataItem[key] = ["2021-2025", "2026-2030", "2031-2035", "2036-2040", "2041-2060"].includes(key)
+                      ? item[key].indexOf('%') > -1 ? '0%' : '0'
+                      : item[key]
+            }
+            return dataItem
+          })
+          this.taskSettingTableData3 = this.taskSettingTableData.map(item => {
+            const dataItem = {}
+            for (const key in item) {
+              dataItem[key] = ["2021-2025", "2026-2030", "2031-2035", "2036-2040", "2041-2060"].includes(key)
+                      ? item[key].indexOf('%') > -1 ? '0%' : '0'
+                      : item[key]
+            }
+            return dataItem
+          })
         },
 
         objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -446,203 +453,6 @@
             }
         },
 
-        fetchJTLData() {
-          const keyMap = {
-            rows: 'rows',
-            range: 'year',
-            list: 'children',
-            sum: 'total',
-            sum1: 'xjjz',
-            sum2: 'xjgj',
-            sum3: 'jygjgz',
-            sum4: 'jyjjgz',
-            sum5: 'nf',
-            sum6: 'kqdry',
-            sum9: 'solarPhotothermal',
-            sum10: 'solarPhotoelectricity',
-            sum11: 'gpswrcl',
-            sum13: 'yllh',
-            sum14: 'jzgyh'
-          }
-          const childKeyMap = {
-            year: 'year',
-            cost1: 'xjjz',
-            cost2: 'xjgj',
-            cost3: 'jygjgz',
-            cost4: 'jyjjgz',
-            cost5: 'nf',
-            cost6: 'kqdry',
-            cost9: 'solarPhotothermal',
-            cost10: 'solarPhotoelectricity',
-            cost11: 'gpswrcl',
-            cost13: 'yllh',
-            cost14: 'jzgyh'
-          }
-          const jtlTableData = [
-            {
-              list: [],
-              range: "2021-2025",
-              rows: 1,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2026-2030",
-              rows: 2,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2031-2035",
-              rows: 3,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2036-2040",
-              rows: 4,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2041-2045",
-              rows: 5,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2046-2050",
-              rows: 6,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2051-2055",
-              rows: 7,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            },
-            {
-              list: [],
-              range: "2056-2060",
-              rows: 8,
-              sum: 0,
-              sum1: 0,
-              sum2: 0,
-              sum3: 0,
-              sum4: 0,
-              sum5: 0,
-              sum6: 0,
-              sum7: 0,
-              sum9: 0,
-              sum10: 0,
-              sum11: 0,
-              sum13: 0,
-              sum14: 0
-            }
-          ]
-          this.jtlTableData = jtlTableData.map(item => {
-            const dataItem = {}
-            for (const key in item) {
-              if (key === 'list') {
-                dataItem.children = item.list.map((childItem, childIndex) => {
-                  const childDataItem = { rows: `childItem-${childIndex}` }
-                  for (const childKey in childItem) {
-                    childDataItem[childKeyMap[childKey]] = childItem[childKey]
-                  }
-                  return childDataItem
-                })
-              } else {
-                dataItem[keyMap[key]] = item[key]
-              }
-            }
-            return dataItem
-          })
-        },
-
         fetchProjectBankData() {
           const { right_top } = this.resData;
           const { datas, dws, names, title } = right_top;
@@ -675,27 +485,18 @@
             backgroundColor: 'transparent',
             tooltip: {
               trigger: 'axis',
-              confine: true,
-              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-              formatter: function(params){
-                return `<div class="cx-tooltip">${tip}: ${params[0].value}${dw}</div>`
-              },
               axisPointer: {
-                type: 'cross',
-                crossStyle: {
-                  axisPointer: {
-                    type: 'cross',
-                    crossStyle: {
-                      color: '#fff'
-                    },
-                    lineStyle: {
-                      type: 'dashed'
-                    }
-                  }
-                },
-                lineStyle: {
-                  type: 'dashed'
+                type: 'shadow'
+              },
+              confine: true,
+              formatter: function (params) {
+                let relVal = `${params[0].name}`;
+                let prefix
+                for (let i = 0, l = params.length; i < l; i++) {
+                  prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                  relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
                 }
+                return relVal;
               }
             },
             grid: {
@@ -811,7 +612,7 @@
         /**
          * 绘制工作调度图表
          */
-        drawGZDDChart(showDataZoom = true) {
+        drawGZDDChart(showDataZoom = false) {
           const { left_bottom } = this.resData;
           const { title, dw, x_name, y_data } = left_bottom;
           this.leftBottomTitle = title;
@@ -948,6 +749,58 @@
 
         handleExpandToggle() {
           this.isExpand = !this.isExpand;
+        },
+
+        /**
+         * 计算
+         */
+        handleComputedClick() {
+          const loading = this.$loading({
+            text: "正在计算减碳量与成本,请稍后...",
+            background: 'rgba(0, 0, 0, 0.25)'
+          });
+          this.taskSettingTableData2 = this.taskSettingTableData.map(item => {
+            const dataItem = {}
+            for (const key in item) {
+              const energySaving = item.energySaving || 0
+              if (["2021-2025", "2026-2030", "2031-2035", "2036-2040", "2041-2060"].includes(key)) {
+                if (item[key].indexOf('%') > -1) {
+                  let value = item[key].replace("%", "");
+                  value = value / 100;
+                  dataItem[key] = value * energySaving * 2.1 + '%';
+                } else {
+                  dataItem[key] = item[key] * energySaving * 2.1
+                }
+              } else {
+                dataItem[key] = item[key]
+              }
+            }
+            return dataItem
+          })
+          this.taskSettingTableData3 = this.taskSettingTableData.map(item => {
+            const dataItem = {}
+            for (const key in item) {
+              const cost = isNaN(item.cost) ? 0 : item.cost
+              if (["2021-2025", "2026-2030", "2031-2035", "2036-2040", "2041-2060"].includes(key)) {
+                if (item[key].indexOf('%') > -1) {
+                  let value = item[key].replace("%", "");
+                  value = value / 100;
+                  dataItem[key] = value * cost + '%';
+                } else {
+                  dataItem[key] = item[key] * cost
+                }
+              } else {
+                dataItem[key] = item[key]
+              }
+            }
+            return dataItem
+          })
+          setTimeout(() => {
+            loading.close();
+            this.computedFlag = true;
+            this.tabActive = 2;
+            this.$message.success("计算完成");
+          }, 2000)
         }
       },
       computed: {
@@ -977,8 +830,6 @@
       },
       mounted() {
         this.getCurrentDateTime();
-        this.fetchDataSettingOnline();
-        this.fetchJTLData();
         this.$nextTick(() => {
           this.projectBankTableHeight = $('.project-table-wrap').height();
           const that = this;
@@ -987,10 +838,12 @@
             background: 'rgba(0, 0, 0, 0.25)'
           });
           $.get(`${severUrl}/Newdd/index`, {}, function (data) {
+
             loading.close();
             that.resData = data;
+            that.fetchDataSettingOnline();
             that.fetchProjectBankData();
-            that.drawQKJCChart();
+            // that.drawQKJCChart();
             that.drawGZDDChart();
           })
         })

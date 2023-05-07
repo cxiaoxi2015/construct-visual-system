@@ -61,7 +61,7 @@
         <template v-if="region === 'china'">
             <div class="area-group">
                 <div :class="leftBtnClass" @click="handleDqClick('1')">全国</div>
-                <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>
+<!--                <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>-->
             </div>
             <div class="area-line"></div>
         </template>
@@ -397,19 +397,18 @@
                     backgroundColor: 'transparent',
                     tooltip: {
                         trigger: 'axis',
-                        confine: true,
-                        extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-                        formatter: function (params) {
-                            return `<div class="cx-tooltip">总量: ${params[0].value}${dw}</div>`
-                        },
                         axisPointer: {
-                            type: 'cross',
-                            crossStyle: {
-                                color: '#fff'
-                            },
-                            lineStyle: {
-                                type: 'dashed'
+                            type: 'shadow'
+                        },
+                        confine: true,
+                        formatter: function (params) {
+                            let relVal = `${params[0].name}`;
+                            let prefix
+                            for (let i = 0, l = params.length; i < l; i++) {
+                                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
                             }
+                            return relVal;
                         }
                     },
                     legend: {
@@ -457,7 +456,7 @@
                         nameTextStyle: {
                             color: "#fff",
                             fontSize: "",
-                            padding: [-15, 0, 0, 0],
+                            padding: [-15, 0, 0, -50],
                         },
                         show: true,
                         axisTick: {
@@ -541,7 +540,25 @@
                 const { left_middle } = this.resData;
                 const { dw, legend, title, x_name, y_data } = left_middle;
                 this.leftMiddleTitle = title;
-                const myChart = echarts.init(document.getElementById('pfzl'));
+                const chartContainer = document.getElementById('pfzl');
+                chartContainer.removeAttribute('_echarts_instance_');
+                const myChart = echarts.init(chartContainer);
+                const colorList = ["#F5804D", "#09BCB7", "#eada1f", ]
+                const series = legend.map((name, index) => {
+                    return {
+                        name,
+                        type: 'line',
+                        smooth: true,
+                        symbolSize: 5,
+                        symbol: 'circle',
+                        itemStyle: {
+                            barBorderRadius: [30, 30, 0, 0],
+                            color: colorList[index],
+                            borderColor: '#fff'
+                        },
+                        data: y_data[index]
+                    }
+                })
                 const option = {
                     backgroundColor: 'transparent',
                     tooltip: {
@@ -554,7 +571,7 @@
                             let relVal = `${params[0].name}`;
                             let prefix
                             for (let i = 0, l = params.length; i < l; i++) {
-                                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
+                                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
                                 relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
                             }
                             return relVal;
@@ -570,8 +587,8 @@
                     legend: {
                         x: 'right',
                         y: 'top',
-                        padding: [20, 30, 0, 0],
-                        itemGap: 34,
+                        itemGap: 5,
+                        padding: [15, 15, 0, 0],
                         data: legend,
                         textStyle: {
                             color: '#fff',
@@ -629,76 +646,7 @@
                             }
                         },
                     ],
-                    series: [
-                        {
-                            name: legend[0],
-                            type: "bar",
-                            barWidth: 4,
-                            itemStyle: {
-                                borderWidth: 5,
-                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                                    {
-                                        offset: 0,
-                                        color: "#F5804D",
-                                    },
-                                    {
-                                        offset: 1,
-                                        color: '#FCCB05'
-                                    }
-                                ]),
-                                borderRadius: 3
-                            },
-                            data: y_data[0],
-                        },
-                        {
-                            name: legend[1],
-                            type: "bar",
-                            barWidth: 4,
-                            barGap: "50%",
-                            label: {
-                                show: false
-                            },
-                            itemStyle: {
-                                borderWidth: 5,
-                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                                    {
-                                        offset: 0,
-                                        color: "#09BCB7",
-                                    },
-                                    {
-                                        offset: 1,
-                                        color: '#8BD46E'
-                                    }
-                                ]),
-                                borderRadius: 3
-                            },
-                            data: y_data[1],
-                        },
-                        {
-                            name: legend[2],
-                            type: "bar",
-                            barWidth: 4,
-                            barGap: "50%",
-                            label: {
-                                show: false
-                            },
-                            itemStyle: {
-                                borderWidth: 5,
-                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                                    {
-                                        offset: 0,
-                                        color: "#6851F1",
-                                    },
-                                    {
-                                        offset: 1,
-                                        color: '#248FF7'
-                                    }
-                                ]),
-                                borderRadius: 3
-                            },
-                            data: y_data[2]
-                        }
-                    ]
+                    series
                 };
                 myChart.setOption(option)
             },
@@ -707,36 +655,47 @@
              * 绘制排放强度图表
              */
             drawPFQDChart() {
-                const that = this;
                 const { left_bottom } = this.resData;
                 const { dw, legend, title, x_name, y_data } = left_bottom;
                 this.leftBottomTitle = title;
-                const myChart = echarts.init(document.getElementById('pfqd'));
+                const chartContainer = document.getElementById('pfqd');
+                chartContainer.removeAttribute('_echarts_instance_');
+                const myChart = echarts.init(chartContainer);
+                const colorList = ["#F3B330", "#62FFF9", "#12fe01", "#e77071"]
+                const series = legend.map((name, index) => {
+                    return {
+                        name,
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            color: colorList[index]
+                        },
+                        symbolSize: 5,
+                        symbol: 'circle',
+                        itemStyle: {
+                            barBorderRadius: [30, 30, 0, 0],
+                            color: colorList[index],
+                            borderColor: '#fff'
+                        },
+                        data: y_data[index]
+                    }
+                })
                 const option = {
                     backgroundColor: 'transparent',
                     tooltip: {
                         trigger: 'axis',
-                        confine: true,
-                        extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-                        formatter: function (params) {
-                            return `<div class="cx-tooltip">${that.cate === "1" ? "用能强度" : "排放强度"}: ${params[0].value}${dw}</div>`
-                        },
                         axisPointer: {
-                            type: 'cross',
-                            crossStyle: {
-                                axisPointer: {
-                                    type: 'cross',
-                                    crossStyle: {
-                                        color: '#fff'
-                                    },
-                                    lineStyle: {
-                                        type: 'dashed'
-                                    }
-                                }
-                            },
-                            lineStyle: {
-                                type: 'dashed'
+                            type: 'shadow'
+                        },
+                        confine: true,
+                        formatter: function (params) {
+                            let relVal = `${params[0].name}`;
+                            let prefix
+                            for (let i = 0, l = params.length; i < l; i++) {
+                                prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
                             }
+                            return relVal;
                         }
                     },
                     grid: {
@@ -745,6 +704,19 @@
                         right: '5%',
                         bottom: '5%',
                         containLabel: true
+                    },
+                    legend: {
+                        top: "3%",
+                        left: '3%',
+                        textStyle: {
+                            color: "#fff",
+                            fontSize: 12
+                        },
+                        itemGap: 5,
+                        itemWidth: 5,
+                        itemHeight: 5,
+                        icon: "circle",
+                        data: legend
                     },
                     xAxis: [
                         {
@@ -774,7 +746,7 @@
                         nameTextStyle: {
                             color: "#fff",
                             fontSize: "",
-                            padding: [0, 0, 0, 25],
+                            padding: [0, 0, 0, 15],
                         },
                         show: true,
                         axisTick: {
@@ -786,7 +758,7 @@
                         splitLine: {
                             show: true,
                             lineStyle: {
-                                color: "rgba(255, 255, 255, .85)"
+                                color: "rgba(255, 255, 255, .09)"
                             }
                         },
                         axisLabel: {
@@ -794,17 +766,7 @@
                             color: '#fff'
                         }
                     },
-                    series: {
-                        name: that.cate === "1" ? "用能强度" : "排放强度",
-                        type: "bar",
-                        barWidth: 8,
-                        itemStyle: {
-                            borderWidth: 1,
-                            color: '#0B7062',
-                            borderColor: '#15FED1'
-                        },
-                        data: y_data,
-                    }
+                    series
                 };
                 myChart.setOption(option)
             },

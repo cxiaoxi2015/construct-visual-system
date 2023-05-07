@@ -309,7 +309,7 @@
                 mapTitle: "",
                 mapUnit: "",
                 mapValue: "",
-                cate: "1",
+                cate: "2",
                 dq: "1",
                 leftTopTitle: "",
                 leftMiddleTitle: "",
@@ -338,23 +338,48 @@
                  * 绘制能耗总量图表
                  */
                 drawNHZLChart(showDataZoom = true) {
+                    const colorList = [
+                        {
+                            offset0: "#F5804D",
+                            offset1: "#FCCB05"
+                        },
+                        {
+                            offset0: "#6851F1",
+                            offset1: "#248FF7"
+                        },
+                    ]
                     const { left_top } = this.resData;
                     if (!left_top) {
                         return;
                     }
                     const { dw, legend, title, x_name, y_data } = left_top;
                     this.leftTopTitle = title;
-                    const nhzlData = {
-                        tj: [],
-                        cf: [],
-                        year: []
-                    }
-                    for (let i = 0; i < x_name.length; i++) {
-                        nhzlData.tj.push(y_data[0][i])
-                        nhzlData.cf.push(y_data[1][i])
-                        nhzlData.year.push(x_name[i])
-                    }
-                    const myChart = echarts.init(document.getElementById('nhzl'));
+
+                    const series = legend.map((name, index) => {
+                        return {
+                            name,
+                            type: "bar",
+                            barWidth: 11,
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                                    {
+                                        offset: 0,
+                                        color: colorList[index].offset0
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: colorList[index].offset1
+                                    }
+                                ]),
+                                borderRadius: 3
+                            },
+                            data: y_data[index]
+                        }
+                    })
+                    const chartContainer = document.getElementById('nhzl');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
@@ -386,16 +411,7 @@
                             axisPointer: {
                                 type: 'shadow'
                             },
-                            confine: true,
-                            formatter: function(params){
-                                let relVal = `${params[0].name}`;
-                                let prefix
-                                for (let i = 0, l = params.length; i < l; i++) {
-                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color.colorStops[0].color}"></span>`
-                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
-                                }
-                                return relVal;
-                            }
+                            confine: true
                         },
                         grid: {
                             top: showDataZoom ? '25%' : '20%',
@@ -428,7 +444,7 @@
                                         color: 'rgba(255, 255, 255, .05)'
                                     }
                                 },
-                                data: nhzlData.year,
+                                data: x_name,
                                 axisLabel: {
                                     margin: 10,
                                     fontSize: '.1rem',
@@ -467,52 +483,7 @@
                             },
                         ],
                         dataZoom,
-                        series: [
-                            {
-                                name: "统计",
-                                type: "bar",
-                                barWidth: 11,
-                                itemStyle: {
-                                    borderWidth: 2,
-                                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                                        {
-                                            offset: 0,
-                                            color: "#F5804D",
-                                        },
-                                        {
-                                            offset: 1,
-                                            color: '#FCCB05'
-                                        }
-                                    ]),
-                                    borderRadius: 3
-                                },
-                                data: nhzlData.tj,
-                            },
-                            {
-                                name: "拆分",
-                                type: "bar",
-                                barWidth: 11,
-                                barGap: "50%",
-                                label: {
-                                    show: false
-                                },
-                                itemStyle: {
-                                    borderWidth: 2,
-                                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
-                                        {
-                                            offset: 0,
-                                            color: "#6851F1",
-                                        },
-                                        {
-                                            offset: 1,
-                                            color: '#248FF7'
-                                        }
-                                    ]),
-                                    borderRadius: 3
-                                },
-                                data: nhzlData.cf,
-                            }
-                        ]
+                        series
                     };
                     myChart.setOption(option)
                 },
@@ -525,14 +496,11 @@
                     if (!left_middle) {
                         return;
                     }
-                    const { dw, title, x_name, y_data } = left_middle;
+                    const { dw, title, legend, x_name, y_data } = left_middle;
                     this.leftMiddleTitle = title;
-                    const myChart = echarts.init(document.getElementById('ynzb'));
-                    const seriesData = [], yearData = [];
-                    for (let i = 0; i < x_name.length; i++) {
-                        yearData.push(x_name[i])
-                        seriesData.push(y_data[i])
-                    }
+                    const chartContainer = document.getElementById('ynzb');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
                     const dataZoom = showDataZoom && [
                         {
                             show: showDataZoom,
@@ -558,14 +526,39 @@
                             fillerColor: 'rgba(250, 84, 28, .1)'
                         }
                     ]
+                    const colorList = ["#ffd918", "#00dcff"];
+                    const series = legend.map((name, index) => {
+                        return {
+                            name,
+                            data: y_data[index],
+                            type: 'line',
+                            smooth: true,
+                            lineStyle: {
+                                color:  colorList[index]
+                            },
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: colorList[index],
+                                borderColor: '#fff'
+                            }
+                        }
+                    })
                     const option = {
                         backgroundColor: 'transparent',
                         tooltip: {
                             trigger: 'axis',
                             confine: true,
-                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-                            formatter: function(params){
-                                return `<div class="cx-tooltip">占比: ${params[0].value}${dw}</div>`
+                            // extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                            formatter: function(params) {
+                                let relVal = `${params[0].name}`;
+                                let prefix
+                                for (let i = 0, l = params.length; i < l; i++) {
+                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                    relVal += '<br/>' + prefix + `增速率` + ' : ' + `${params[i].value} ${dw}`;
+                                }
+                                return relVal;
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -577,6 +570,19 @@
                                 }
                             }
                         },
+                        legend: {
+                            top: "3%",
+                            right: '2%',
+                            textStyle: {
+                                color: "#fff",
+                                fontSize: 14
+                            },
+                            itemGap: 26,
+                            itemWidth: 25,
+                            itemHeight: 4,
+                            icon: 'rectangle',
+                            data: legend
+                        },
                         grid: {
                             top: '20%',
                             left: showDataZoom ? '5%' : '2%',
@@ -586,7 +592,7 @@
                         },
                         xAxis: {
                             type: 'category',
-                            data: yearData,
+                            data: x_name,
                             axisTick: {
                                 show: false,
                             },
@@ -633,21 +639,7 @@
                             }
                         },
                         dataZoom,
-                        series: {
-                            data: seriesData,
-                            type: 'line',
-                            smooth: true,
-                            lineStyle: {
-                                color: '#ffd918'
-                            },
-                            symbolSize: 5,
-                            symbol: 'circle',
-                            itemStyle: {
-                                barBorderRadius: [30, 30, 0, 0],
-                                color: '#ffd918',
-                                borderColor: '#fff'
-                            }
-                        }
+                        series
                     };
                     myChart.setOption(option)
                 },
@@ -662,13 +654,9 @@
                     }
                     const { dw, legend, title, max, x_name, y_data } = left_bottom;
                     this.leftBottomTitle = title;
-                    const yearData = [], tjData = [], cfData = []
-                    for (let i = 0; i < x_name.length; i++) {
-                        yearData.push(x_name[i])
-                        tjData.push(y_data[0][i]),
-                        cfData.push(y_data[1][i])
-                    }
-                    const myChart = echarts.init(document.getElementById('ynzs'));
+                    const chartContainer = document.getElementById('ynzs');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
@@ -693,14 +681,39 @@
                             fillerColor: 'rgba(250, 84, 28, .1)'
                         }
                     ]
+                    const colorList = ["#ffd918", "#00dcff"];
+                    const series = legend.map((name, index) => {
+                        return {
+                            name,
+                            type: "line",
+                            data: y_data[index],
+                            smooth: true,
+                            lineStyle: {
+                                color: colorList[index]
+                            },
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            itemStyle: {
+                                barBorderRadius: [30, 30, 0, 0],
+                                color: colorList[index],
+                                borderColor: '#fff'
+                            }
+                        }
+                    })
                     const option = {
                         backgroundColor:  'transparent',
                         tooltip: {
                             trigger: 'axis',
                             confine: true,
-                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-                            formatter: function(params){
-                                return `<div class="cx-tooltip">增速率: ${params[0].value}${dw}</div>`
+                            // extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
+                            formatter: function(params) {
+                                let relVal = `${params[0].name}`;
+                                let prefix
+                                for (let i = 0, l = params.length; i < l; i++) {
+                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                    relVal += '<br/>' + prefix + `增速率` + ' : ' + `${params[i].value} ${dw}`;
+                                }
+                                return relVal;
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -742,7 +755,7 @@
                         },
                         xAxis: {
                             type: 'category',
-                            data: yearData,
+                            data: x_name,
                             axisTick: {
                                 show: false,
                             },
@@ -789,40 +802,7 @@
                             }
                         },
                         dataZoom,
-                        series: [
-                            {
-                                name: "统计",
-                                type: "line",
-                                data: tjData,
-                                smooth: true,
-                                lineStyle: {
-                                    color: '#ffd918'
-                                },
-                                symbolSize: 5,
-                                symbol: 'circle',
-                                itemStyle: {
-                                    barBorderRadius: [30, 30, 0, 0],
-                                    color: '#ffd918',
-                                    borderColor: '#fff'
-                                }
-                            },
-                            {
-                                name: "拆分",
-                                type: "line",
-                                data: cfData,
-                                smooth: true,
-                                lineStyle: {
-                                    color: '#00dcff'
-                                },
-                                symbolSize: 5,
-                                symbol: 'circle',
-                                itemStyle: {
-                                    barBorderRadius: [30, 30, 0, 0],
-                                    color: '#00dcff',
-                                    borderColor: '#fff'
-                                }
-                            }
-                        ]
+                        series
                     };
                     myChart.setOption(option)
                 },
@@ -1002,11 +982,69 @@
                     if (!right_middle) {
                         return;
                     }
-                    const { dw, legend, title, x_name, y_data } = right_middle;
+                    const { legend, title, dw, x_name, y_data } = right_middle;
                     this.rightMiddleTitle = title;
                     const myChart = echarts.init(document.getElementById('dqhl'));
-                    const seriesData1 = y_data[0],
-                        seriesData2 = y_data[1]
+                    const colorList = ["#FCA805", "#2C87F6"]
+                    const yAxis = legend.map((name, index) => {
+                        return {
+                            type: "value",
+                            name: `单位：${dw[index]}`,
+                            position: index === 0 ? 'left' : 'right',
+                            nameTextStyle: {
+                                color: "#fff",
+                                fontSize: "",
+                                padding: [0, 0, 0, 5],
+                            },
+                            show: true,
+                            axisTick: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            splitLine: {
+                                show: index === 0,
+                                lineStyle: {
+                                    color: "rgba(255, 255, 255, .25)"
+                                }
+                            },
+                            axisLabel: {
+                                fontSize: '.12rem',
+                                color: '#fff'
+                            }
+                        }
+                    })
+                    const series = legend.map((name, index) => {
+                        return index === 0 ? {
+                            name,
+                            type: "bar",
+                            yAxisIndex: 0,
+                            barWidth: 8,
+                            itemStyle: {
+                                borderWidth: 2,
+                                color: colorList[0],
+                                borderRadius: 3
+                            },
+                            data: y_data[index]
+                        } : {
+                            name,
+                            type: 'line',
+                            yAxisIndex: 1,
+                            smooth: true,
+                            symbolSize: 5,
+                            symbol: 'circle',
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                borderWidth: 4,
+                                color: colorList[index],
+                                borderColor: '#fff'
+                            },
+                            data: y_data[index]
+                        }
+                    })
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
@@ -1094,97 +1132,9 @@
                                 }
                             },
                         ],
-                        yAxis: [
-                            {
-                                type: "value",
-                                name: `单位：${dw[0]}`,
-                                position: 'left',
-                                nameTextStyle: {
-                                    color: "#fff",
-                                    fontSize: "",
-                                    padding: [0, 0, 0, 0],
-                                },
-                                show: true,
-                                axisTick: {
-                                    show: false,
-                                },
-                                axisLine: {
-                                    show: false,
-                                },
-                                splitLine: {
-                                    show: true,
-                                    lineStyle: {
-                                        color: "rgba(255, 255, 255, .85)"
-                                    }
-                                },
-                                axisLabel: {
-                                    fontSize: '.12rem',
-                                    color: '#fff'
-                                }
-                            },
-                            {
-                                type: "value",
-                                name: `单位：${dw[1]}`,
-                                position: 'right',
-                                nameTextStyle: {
-                                    color: "#fff",
-                                    fontSize: "",
-                                    padding: [0, 30, 0, 0],
-                                },
-                                axisTick: {
-                                    show: false,
-                                },
-                                axisLine: {
-                                    show: false,
-                                    lineStyle: {
-                                        color: "#fff",
-                                    },
-                                },
-                                axisLabel: {
-                                    margin: 10,
-                                    color: "#A5B0B2",
-                                    fontSize: '.12rem',
-                                    formatter: "{value}",
-                                    rotate: 45
-                                },
-                                splitLine: {
-                                    show: true,
-                                    lineStyle: {
-                                        color: "rgba(255, 255, 255, .85)"
-                                    }
-                                }
-                            }
-                        ],
+                        yAxis,
                         dataZoom,
-                        series: [
-                            {
-                                name: legend[0],
-                                type: "bar",
-                                barWidth: 8,
-                                itemStyle: {
-                                    borderWidth: 2,
-                                    color: '#FCA805',
-                                    borderRadius: 3
-                                },
-                                data: seriesData1
-                            },
-                            {
-                                name: legend[1],
-                                type: 'line',
-                                smooth: true,
-                                symbolSize: 5,
-                                symbol: 'circle',
-                                label: {
-                                    show: false
-                                },
-                                itemStyle: {
-                                    borderWidth: 2,
-                                    color: '#812340',
-                                    borderColor: '#fff'
-                                },
-                                data: seriesData2
-                            }
-                        ]
+                        series
                     };
                     myChart.setOption(option)
                 },

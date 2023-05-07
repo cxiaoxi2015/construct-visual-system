@@ -65,7 +65,6 @@
           :data="treeNode"
           :current-node-key="currentNode"
           :props="defaultProps"
-          :expand-on-click-node="false"
           node-key="id"
           :default-expanded-keys="defaultExpandedKeys"
           @node-click="handleNodeClick"
@@ -74,7 +73,10 @@
     </div>
     <div class="tree__node__detail">
       <div class="tree__table__title" v-if="title">{{ title }}</div>
-      <div class="table__wrap">
+      <div class="table__wrap"
+           v-loading="loading"
+           element-loading-text="正在加载数据,请稍后..."
+           element-loading-background="rgba(0, 0, 0, .25)">
         <el-table
           :data="tableData"
           height="100%"
@@ -138,7 +140,7 @@
         },
         {
           navName: "kaoping",
-          name: "考评",
+          name: "评价",
           location: 'kaoping.html'
         },
         {
@@ -183,7 +185,8 @@
       pageSize: 30,
       total: 0,
       defaultExpandedKeys: [],
-      tableColumn: []
+      tableColumn: [],
+      loading: true
     },
     methods: {
       handleNavClick(item) {
@@ -206,6 +209,8 @@
         } else {
           this.title = `${node.name}`
           this.lastChecked = node.id
+          this.tableColumn = [];
+          this.loading = true;
           this.getTableData(node.id);
         }
       },
@@ -232,6 +237,7 @@
             tableColumn.push(columnItem)
           }
           that.tableColumn =  tableColumn;
+          that.loading = false;
         })
       },
 

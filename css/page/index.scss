@@ -471,21 +471,28 @@ $unitTextColor: #a7a7a7;
     .tabs {
       display: flex;
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 50%;
+      right: 15px;
+      margin-top: -12.5px;
       font-size: 0.12rem;
       user-select: none;
       .tab-item {
-        width: 60px;
-        text-align: center;
+        width: 57px;
+        height: 25px;
+        line-height: normal;
         border: 2px solid #17b9fd;
-        height: 0.46rem;
+        font-size: 0.16rem;
+        text-align: center;
+        font-weight: normal;
         &--active {
           background: #17b9fd;
           color: #fff;
         }
         &:hover {
           cursor: pointer;
+        }
+        &:first-child {
+          margin-right: 8px;
         }
       }
     }

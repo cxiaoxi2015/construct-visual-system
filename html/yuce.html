@@ -45,14 +45,15 @@
         <div class="header-right-line"></div>
         <div class="header-right">
             <div class="header-right-top">
-                <img class="avatar"
-                     src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+                <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
                 <div class="text">
-                    <span>欢迎您！</span>
                     <a>{{ userName }}</a>
+                    <div class="icon-wrap">
+                        <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+                        <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+                    </div>
                 </div>
             </div>
-            <div class="header-right-bottom">{{ dateTime }}</div>
         </div>
     </div>
 
@@ -335,8 +336,6 @@
             ],
             // 排放强度
             cate: "1",
-            dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-            dateTimer: null,
             currentYear: '2023',
             region: 'china',
             leftBtnClass: '',
@@ -347,16 +346,16 @@
             notReachedAreaTableColumn: [],
             areaTableHeight: 0,
             dq: "1",
-            qj: "1",
+            qj: "2",
             sceneTypeList: [
-                {
-                    typeName: "无政策情景",
-                    typeValue: "1"
-                },
                 // {
-                //     typeName: "2030年达峰情景",
-                //     typeValue: "2"
-                // }
+                //     typeName: "无政策情景",
+                //     typeValue: "1"
+                // },
+                {
+                    typeName: "2030达峰情景",
+                    typeValue: "2"
+                }
             ],
             sceneDataList: [],
             economicCostDataList: [],
@@ -414,15 +413,16 @@
                     legend: {
                         x: 'right',
                         y: 'top',
-                        itemGap: 5,
-                        padding: [15, 15, 0, 0],
+                        padding: [20, 15, 0, 0],
+                        itemGap: 10,
                         data: legend,
                         textStyle: {
                             color: '#fff',
                             fontSize: '.12rem'
                         },
                         itemWidth: 10,
-                        itemHeight: 4
+                        itemHeight: 4,
+                        icon: "rectangle"
                     },
                     grid: {
                         top: '20%',
@@ -587,15 +587,16 @@
                     legend: {
                         x: 'right',
                         y: 'top',
-                        itemGap: 5,
-                        padding: [15, 15, 0, 0],
+                        padding: [20, 15, 0, 0],
+                        itemGap: 10,
                         data: legend,
                         textStyle: {
                             color: '#fff',
                             fontSize: '.12rem'
                         },
                         itemWidth: 10,
-                        itemHeight: 4
+                        itemHeight: 4,
+                        icon: "rectangle"
                     },
                     xAxis: [
                         {
@@ -708,15 +709,15 @@
                     legend: {
                         top: "3%",
                         left: '3%',
+                        itemGap: 8,
+                        data: legend,
                         textStyle: {
-                            color: "#fff",
-                            fontSize: 12
+                            color: '#fff',
+                            fontSize: '.12rem'
                         },
-                        itemGap: 5,
-                        itemWidth: 5,
-                        itemHeight: 5,
-                        icon: "circle",
-                        data: legend
+                        itemWidth: 10,
+                        itemHeight: 4,
+                        icon: "rectangle"
                     },
                     xAxis: [
                         {
@@ -772,7 +773,7 @@
             },
 
             /**
-             * 无政策情景/2030年达峰情景
+             * 无政策情景/2030达峰情景
              */
             fetchDataScene() {
                 const { right_top } = this.resData;
@@ -860,15 +861,6 @@
             handlePFQDToggle(yndqActive) {
                 this.cate = yndqActive;
                 this.handleChange();
-            },
-
-            getCurrentDateTime() {
-                if (this.dateTimer) {
-                    clearInterval(this.dateTimer)
-                }
-                this.dateTimer = setInterval(() => {
-                    this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
-                }, 1000)
             },
 
             /**
@@ -1162,6 +1154,10 @@
 
             handleHomeClick() {
                 window.location.href = 'index.html'
+            },
+
+            modelClick() {
+                window.open('model.html')
             }
         },
         computed: {
@@ -1190,7 +1186,6 @@
             }
         },
         mounted() {
-            this.getCurrentDateTime();
             const loading = this.$loading({
                 text: "数据加载中...",
                 background: 'rgba(0, 0, 0, 0.25)'

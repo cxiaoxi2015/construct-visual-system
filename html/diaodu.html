@@ -45,15 +45,16 @@
     <div class="header-right-line"></div>
     <div class="header-right">
       <div class="header-right-top">
-        <img class="avatar"
-             src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+        <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
         <div class="text">
-          <span>欢迎您！</span>
           <a>{{ userName }}</a>
+          <div class="icon-wrap">
+            <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+            <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+          </div>
         </div>
       </div>
-      <div class="header-right-bottom">{{ dateTime }}</div>
-    </div>
+    </div>>
   </div>
   <div class="collapse" :class="{ 'is-expand': isExpand }" @click="handleExpandToggle">
     <span>{{ isExpand ? '收起' : '展开' }}</span>
@@ -259,8 +260,6 @@
             location: 'data-query.html'
           }
         ],
-        dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-        dateTimer: null,
         mapActive: 'china',
         leftBtnClass: '',
         rightBtnClass: '',
@@ -302,15 +301,6 @@
         isExpand: false
       },
       methods: {
-        getCurrentDateTime() {
-          if (this.dateTimer) {
-            clearInterval(this.dateTimer)
-          }
-          this.dateTimer = setInterval(() => {
-            this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
-          }, 1000)
-        },
-
         handleNavClick(item) {
           window.location.href = item.location;
         },
@@ -646,9 +636,14 @@
             tooltip: {
               trigger: 'axis',
               confine: true,
-              extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
-              formatter: function (params) {
-                return `<div class="cx-tooltip">减碳贡献度: ${params[0].value}${dw}</div>`
+              formatter: function(params){
+                let relVal = `${params[0].name}`;
+                let prefix
+                for (let i = 0, l = params.length; i < l; i++) {
+                  prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                  relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
+                }
+                return relVal;
               },
               axisPointer: {
                 type: 'cross',
@@ -724,7 +719,7 @@
             },
             dataZoom,
             series: {
-              name: "用能强度",
+              name: "减碳贡献度",
               type: "bar",
               barWidth: 12,
               itemStyle: {
@@ -801,6 +796,10 @@
             this.tabActive = 2;
             this.$message.success("计算完成");
           }, 2000)
+        },
+
+        modelClick() {
+          window.open('model.html')
         }
       },
       computed: {
@@ -829,7 +828,6 @@
         }
       },
       mounted() {
-        this.getCurrentDateTime();
         this.$nextTick(() => {
           this.projectBankTableHeight = $('.project-table-wrap').height();
           const that = this;

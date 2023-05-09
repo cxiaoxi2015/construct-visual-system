@@ -236,6 +236,35 @@
   background-image: url("../assets/images/xianzhuang/shuju-active-icon.png");
 }
 
+#app .sys-header .header-right-top .text {
+  flex-direction: column;
+  align-items: flex-start;
+}
+#app .sys-header .header-right-top .text a {
+  display: inline-block;
+  text-align: left;
+  margin-bottom: 5px;
+  font-size: 0.16rem;
+}
+#app .sys-header .header-right-top .text .icon-wrap {
+  display: flex;
+}
+#app .sys-header .header-right-top .text .icon-wrap .iconfont {
+  height: auto;
+  line-height: normal;
+  margin: 0;
+  user-select: none;
+  transition: all 0.2s linear;
+  transform: scale(0.95);
+}
+#app .sys-header .header-right-top .text .icon-wrap .iconfont:hover {
+  cursor: pointer;
+  transform: scale(1.15);
+}
+#app .sys-header .header-right-top .text .icon-wrap .iconfont:first-child {
+  margin-right: 10px;
+}
+
 [v-clock] {
   display: none;
 }

@@ -47,11 +47,13 @@
       <div class="header-right-top">
         <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
         <div class="text">
-          <span>欢迎您！</span>
           <a>{{ userName }}</a>
+          <div class="icon-wrap">
+            <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+            <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+          </div>
         </div>
       </div>
-      <div class="header-right-bottom">{{ dateTime }}</div>
     </div>
   </div>
 
@@ -166,8 +168,6 @@
         }
       ],
       year: 2023,
-      dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-      dateTimer: null,
       currentYear: '2023',
       treeNode: [],
       defaultProps: {
@@ -191,15 +191,6 @@
     methods: {
       handleNavClick(item) {
         window.location.href = item.location;
-      },
-
-      getCurrentDateTime() {
-        if (this.dateTimer) {
-          clearInterval(this.dateTimer)
-        }
-        this.dateTimer = setInterval(() => {
-          this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
-        }, 1000)
       },
 
       handleNodeClick(node) {
@@ -312,6 +303,10 @@
           }
         })
         loading.close();
+      },
+
+      modelClick() {
+        window.open('model.html')
       }
     },
     computed: {
@@ -323,7 +318,6 @@
       }
     },
     mounted() {
-      this.getCurrentDateTime()
       this.fetchData();
     }
   })

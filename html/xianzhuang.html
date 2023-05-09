@@ -16,7 +16,6 @@
 
         <!-- header -->
         <div class="sys-header">
-            <div class="full-screen iconfont" @click="fullScreenClick">&#xe607;</div>
             <div class="home" @click="handleHomeClick">
                 <div class="home-icon iconfont">&#xe751;</div>
                 <span class="home-text">首页</span>
@@ -48,11 +47,13 @@
                 <div class="header-right-top">
                     <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
                     <div class="text">
-                        <span>欢迎您！</span>
                         <a>{{ userName }}</a>
+                        <div class="icon-wrap">
+                            <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+                            <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+                        </div>
                     </div>
                 </div>
-                <div class="header-right-bottom">{{ dateTime }}</div>
             </div>
         </div>
 
@@ -283,8 +284,6 @@
                 ],
                 // 用能强度
                 mold: 1,
-                dateTime: moment(new Date()).format('YYYY/MM/DD HH:mm:ss'),
-                dateTimer: null,
                 region: 'china',
                 leftBtnClass: '',
                 rightBtnClass: '',
@@ -421,17 +420,18 @@
                             containLabel: true
                         },
                         legend: {
-                            x:'right',
-                            y:'top',
-                            padding: [20, 30, 0, 0],
-                            itemGap: 34,
+                            x: 'right',
+                            y: 'top',
+                            padding: [20, 10, 0, 0],
+                            itemGap: 10,
                             data: legend,
                             textStyle: {
                                 color: '#fff',
                                 fontSize: '.12rem'
                             },
                             itemWidth: 10,
-                            itemHeight: 4
+                            itemHeight: 4,
+                            icon: "rectangle"
                         },
                         xAxis: [
                             {
@@ -571,17 +571,18 @@
                             }
                         },
                         legend: {
-                            top: "3%",
-                            right: '2%',
+                            x: 'right',
+                            y: 'top',
+                            padding: [20, 10, 0, 0],
+                            itemGap: 10,
+                            data: legend,
                             textStyle: {
-                                color: "#fff",
-                                fontSize: 14
+                                color: '#fff',
+                                fontSize: '.12rem'
                             },
-                            itemGap: 26,
-                            itemWidth: 25,
+                            itemWidth: 10,
                             itemHeight: 4,
-                            icon: 'rectangle',
-                            data: legend
+                            icon: "rectangle"
                         },
                         grid: {
                             top: '20%',
@@ -741,17 +742,18 @@
                             containLabel: true
                         },
                         legend: {
-                            top: "3%",
-                            right: '2%',
+                            x: 'right',
+                            y: 'top',
+                            padding: [20, 10, 0, 0],
+                            itemGap: 10,
+                            data: legend,
                             textStyle: {
-                                color: "#fff",
-                                fontSize: 14
+                                color: '#fff',
+                                fontSize: '.12rem'
                             },
-                            itemGap: 26,
-                            itemWidth: 25,
+                            itemWidth: 10,
                             itemHeight: 4,
-                            icon: 'rectangle',
-                            data: legend
+                            icon: "rectangle"
                         },
                         xAxis: {
                             type: 'category',
@@ -900,14 +902,15 @@
                         legend: {
                             top: "2%",
                             left: showDataZoom ? '2%' : '10px',
+                            itemGap: 10,
+                            data: legend,
                             textStyle: {
-                                color: "#fff",
-                                fontSize: 12
+                                color: '#fff',
+                                fontSize: '.12rem'
                             },
-                            itemWidth: 6,
-                            itemHeight: 6,
-                            icon: "circle",
-                            data: legend
+                            itemWidth: 10,
+                            itemHeight: 4,
+                            icon: "rectangle"
                         },
                         tooltip : {//过滤掉统计的series
                             trigger: 'axis',
@@ -984,7 +987,9 @@
                     }
                     const { legend, title, dw, x_name, y_data } = right_middle;
                     this.rightMiddleTitle = title;
-                    const myChart = echarts.init(document.getElementById('dqhl'));
+                    const chartContainer = document.getElementById('dqhl');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
                     const colorList = ["#FCA805", "#2C87F6"]
                     const yAxis = legend.map((name, index) => {
                         return {
@@ -1102,14 +1107,15 @@
                         legend: {
                             left: showDataZoom ? '5%' : '12px',
                             padding: [20, 30, 0, 0],
-                            itemGap: 34,
+                            itemGap: 10,
                             data: legend,
                             textStyle: {
                                 color: '#fff',
                                 fontSize: '.12rem'
                             },
                             itemWidth: 10,
-                            itemHeight: 4
+                            itemHeight: 4,
+                            icon: "rectangle"
                         },
                         xAxis: [
                             {
@@ -1154,7 +1160,9 @@
                         seriesData.push(y_data[i])
                         year.push(x_name[i])
                     }
-                    const myChart = echarts.init(document.getElementById('ynqd'));
+                    const chartContainer = document.getElementById('ynqd');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
@@ -1184,9 +1192,14 @@
                         tooltip: {
                             trigger: 'axis',
                             confine: true,
-                            extraCssText: "background-color: transparent; padding: 0 5px; border-color: transparent;",
                             formatter: function(params){
-                                return `<div class="cx-tooltip">用能强度: ${params[0].value}${dw}</div>`
+                                let relVal = `${params[0].name}`;
+                                let prefix
+                                for (let i = 0, l = params.length; i < l; i++) {
+                                    prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
+                                    relVal += '<br/>' + prefix + `${params[i].seriesName}` + ' : ' + `${params[i].value} ${dw}`;
+                                }
+                                return relVal;
                             },
                             axisPointer: {
                                 type: 'cross',
@@ -1280,15 +1293,6 @@
                 handleYNQDToggle(yndqActive) {
                     this.mold = yndqActive
                     this.handleChange();
-                },
-
-                getCurrentDateTime() {
-                    if (this.dateTimer) {
-                        clearInterval(this.dateTimer)
-                    }
-                    this.dateTimer = setInterval(() => {
-                        this.dateTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss')
-                    }, 1000)
                 },
 
                 /**
@@ -1617,6 +1621,10 @@
                     }
                 },
 
+                modelClick() {
+                    window.open('model.html')
+                },
+
                 handleHomeClick() {
                     window.location.href = 'index.html'
                 },
@@ -1669,7 +1677,7 @@
                         that.drawYNZSChart();
                         that.drawYNJGChart();
                         that.drawDQHLChart();
-                        that.drawYNQDChart();
+                        that.drawYNQDChart(that.collapseYNQD);
                         that.drawMapChart();
                     })
                 }
@@ -1716,7 +1724,6 @@
                 }
             },
             mounted() {
-                this.getCurrentDateTime();
                 this.year = this.yearOptions.length && this.yearOptions[this.yearOptions.length - 1];
                 this.$nextTick(() => {
                     const that = this;

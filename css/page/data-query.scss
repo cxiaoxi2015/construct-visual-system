@@ -299,16 +299,24 @@ $activeColor: #d8d42f;
       @include bg(url("../../assets/images/dataQuery/table.png"));
       background-size: 100% 100%;
       .tree__table__title {
+        position: relative;
         font-size: 0.18rem;
         font-weight: bold;
         line-height: 0.53rem;
         padding-left: 0.35rem;
         margin-bottom: -1px;
+        .unit {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 0.2rem;
+          font-size: 0.12rem;
+        }
       }
       .table__wrap {
         flex: 1;
         overflow: hidden;
-        padding: 0 1px;
+        padding: 0 1px 0 3px;
         margin-bottom: 10px;
         .el-table {
           width: 100%;
@@ -342,6 +350,7 @@ $activeColor: #d8d42f;
             padding: 0 !important;
             background-color: #0b5692;
             border-bottom-color: transparent;
+            border-right-color: transparent;
             margin: -1px;
             .cell {
               font-weight: bold;
@@ -364,6 +373,8 @@ $activeColor: #d8d42f;
             .el-table__cell {
               border-bottom-style: dashed;
               border-bottom-color: #2d69a9;
+              border-right-style: dashed;
+              border-right-color: rgba(255, 255, 255, 0.1);
               .cell {
                 font-weight: bold;
                 font-size: 0.14rem;
@@ -453,4 +464,8 @@ $activeColor: #d8d42f;
   .el-pagination.is-background .el-pager li:not(.disabled):hover {
     color: $activeColor;
   }
+}
+
+.el-table--border::after, .el-table--group::after {
+  display: none;
 }

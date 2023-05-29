@@ -43,14 +43,14 @@
         </div>
         <div class="header-right-line"></div>
         <div class="header-right">
+            <div class="icon-wrap">
+                <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+                <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+            </div>
             <div class="header-right-top">
                 <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
                 <div class="text">
                     <a>{{ userName }}</a>
-                    <div class="icon-wrap">
-                        <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
-                        <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -170,7 +170,7 @@
             <div class="scene" v-else>
                 <div class="scene-item">
                     <div class="scene-item-title">
-                        {{ resData.bottom1.name }}
+                        {{ resData.bottom1.title }}
                         <div class="title-bg"></div>
                     </div>
                     <div class="scene-item-content">
@@ -190,7 +190,7 @@
                 </div>
                 <div class="scene-item">
                     <div class="scene-item-title">
-                        省级达峰方案情景
+                        {{ resData.bottom2.title }}
                         <div class="title-bg"></div>
                     </div>
                     <div class="scene-item-content">
@@ -211,7 +211,7 @@
             </div>
         </div>
         <div class="layout-ele layout-ele-right">
-            <div class="yc-item" style="height: 3.3rem; flex: none;">
+            <div class="yc-item">
                 <div class="scene-tab">
                     <div class="scene-tab-item"
                          :class="{ 'active': qj === item.typeValue }"
@@ -225,11 +225,16 @@
                         <span>{{ rightTopTitle }}</span>
                     </div>
                     <div class="scene-data-container">
-                        <div class="data-item" v-for="(item, index) in sceneDataList" :key="index">
-                            <div class="data-item-name">{{ item.name }}</div>
-                            <div class="data-item-value">
-                                <span class="value">{{ item.value }}</span>
-                                <span class="unit">{{ item.dw }}</span>
+                        <div class="scene-data-row" v-for="(row, rowIndex) in sceneDataListRow" :key="rowIndex">
+                            <div class="data-item"
+                                 :class="[row.length === 1 ? 'data-item__style1' : (row.length === 2 ? 'data-item__style2' : '')]"
+                                 v-for="(item, index) in row"
+                                 :key="index">
+                                <div class="data-item-name">{{ item.name }}</div>
+                                <div class="data-item-value">
+                                    <span class="value">{{ item.value }}</span>
+                                    <span class="unit">{{ item.dw }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -243,17 +248,22 @@
                     <div id="contributionRate" class="chart-container"></div>
                 </div>
             </div>
-            <div class="yc-item economic-cost" style="height: 3.1rem; flex: none;">
+            <div class="yc-item economic-cost">
                 <div class="scene-tab-panel">
                     <div class="yc-item-title">
                         <span>{{ rightBottomTitle }}</span>
                     </div>
                     <div class="scene-data-container">
-                        <div class="data-item" v-for="(item, index) in economicCostDataList" :key="index">
-                            <div class="data-item-name">{{ item.name }}</div>
-                            <div class="data-item-value">
-                                <span class="value" :class="{ 'warning': item.value > 90000 }">{{ item.value }}</span>
-                                <span class="unit">{{ item.dw }}</span>
+                        <div class="scene-data-row" v-for="(row, rowIndex) in costDataListRow" :key="rowIndex">
+                            <div class="data-item"
+                                 :class="[row.length === 1 ? 'data-item__style1' : (row.length === 2 ? 'data-item__style2' : '')]"
+                                 v-for="(item, index) in row"
+                                 :key="index">
+                                <div class="data-item-name">{{ item.name }}</div>
+                                <div class="data-item-value">
+                                    <span class="value" :class="{ 'warning': item.value > 90000 }">{{ item.value }}</span>
+                                    <span class="unit">{{ item.dw }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,6 +282,7 @@
 <script src="../js/china.js"></script>
 <script src="../js/province.js"></script>
 <script src="../js/config.js"></script>
+<script src="../js/color.js"></script>
 <script>
     const myApp = new Vue({
         el: "#app",
@@ -346,16 +357,6 @@
             areaTableHeight: 0,
             dq: "1",
             qj: "2",
-            sceneTypeList: [
-                // {
-                //     typeName: "无政策情景",
-                //     typeValue: "1"
-                // },
-                {
-                    typeName: "2030达峰情景",
-                    typeValue: "2"
-                }
-            ],
             sceneDataList: [],
             economicCostDataList: [],
             resData: {},
@@ -390,7 +391,18 @@
                 const { left_top } = this.resData;
                 const { dw, legend, title, x_name, y_data } = left_top;
                 this.leftTopTitle = title;
-                const myChart = echarts.init(document.getElementById('xfzl'));
+                const chartContainer = document.getElementById('xfzl');
+                chartContainer.removeAttribute('_echarts_instance_');
+                const myChart = echarts.init(chartContainer);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                })
+                const selected = {};
+                legend.forEach((item, index) => {
+                    if (!y_data[index].some(item => item)) {
+                        selected[item] = false
+                    }
+                })
                 const option = {
                     backgroundColor: 'transparent',
                     tooltip: {
@@ -421,7 +433,8 @@
                         },
                         itemWidth: 10,
                         itemHeight: 4,
-                        icon: "rectangle"
+                        icon: "rectangle",
+                        selected
                     },
                     grid: {
                         top: '20%',
@@ -455,7 +468,7 @@
                         nameTextStyle: {
                             color: "#fff",
                             fontSize: "",
-                            padding: [-15, 0, 0, -50],
+                            padding: [-15, 0, 0, 0],
                         },
                         show: true,
                         axisTick: {
@@ -485,15 +498,16 @@
                             type: 'line',
                             smooth: true,
                             lineStyle: {
-                                color: '#F3B330'
+                                color: color1
                             },
                             symbolSize: 5,
                             symbol: 'circle',
                             itemStyle: {
                                 barBorderRadius: [30, 30, 0, 0],
-                                color: '#F3B330',
+                                color: color1,
                                 borderColor: '#fff'
-                            }
+                            },
+                            show: y_data[0].some(item => item)
                         },
                         {
                             name: legend[1],
@@ -501,15 +515,16 @@
                             type: 'line',
                             smooth: true,
                             lineStyle: {
-                                color: '#D35700'
+                                color: color2
                             },
                             symbolSize: 5,
                             symbol: 'circle',
                             itemStyle: {
                                 barBorderRadius: [30, 30, 0, 0],
-                                color: '#D35700',
+                                color: color2,
                                 borderColor: '#fff'
-                            }
+                            },
+                            show: y_data[1].some(item => item)
                         },
                         {
                             name: legend[2],
@@ -517,15 +532,16 @@
                             type: 'line',
                             smooth: true,
                             lineStyle: {
-                                color: '#00C900'
+                                color: color3
                             },
                             symbolSize: 5,
                             symbol: 'circle',
                             itemStyle: {
                                 barBorderRadius: [30, 30, 0, 0],
-                                color: '#00C900',
+                                color: color3,
                                 borderColor: '#fff'
-                            }
+                            },
+                            show: y_data[2].some(item => item)
                         }
                     ]
                 }
@@ -542,10 +558,18 @@
                 const chartContainer = document.getElementById('pfzl');
                 chartContainer.removeAttribute('_echarts_instance_');
                 const myChart = echarts.init(chartContainer);
-                const colorList = ["#F5804D", "#09BCB7", "#eada1f", ]
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                })
+                const colorList = [color1, color2, color3]
+                const noDataList = [];
                 const series = legend.map((name, index) => {
+                    if (!y_data[index].some(item => item)) {
+                        noDataList.push(name)
+                    }
                     return {
                         name,
+                        show: y_data[index].some(item => item),
                         type: 'line',
                         smooth: true,
                         symbolSize: 5,
@@ -555,8 +579,17 @@
                             color: colorList[index],
                             borderColor: '#fff'
                         },
+                        label: {
+                            formatter: function(params) {
+                                return '';
+                            }
+                        },
                         data: y_data[index]
                     }
+                })
+                const selected = {}
+                noDataList.forEach(legend => {
+                    selected[legend] = false
                 })
                 const option = {
                     backgroundColor: 'transparent',
@@ -595,7 +628,8 @@
                         },
                         itemWidth: 10,
                         itemHeight: 4,
-                        icon: "rectangle"
+                        icon: "rectangle",
+                        selected
                     },
                     xAxis: [
                         {
@@ -661,6 +695,9 @@
                 const chartContainer = document.getElementById('pfqd');
                 chartContainer.removeAttribute('_echarts_instance_');
                 const myChart = echarts.init(chartContainer);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                })
                 const colorList = ["#F3B330", "#62FFF9", "#12fe01", "#e77071"]
                 const series = legend.map((name, index) => {
                     return {
@@ -790,6 +827,9 @@
                 this.rightMiddleTitle = title;
                 const dw = datas[0].dw;
                 const myChart = echarts.init(document.getElementById('contributionRate'));
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                })
                 const colors = ['#62FFF9', '#01FAFE', '#ED292A', '#5C7BD9', '#5390FF', '#FFF552', '#87C98B', '#0576FE', '#FFA176', '#BD6CFF', '#FF6023', '#F5936E']
                 let richColor = {}
                 colors.forEach((item, idx) => {
@@ -882,7 +922,12 @@
                     }
                     mapsKeyMap[item.region] = item;
                 })
-                const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+                const chartContainer = document.getElementById('mapContainer');
+                chartContainer.removeAttribute('_echarts_instance_');
+                const myChart = echarts.init(chartContainer);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                })
                 const currentYear = this.year;
                 const loadMap = (features, mapData, zoom, provinceName) => {
                     const geoCoordMap = {}
@@ -933,6 +978,18 @@
                                 borderWidth: 8,
                             },
                             regions: [
+                                {
+                                  name: '台湾省',
+                                  itemStyle: {
+                                      borderWidth: 2
+                                  }
+                                },
+                                {
+                                    name: '广东省',
+                                    itemStyle: {
+                                        borderWidth: 2
+                                    }
+                                },
                                 {
                                     name: '南海诸岛',
                                     itemStyle: {
@@ -1009,7 +1066,8 @@
                             if (mapsKeyMap.hasOwnProperty(item.properties.name)) {
                                 return {
                                     name: item.properties.name,
-                                    value: mapsKeyMap[item.properties.name].value
+                                    value: mapsKeyMap[item.properties.name].value,
+                                    itemStyle: { borderWidth: 1 }
                                 }
                             } else {
                                 return {
@@ -1022,7 +1080,6 @@
                     myChart.on('click',  params => {
                         const { name: provinceName } = params;
                         that.region = provinceName
-                        console.log(that.region);
                         that.handleChange();
                     })
                 } else {
@@ -1091,11 +1148,13 @@
                     that.drawXFZLChart();
                     that.drawPFZLChart();
                     that.drawPFQDChart();
-                    that.fetchDataScene();
-                    that.fetchDataTaskGXL();
-                    that.fetchDataJJCB();
                     that.drawMapChart();
                     that.handleFetchDLAreaData();
+                    that.fetchDataScene();
+                    that.fetchDataJJCB();
+                    setTimeout(() => {
+                        that.fetchDataTaskGXL();
+                    }, 200)
                 })
             },
 
@@ -1168,6 +1227,32 @@
             },
             provinceData() {
                 return provinceData
+            },
+            sceneDataListRow() {
+                const dataList = []
+                for (let i = 0; i < Math.ceil(this.sceneDataList.length / 3); i++) {
+                    dataList.push(this.sceneDataList.slice(i * 3, i * 3 + 3))
+                }
+                return dataList;
+            },
+            costDataListRow() {
+                const dataList = []
+                for (let i = 0; i < Math.ceil(this.economicCostDataList.length / 3); i++) {
+                    dataList.push(this.economicCostDataList.slice(i * 3, i * 3 + 3))
+                }
+                return dataList;
+            },
+            sceneTypeList() {
+                return [
+                    // {
+                    //     typeName: "无政策情景",
+                    //     typeValue: "1"
+                    // },
+                    {
+                        typeName: this.region === "china" ? "2030达峰情景" : "达峰方案工作情景",
+                        typeValue: "2"
+                    }
+                ]
             }
         },
         watch: {
@@ -1203,11 +1288,13 @@
                 that.drawXFZLChart();
                 that.drawPFZLChart();
                 that.drawPFQDChart();
-                that.fetchDataScene();
-                that.fetchDataTaskGXL();
-                that.fetchDataJJCB();
                 that.drawMapChart();
                 that.handleFetchDLAreaData();
+                that.fetchDataScene();
+                that.fetchDataJJCB();
+                setTimeout(() => {
+                    that.fetchDataTaskGXL();
+                }, 200)
             })
         }
     })

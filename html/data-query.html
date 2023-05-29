@@ -43,14 +43,14 @@
     </div>
     <div class="header-right-line"></div>
     <div class="header-right">
+      <div class="icon-wrap">
+        <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+        <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+      </div>
       <div class="header-right-top">
         <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
         <div class="text">
           <a>{{ userName }}</a>
-          <div class="icon-wrap">
-            <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
-            <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
-          </div>
         </div>
       </div>
     </div>
@@ -73,7 +73,10 @@
       </div>
     </div>
     <div class="tree__node__detail">
-      <div class="tree__table__title" v-if="title">{{ title }}</div>
+      <div class="tree__table__title" v-if="title">
+        {{ title }}
+        <span class="unit" v-if="dw">单位: {{ dw }}</span>
+      </div>
       <div class="table__wrap"
            v-loading="loading"
            element-loading-text="正在加载数据,请稍后..."
@@ -81,14 +84,40 @@
         <el-table
           :data="tableData"
           height="100%"
-          v-if="tableColumn.length">
-          <el-table-column
-            v-for="item in tableColumn"
-            :label="item.label"
-            :prop="item.prop"
-            align="center"
-            :width="item.width || 150"
-            :fixed="item.fixed"></el-table-column>
+          v-if="tableColumn.length && tableData.length">
+          <template v-if="tableType === 'singleStage'">
+            <el-table-column
+              v-for="item in tableColumn"
+              :label="item.label"
+              :prop="item.prop"
+              align="center"
+              :width="item.width || (tableColumn.length > 8 ? 150 : '')"
+              :fixed="item.fixed"></el-table-column>
+          </template>
+          <template v-if="tableType === 'multistage'">
+            <el-table-column
+              label="年度"
+              prop="year"
+              align="center"
+              width="150"
+              fixed="left"></el-table-column>
+              <el-table-column
+                v-for="(item, index) in tableColumn"
+                :label="item.label"
+                :prop="item.prop"
+                align="center">
+                <template v-if="tableUnitColumn.length">
+                  <el-table-column
+                    :label="tableUnitColumn[index].label"
+                    :prop="tableUnitColumn[index].prop"
+                    align="center">
+                    <template slot="header" slot-scope="scope">
+                      <div style="font-size: 0.12rem; color: #ddd;">{{ tableUnitColumn[index].label }}</div>
+                    </template>
+                  </el-table-column>
+                </template>
+              </el-table-column>
+          </template>
         </el-table>
         <div class="no-data" v-else>
           <div class="iconfont">&#xeabc;</div>
@@ -185,7 +214,10 @@
       total: 0,
       defaultExpandedKeys: [],
       tableColumn: [],
-      loading: true
+      tableUnitColumn: [],
+      loading: true,
+      tableType: "",
+      dw: ""
     },
     methods: {
       handleNavClick(item) {
@@ -200,6 +232,7 @@
           this.title = `${node.name}`
           this.lastChecked = node.id
           this.tableColumn = [];
+          this.tableType = ""
           this.loading = true;
           this.getTableData(node.id);
         }
@@ -210,23 +243,67 @@
         $.get(`${severUrl}/Newxz/datasearchdetail`, {
           id
         }, function(data) {
-          const { datas, table_title } = data;
-          that.originData = JSON.parse(JSON.stringify(datas));
-          that.total = that.originData.length;
-          that.tableData = datas.slice(0, that.pageSize);
-          that.table_title = table_title;
-          const tableColumn = []
-          for (const prop in table_title) {
-            const columnItem = {
-              label: table_title[prop],
-              prop
+          const { datas, dw, table_title } = data;
+          that.dw = dw;
+          if (datas instanceof Array) {
+            that.originData = JSON.parse(JSON.stringify(datas));
+            that.total = that.originData.length;
+            that.tableData = datas.slice(0, that.pageSize);
+            that.table_title = table_title;
+            const tableColumn = []
+            for (const prop in table_title) {
+              if (!["index_text2"].includes(prop) || table_title[prop]) {
+                const columnItem = {
+                  label: table_title[prop],
+                  prop
+                }
+                if (['region_name', 'index_text1', 'index_text2'].includes(prop)) {
+                  columnItem.fixed = "left"
+                }
+                tableColumn.push(columnItem)
+              }
             }
-            if (['region_name', 'index_text1', 'index_text2'].includes(prop)) {
-              columnItem.fixed = "left"
-            }
-            tableColumn.push(columnItem)
+            that.tableColumn = tableColumn;
+            that.tableType = "singleStage"
+          } else {
+            const tableData = []
+            const { index_text1, index_text2 } = table_title;
+            Object.values(datas).forEach(item => {
+              const row = {
+                year: item[0],
+              }
+              index_text1.forEach((title, index) => {
+                row[title] = item[index];
+              })
+              tableData.push(row)
+            })
+            that.originData = JSON.parse(JSON.stringify(tableData));
+            that.total = that.originData.length;
+            that.tableData = tableData.slice(0, that.pageSize);
+            const tableUnitColumn = []
+            index_text2.forEach((label, index) => {
+              if (label !== "" || (index === index_text2.length - 1 && index_text2[index_text2.length - 2])) {
+                const columnItem = {
+                  label: label || "",
+                  prop: index_text1[index]
+                }
+                tableUnitColumn.push(columnItem)
+              }
+            })
+            const tableColumn = []
+            index_text1.forEach((label, index) => {
+              if (label) {
+                const columnItem = {
+                  label,
+                  prop: tableUnitColumn.length ? `title_${index}` : label
+                }
+                tableColumn.push(columnItem)
+              }
+            })
+            that.tableColumn = tableColumn;
+            that.tableUnitColumn = tableUnitColumn;
+            that.tableType = "multistage"
           }
-          that.tableColumn =  tableColumn;
           that.loading = false;
         })
       },

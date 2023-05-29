@@ -44,14 +44,14 @@
             </div>
             <div class="header-right-line"></div>
             <div class="header-right">
+                <div class="icon-wrap">
+                    <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+                    <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+                </div>
                 <div class="header-right-top">
                     <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
                     <div class="text">
                         <a>{{ userName }}</a>
-                        <div class="icon-wrap">
-                            <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
-                            <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -199,7 +199,7 @@
                                 {{ collapseYNQD ? '展开' : '收起' }}
                             </div>
                         </div>
-                        <div class="chart-toggle-group" style="right: 0.25rem;">
+                        <div class="chart-toggle-group" style="right: 0.25rem;" v-if="![20].includes(type)">
                             <div class="group-item"
                                  :class="[mold === 1 && 'group-item--active']"
                                  @click="handleYNQDToggle(1)">人均</div>
@@ -379,11 +379,14 @@
                     const chartContainer = document.getElementById('nhzl');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -496,17 +499,20 @@
                     if (!left_middle) {
                         return;
                     }
-                    const { dw, title, legend, x_name, y_data } = left_middle;
+                    const { dw, title, legend, tip, x_name, y_data } = left_middle;
                     this.leftMiddleTitle = title;
                     const chartContainer = document.getElementById('ynzb');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const dataZoom = showDataZoom && [
                         {
                             show: showDataZoom,
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -556,7 +562,7 @@
                                 let prefix
                                 for (let i = 0, l = params.length; i < l; i++) {
                                     prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
-                                    relVal += '<br/>' + prefix + `增速率` + ' : ' + `${params[i].value} ${dw}`;
+                                    relVal += '<br/>' + prefix + `${tip}` + ' : ' + `${params[i].value} ${dw}`;
                                 }
                                 return relVal;
                             },
@@ -653,16 +659,19 @@
                     if (!left_bottom) {
                         return;
                     }
-                    const { dw, legend, title, max, x_name, y_data } = left_bottom;
+                    const { dw, legend, title, tip, max, x_name, y_data } = left_bottom;
                     this.leftBottomTitle = title;
                     const chartContainer = document.getElementById('ynzs');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -712,7 +721,7 @@
                                 let prefix
                                 for (let i = 0, l = params.length; i < l; i++) {
                                     prefix = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color: ${params[i].color}"></span>`
-                                    relVal += '<br/>' + prefix + `增速率` + ' : ' + `${params[i].value} ${dw}`;
+                                    relVal += '<br/>' + prefix + `${tip}` + ' : ' + `${params[i].value} ${dw}`;
                                 }
                                 return relVal;
                             },
@@ -820,6 +829,9 @@
                     const { dw, legend, title, x_name, y_data } = right_top;
                     this.rightTopTitle = title;
                     const myChart = echarts.init(document.getElementById('ynjg'));
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const yearData = []
                     for (let i = 0; i < x_name.length; i++) {
                         yearData.push(x_name[i])
@@ -843,7 +855,7 @@
                         seriesData.push({
                             name,
                             type:'bar',
-                            barWidth: 11,
+                            barWidth: 15,
                             stack: title,
                             data: legendKeyMap[name],
                             itemStyle: {
@@ -873,8 +885,8 @@
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -960,7 +972,7 @@
                                 splitLine: {
                                     show: true,
                                     lineStyle: {
-                                        color: "rgba(255, 255, 255, .85)"
+                                        color: "rgba(255, 255, 255, .25)"
                                     }
                                 },
                                 axisLabel: {
@@ -990,6 +1002,9 @@
                     const chartContainer = document.getElementById('dqhl');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const colorList = ["#FCA805", "#2C87F6"]
                     const yAxis = legend.map((name, index) => {
                         return {
@@ -1025,7 +1040,7 @@
                             name,
                             type: "bar",
                             yAxisIndex: 0,
-                            barWidth: 8,
+                            barWidth: legend.length === 1 ? 15 : 8,
                             itemStyle: {
                                 borderWidth: 2,
                                 color: colorList[0],
@@ -1053,8 +1068,8 @@
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -1163,11 +1178,14 @@
                     const chartContainer = document.getElementById('ynqd');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const dataZoom = showDataZoom && [
                         {
                             type: 'slider',
-                            startValue: 0,
-                            endValue: 7,
+                            startValue: x_name.length > 7 ? x_name.length - 7 : 0,
+                            endValue: x_name.length,
                             bottom: '20',
                             left: '30',
                             height: 10,
@@ -1220,7 +1238,7 @@
                             }
                         },
                         grid: {
-                            top: showDataZoom ? '30%' : '20%',
+                            top: showDataZoom ? ([20].includes(this.type) ? '20%' : '30%') : ([20].includes(this.type) ? '15%' : '20%'),
                             left: showDataZoom ? '5%' : '2%',
                             right: showDataZoom ?'5%' : '2%',
                             bottom: showDataZoom ? '15%' : '5%',
@@ -1266,7 +1284,7 @@
                             splitLine: {
                                 show: true,
                                 lineStyle: {
-                                    color: "rgba(255, 255, 255, .85)"
+                                    color: "rgba(255, 255, 255, .25)"
                                 }
                             },
                             axisLabel: {
@@ -1278,7 +1296,7 @@
                         series: {
                             name: "用能强度",
                             type: "bar",
-                            barWidth: 11,
+                            barWidth: 15,
                             itemStyle: {
                                 borderWidth: 1,
                                 color: '#0B7062',
@@ -1317,7 +1335,12 @@
                         }
                         mapsKeyMap[item.region] = item;
                     })
-                    const myChart = echarts.getInstanceById('mapContainer') || echarts.init(document.getElementById('mapContainer'))
+                    const chartContainer = document.getElementById('mapContainer');
+                    chartContainer.removeAttribute('_echarts_instance_');
+                    const myChart = echarts.init(chartContainer);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    })
                     const currentYear = this.year;
                     const loadMap = (features, mapData, zoom, provinceName) => {
                         const geoCoordMap = {}
@@ -1368,6 +1391,18 @@
                                     borderWidth: 8,
                                 },
                                 regions: [
+                                    {
+                                        name: '台湾省',
+                                        itemStyle: {
+                                            borderWidth: 2
+                                        }
+                                    },
+                                    {
+                                        name: '广东省',
+                                        itemStyle: {
+                                            borderWidth: 2
+                                        }
+                                    },
                                     {
                                         name: '南海诸岛',
                                         itemStyle: {

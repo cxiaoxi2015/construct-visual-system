@@ -43,14 +43,14 @@
         </div>
         <div class="header-right-line"></div>
         <div class="header-right">
+            <div class="icon-wrap">
+                <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
+                <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
+            </div>
             <div class="header-right-top">
                 <img class="avatar" src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
                 <div class="text">
                     <a>{{ userName }}</a>
-                    <div class="icon-wrap">
-                        <div class="iconfont" title="全屏" @click="fullScreenClick">&#xe607;</div>
-                        <div class="iconfont" title="模型" @click="modelClick">&#xe667;</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -98,49 +98,27 @@
 
             <!-- 低碳技术 -->
             <div class="table-detail" v-if="categoryActive === 1">
-                <div class="table-wrap">
+                <div class="table-wrap" v-if="dtjsTableColumn.length">
                     <el-table
-                        :data="tableData"
+                        :data="dtjsTableDataView"
                         :row-class-name="getRowClassName"
                         @selection-change="handleSelectionChange"
                         height="100%"
                         style="width: 100%">
                         <el-table-column
-                                type="selection"
-                                width="55"
-                                align="center">
+                            :prop="column.prop"
+                            :label="column.label"
+                            :width="column.width"
+                            v-for="column in dtjsTableColumn"
+                            :key="column.prop">
                         </el-table-column>
-                        <el-table-column
-                                prop="buildingName"
-                                label="建筑名称"
-                                max-width="150"></el-table-column>
-                        <el-table-column
-                                prop="buildingArea"
-                                label="建筑面积(㎡)"
-                                sortable
-                                max-width="130">
-                        </el-table-column>
-                        <el-table-column
-                                prop="measure"
-                                label="措施类别"
-                                max-width="110"></el-table-column>
-                        <el-table-column
-                                prop="planTime"
-                                label="计划完成时间"
-                                max-width="130"
-                                sortable></el-table-column>
-                        <el-table-column
-                                prop="measureDesc"
-                                label="技术措施具体描述"
-                                show-overflow-tooltip
-                                min-width="200"></el-table-column>
                     </el-table>
                 </div>
                 <div class="table-pagination">
                     <el-pagination
-                        :current-page.sync="page"
-                        :page-size="pageSize"
-                        :total="total"
+                        :current-page.sync="dtjsPage"
+                        :page-size="dtjsPageSize"
+                        :total="dtjsTotal"
                         background
                         layout="total, prev, pager, next">
                     </el-pagination>
@@ -311,72 +289,7 @@
             cpzl: "all",
             // 地区分类
             dqfl: "all",
-            tableData: [
-                {
-                    id: "1001",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1002",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1003",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1004",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1005",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1006",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1007",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                },
-                {
-                    id: "1008",
-                    buildingName: "新郑农商银行港区支行",
-                    buildingArea: "2062",
-                    measure: "其他",
-                    planTime: "2019-09-12",
-                    measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                }
-            ],
+            tableData: [],
             currentSelection: [],
             year: 'all',
             participate: 'all',
@@ -384,7 +297,10 @@
             province: 'all',
             classicCaseDataList: [],
             page: 1,
-            pageSize: 6
+            pageSize: 6,
+            dtjsTableColumn: [],
+            dtjsPage: 1,
+            dtjsPageSize: 30
         },
         methods: {
             handleNavClick(item) {
@@ -411,7 +327,12 @@
             handleSysCategoryClick(category, subCategory) {
                 this[category.field] = subCategory.value;
                 this.page = 1;
-                this.fetchProductData();
+                this.dtjsPage = 1;
+                if (this.categoryActive === 1) {
+                    this.fetchDTJSData();
+                } else if (this.categoryActive === 3) {
+                    this.fetchProductData();
+                }
             },
 
             getRowClassName({row}) {
@@ -427,72 +348,7 @@
             handleCategoryClick(category) {
                 this.categoryActive = category.type
                 if (category.type === 1) {
-                    this.tableData = [
-                        {
-                            id: "1001",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1002",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1003",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1004",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1005",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1006",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1007",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        },
-                        {
-                            id: "1008",
-                            buildingName: "新郑农商银行港区支行",
-                            buildingArea: "2062",
-                            measure: "其他",
-                            planTime: "2019-09-12",
-                            measureDesc: "在屋里布置太阳能光伏发电组件，采用多晶硅电池组件，在屋里布置太阳能光伏发电组件，采用多晶硅电"
-                        }
-                    ]
+                    this.fetchDTJSData();
                 } else if (category.type === 2) {
                     this.tableData = [
                         {
@@ -638,6 +494,48 @@
                 loading.close();
             },
 
+            /**
+             * 加载低碳技术表格数据
+             */
+            fetchDTJSData() {
+                const loading = this.$loading({
+                    text: "数据加载中...",
+                    background: 'rgba(0, 0, 0, 0.25)'
+                });
+                const that = this;
+                $.get(`${severUrl}/newxz/lcquota`, {
+                    building_func: that.jzgn === "all" ? '' : that.jzgn,
+                    apply_saving_item: that.jsfl === "all" ? '' : that.jsfl,
+                    climatic_region: that.sydq === "all" ? '' : that.sydq
+                }, function(data) {
+                    const { dws, list, titles } = data;
+                    const dtjsTableColumn = [];
+                    for (const key in titles) {
+                        let columnWidth = 'auto'
+                        if (key === 'apply_saving_details') {
+                            columnWidth = '500px'
+                        }
+                        if (dws[key]) {
+                            dtjsTableColumn.push({
+                                prop: key,
+                                label: `${titles[key]}(${dws[key]})`,
+                                width: columnWidth
+                            })
+                        } else {
+                            dtjsTableColumn.push({
+                                prop: key,
+                                label: `${titles[key]}`,
+                                width: columnWidth
+                            })
+                        }
+                    }
+                    that.dtjsTableColumn = dtjsTableColumn;
+                    that.tableData = list;
+                    that.total = list.length;
+                    loading.close();
+                })
+            },
+
             modelClick() {
                 window.open('model.html')
             }
@@ -670,28 +568,32 @@
                                 field: "jzgn",
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
-                                    {label: "办公建筑", value: "1"},
-                                    {label: "商场建筑", value: "2"},
-                                    {label: "宾馆饭店", value: "3"},
-                                    {label: "文化建筑", value: "4"},
-                                    {label: "医疗卫生", value: "5"},
-                                    {label: "体育建筑", value: "6"},
-                                    {label: "综合建筑", value: "7"},
-                                    {label: "教育建筑", value: "8"},
-                                    {label: "其他", value: "9"}
+                                    {label: "办公建筑", value: "A"},
+                                    {label: "商场建筑", value: "B"},
+                                    {label: "宾馆饭店", value: "C"},
+                                    {label: "文化建筑", value: "D"},
+                                    {label: "医疗卫生", value: "E"},
+                                    {label: "体育建筑", value: "F"},
+                                    {label: "综合建筑", value: "G"},
+                                    {label: "教育建筑", value: "H"},
+                                    {label: "其他", value: "Z"}
                                 ]
                             },
                             {
-                                label: "技术分类",
+                                label: "技术措施类别",
                                 field: "jsfl",
                                 fixed: [{label: "全部", value: "all"}],
                                 categories: [
-                                    {label: "采暖通风", value: "1"},
-                                    {label: "空调系统", value: "2"},
-                                    {label: "生活热水系统", value: "3"},
-                                    {label: "配供电系统", value: "4"},
-                                    {label: "照明插座系统", value: "5"},
-                                    {label: "监测与控制系统", value: "6"}
+                                    {label: "采暖通风空调系统", value: "A"},
+                                    {label: "生活热水系统", value: "B"},
+                                    {label: "供配电系统", value: "C"},
+                                    {label: "照明插座系统", value: "D"},
+                                    {label: "监测与控制系统", value: "E"},
+                                    {label: "特殊用电系统", value: "F"},
+                                    {label: "动力系统", value: "G"},
+                                    {label: "围护结构", value: "H"},
+                                    {label: "炊事系统 ", value: "I"},
+                                    {label: "其他 ", value: "J"}
                                 ]
                             },
                             {
@@ -702,8 +604,8 @@
                                     {label: "严寒", value: "1"},
                                     {label: "寒冷", value: "2"},
                                     {label: "夏热冬冷", value: "3"},
-                                    {label: "温和", value: "4"},
-                                    {label: "夏热冬暖", value: "5"}
+                                    {label: "夏热冬暖", value: "4"},
+                                    {label: "温和", value: "5"}
                                 ]
                             }
                         ]
@@ -769,10 +671,20 @@
             },
             classicCaseDataListView() {
                 return this.classicCaseDataList.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+            },
+            dtjsTotal() {
+                return this.tableData.length;
+            },
+            dtjsTableDataView() {
+                return this.tableData.slice((this.dtjsPage - 1) * this.dtjsPageSize, (this.dtjsPage - 1) * this.dtjsPageSize + this.dtjsPageSize);
             }
         },
         mounted() {
-            this.fetchProductData();
+            if (this.categoryActive === 1) {
+                this.fetchDTJSData();
+            } else if (this.categoryActive === 3) {
+                this.fetchProductData();
+            }
         }
     })
 </script>

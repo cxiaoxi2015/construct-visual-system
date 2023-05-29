@@ -388,6 +388,22 @@ $unitTextColor: #a7a7a7;
             font-size: .2rem;
           }
         }
+        .map-back {
+          position: absolute;
+          top: 0.4rem;
+          right: 0.4rem;
+          z-index: 100;
+          font-size: 0.18rem;
+          font-weight: bold;
+          padding: 0.025rem 0.1rem;
+          border: 2px solid #91C3FF;
+          border-radius: 4px;
+          transition: all .2s linear;
+          &:hover {
+            cursor: pointer;
+            color: #fbf014;
+          }
+        }
         .map {
           height: 100%;
           @include bg(url('../../assets/images/xianzhuang/map-grid.png'));
@@ -552,10 +568,38 @@ $unitTextColor: #a7a7a7;
         flex: 0 0 calc(50% - 0.2rem);
         height: 0.78rem;
         position: relative;
+        &-bg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-repeat: no-repeat;
+          background-position: 100% 100%;
+          background-size: 100% 100%;
+          z-index: 1000;
+        }
         &:first-child {
-          margin-right: 0.2rem;
+          .item-bg {
+            background-image: url("../../assets/images/index/已接入建筑数量.png");
+            margin-right: 0.2rem;
+          }
+        }
+        &:nth-child(2) {
+          .item-bg {
+            background-image: url("../../assets/images/index/已接入建筑面积.png");
+          }
+          margin-left: 0.2rem;
+        }
+        &:nth-child(3) {
+          .item-bg {
+            background-image: url("../../assets/images/index/电耗强度.png");
+          }
         }
         &:last-child {
+          .item-bg {
+            background-image: url("../../assets/images/index/碳排放强度.png");
+          }
           margin-left: 0.2rem;
         }
         img {
@@ -564,23 +608,34 @@ $unitTextColor: #a7a7a7;
           left: 50%;
           transform: translate(-50%, -50%);
           width: 100%;
+          z-index: 1000;
         }
         .item-text {
+          display: inline-block;
+          text-align: left;
+          padding-left: 0.05rem;
           min-width: 1rem;
           font-size: 0.12rem;
           line-height: 0.14rem;
           position: absolute;
-          top: 5px;
+          top: 0.05rem;
           right: 0;
           font-weight: bold;
         }
         .item-value-wrap {
-          min-width: 1rem;
+          width: 85%;
           font-size: 0;
           position: absolute;
-          bottom: 0.1rem;
-          right: 0.1rem;
+          bottom: 1px;
+          right: 1px;
           font-weight: bold;
+          border: 2px solid #6789ab;
+          border-left: none;
+          padding-right: 0.15rem;
+          height: 0.5rem;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
           .item-value {
             font-size: 0.24rem;
           }

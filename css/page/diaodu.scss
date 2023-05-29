@@ -660,6 +660,12 @@ $unitTextColor: #a7a7a7;
       .el-table__cell,
       .cell {
         color: $hoverColor;
+        background-color: transparent;
+      }
+    }
+    &.hover-row {
+      td {
+        background-color: transparent !important;
       }
     }
   }

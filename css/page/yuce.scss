@@ -441,7 +441,6 @@ $hoverColor: #efe526;
       }
       .yc-item {
         flex: 1;
-        margin-bottom: 18px;
         display: flex;
         flex-direction: column;
         position: relative;
@@ -525,21 +524,20 @@ $hoverColor: #efe526;
     display: flex;
     width: 100%;
     height: 0.4rem;
-    border: 1px solid rgba(7,166,255,0.76);
+    border-bottom: 1px solid rgba(7, 166, 255, 0.76);
+    justify-content: center;
+    background: rgba(7, 166, 255, 0.26);
+    backdrop-filter: blur(1px);
     &-item {
       display: inline-block;
       height: 0.4rem;
       text-align: center;
       line-height: 0.4rem;
       padding: 0 0.2rem;
-      border: 1px solid #17b9fd;
-      font-size: 0.16rem;
+      font-size: 0.18rem;
       font-weight: 600;
       &:hover {
         cursor: pointer;
-      }
-      &.active {
-        background: #17b9fd;
       }
     }
   }
@@ -550,61 +548,60 @@ $hoverColor: #efe526;
     flex-direction: column;
     background: rgba(6,54,91,0.23);
     border: 1px solid rgba(7,166,255,0.76);
-    padding-bottom: 0.1rem;
     .scene-data-container {
       flex: 1;
       overflow: hidden;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
       padding: 0 15px;
-      .data-item {
-        flex: 0 0 calc((100% - 0.6rem) / 3);
-        font-size: 0.14rem;
-        position: relative;
-        padding-bottom: 10px;
-        margin-top: 10px;
-        margin-right: 0.3rem;
+      display: flex;
+      flex-direction: column;
+      .scene-data-row {
+        overflow: hidden;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        &:nth-child(1),
-        &:nth-child(2),
-        &:nth-child(3) {
-          margin-top: 0;
-        }
-        &:nth-child(3),
-        &:nth-child(6),
-        &:nth-child(9),
-        &:nth-child(12) {
-          margin-right: 0;
-        }
-        &::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          width: 100%;
-          height: 8.8px;
-          @include bg(url('../../assets/images/yuce/scene-text.png'));
-          background-size: 100% 100%;
-        }
-        &-name {
-          padding-left: 15px;
-          font-weight: 600;
-          font-size: 0.12rem;
-          transform: scale(1.1) translateX(5px)
-        }
-        &-value {
-          padding-left: 10px;
+        .data-item {
+          flex: 1;
+          overflow: hidden;
           font-size: 0.14rem;
-          font-weight: 600;
-          .value {
-            margin: 0 0.05rem;
-            font-size: 0.16rem;
-            @include breathing;
-            &.warning {
-              @include breathing(#ed292a);
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 2px;
+            width: calc(100% - 4px);
+            height: 8.8px;
+            @include bg(url('../../assets/images/yuce/scene-text.png'));
+            background-size: 100% 100%;
+          }
+          &:nth-child(2) {
+            margin: 0 10px;
+          }
+          &__style1,
+          &__style2 {
+            flex: 0 0 calc(100% / 3);
+          }
+          &__style2 {
+            margin-left: 10px;
+          }
+          &-name {
+            font-weight: 600;
+            font-size: 0.12rem;
+          }
+          &-value {
+            font-size: 0.14rem;
+            font-weight: 600;
+            .value {
+              font-size: 0.16rem;
+              @include breathing;
+              &.warning {
+                @include breathing(#ed292a);
+              }
+            }
+            .unit {
+              display: inline-block;
+              font-size: 0.12rem;
             }
           }
         }
@@ -613,6 +610,7 @@ $hoverColor: #efe526;
   }
 
   .layout-ele-right {
+    border: 1px solid rgba(7,166,255,0.76);
     .yc-item {
       background: none !important;
       &-title {
@@ -640,11 +638,29 @@ $hoverColor: #efe526;
           }
         }
       }
+      .scene-tab-panel {
+        border: none;
+      }
+      &:nth-child(1),
+      &:nth-child(3) {
+        flex: none;
+        .data-item {
+          padding: 5px 0 12px 10px;
+          display: flex;
+          justify-content: flex-start;
+        }
+      }
+      &:nth-child(2) {
+        overflow: hidden;
+      }
     }
     .economic-cost {
+      .yc-item-title {
+        height: auto !important;
+        line-height: normal !important;
+      }
       .data-item {
         font-size: 0.12rem;
-        transform: scale(1.05);
         .data-item-value {
           font-size: 0.12rem;
           .value {

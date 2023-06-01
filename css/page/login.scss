@@ -105,6 +105,32 @@ canvas {
   }
 }
 
+.bg-grid {
+  position: absolute;
+  width: 100%;
+  height: 3rem;
+  z-index: 999;
+  bottom: 0;
+  left: 0;
+  background-image: url("../../assets/images/login/bg-grid.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: bottom;
+}
+
+.bg-building {
+  position: absolute;
+  width: 7.21rem;
+  height: 5.67rem;
+  z-index: 1000;
+  bottom: 2rem;
+  left: 0;
+  background-image: url("../../assets/images/login/bg-building.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom left;
+}
+
 #app {
   width: 100%;
   height: 100%;
@@ -145,12 +171,13 @@ canvas {
 }
 .login-box {
   position: absolute;
-  top: 1.75rem;
+  top: 15%;
   right: 1.83rem;
-  width: 5.88rem;
-  height: 5.73rem;
+  width: 5.6rem;
+  height: 6rem;
   background: url("../../assets/images/login/login-box.png") no-repeat 100% 100%;
   background-size: 100% 100%;
+  z-index: 999;
 
   &-title {
     font-size: 0.28rem;
@@ -274,6 +301,46 @@ canvas {
         height: 100%;
         border: 1px solid #ddd;
       }
+      &-phone {
+        .login-verify-input {
+          margin-right: 0;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          .prefix-icon {
+            background-image: url("../../assets/images/login/phone-verify.png");
+            background-size: 85% 75%;
+          }
+        }
+        .verify-get-button {
+          flex: 1;
+          font-size: 0.14rem;
+          color: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: #00336a;
+          border: 2px solid #08f1f7;
+          border-left: none;
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+          user-select: none;
+          &:hover {
+            cursor: pointer;
+            background: #07274b;
+          }
+          &__disabled {
+            cursor: not-allowed;
+            background: #07274b;
+            color: #aaa;
+          }
+        }
+      }
+    }
+    .login-phone {
+      .prefix-icon {
+        background-image: url("../../assets/images/login/phone.png");
+        background-size: 85% 75%;
+      }
     }
     .login-action {
       width: 3.7rem;
@@ -293,26 +360,38 @@ canvas {
       }
     }
   }
+}
 
-  .logo {
-    width: 3.7rem;
-    margin: 0.2rem auto 0 auto;
-    font-size: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    &-img {
-      width: 0.75rem;
-      height: 0.45rem;
-      margin-bottom: 0.05rem;
-    }
-    &-text {
-      font-size: 0.2rem;
-      font-weight: bold;
-      text-align: center;
-      background-image: linear-gradient(180deg, #2aa9fa 0%, #0f5dc9 99%);
-      color: transparent;
-      -webkit-background-clip: text;
-    }
+.logo {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 0.2rem;
+  z-index: 1000;
+  margin: 0.2rem auto 0 auto;
+  font-size: 0;
+  display: flex;
+  align-items: center;
+  &-img {
+    width: 0.75rem;
+    height: 0.45rem;
+    margin-bottom: 0.05rem;
   }
+  &-text {
+    font-size: 0.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+  }
+}
+
+.el-message {
+  font-size: 0.14rem;
+}
+.el-message--warning {
+  background-color: #011e51;
+  border-color: #08eaf0;
+}
+.el-message--warning .el-message__icon,
+.el-message--warning .el-message__content {
+  color: #f4e925;
 }

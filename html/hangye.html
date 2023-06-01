@@ -548,7 +548,7 @@
               max,
               calculable: true,
               inRange: {
-                color: ['#115C9E', '#16EB9C']
+                color: ['#5798ED', '#6BC661', '#FFF54E', '#E0D3E1', '#F1682A', '#F26624']
               },
               padding: [0, 0, 50, 50],
               textStyle: {
@@ -589,10 +589,24 @@
               },
               label: {
                 show: true,
-                color: '#fff',
+                color: '#333',
                 position: 'top',
                 fontSize: 12,
-                padding: 10
+                fontWeight: 600,
+                padding: 10,
+                formatter: function(params) {
+                  if (["南海诸岛", "台湾省"].includes(params.name)) {
+                    return "{a|" + params.name + "}";
+                  } else {
+                    return params.name;
+                  }
+                },
+                rich: {
+                  a: {
+                    color: "#eee",
+                    fontWeight: 600
+                  }
+                }
               }
             }]
           }

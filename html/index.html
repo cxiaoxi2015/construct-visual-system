@@ -90,7 +90,10 @@
                    @click="handleToggleEnergy('cate2', item.type)">{{ item.label }}</div>
             </div>
           </div>
-          <div class="chart-container" id="cate2"></div>
+          <div class="chart-container">
+            <div class="container-bg"></div>
+            <div id="cate2" style="width: 100%;height: 100%"></div>
+          </div>
         </div>
       </div>
       <div class="xz-item">
@@ -490,7 +493,7 @@
                 itemStyle: {
                   borderColor: '#84B2FD',
                   color: 'transparent',
-                  borderWidth: 8,
+                  borderWidth: 8
                 },
                 regions: [
                   {
@@ -523,7 +526,7 @@
                 max,
                 calculable: true,
                 inRange: {
-                  color: ['#115C9E', '#16EB9C']
+                  color: ['#5798ED', '#6BC661', '#FFF54E', '#E0D3E1', '#F1682A', '#F26624']
                 },
                 padding: [0, 0, 50, 50],
                 textStyle: {
@@ -554,7 +557,7 @@
                   },
                   itemStyle: {
                     color: '#fcf565'
-                  },
+                  }
                 },
                 select: {
                   label: {
@@ -564,10 +567,24 @@
                 },
                 label: {
                   show: true,
-                  color: '#fff',
+                  color: '#333',
                   position: 'top',
                   fontSize: 12,
-                  padding: 10
+                  fontWeight: 600,
+                  padding: 10,
+                  formatter: function(params) {
+                    if (["南海诸岛", "台湾省"].includes(params.name)) {
+                      return "{a|" + params.name + "}";
+                    } else {
+                      return params.name;
+                    }
+                  },
+                  rich: {
+                    a: {
+                      color: "#eee",
+                      fontWeight: 600
+                    }
+                  }
                 }
               }]
             }

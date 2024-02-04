@@ -82,6 +82,10 @@
                 <div :class="leftBtnClass" @click="handleDqClick('1')">全国</div>
                 <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>
             </div>
+            <div class="area-group" v-if="regionDefault !== 'china'">
+                <div :class="leftBtnClass" @click="handleDqClick('1')">全省</div>
+                <div :class="rightBtnClass" @click="handleDqClick('2')">各地</div>
+            </div>
             <div class="cx-placeholder">
                 <div class="analyse" @click="handleCompareAnalysisClick">
                     <div class="analyse-icon"></div>
@@ -145,7 +149,7 @@
                         </div>
                         <div class="energy-consumption-suffix">{{ mapUnit }}</div>
                     </div>
-                    <div class="map-back" v-show="region !== 'china'" @click="handleMapChina">返回全国</div>
+                    <div class="map-back" v-show="region !== 'china'" v-if="regionDefault === 'china'" @click="handleMapChina">返回全国</div>
                     <div class="map" id="mapContainer"></div>
                 </div>
                 <div class="category">
@@ -284,7 +288,7 @@
                 ],
                 // 用能强度
                 mold: 1,
-                region: 'china',
+                region: "",
                 leftBtnClass: '',
                 rightBtnClass: '',
                 cateLeftBtnClass: "",
@@ -351,8 +355,8 @@
                     if (!left_top) {
                         return;
                     }
-                    const { dw, legend, title, x_name, y_data } = left_top;
-                    this.leftTopTitle = title;
+                    const { dw, legend, x_name, y_data } = left_top;
+                    // this.leftTopTitle = title;
 
                     const series = legend.map((name, index) => {
                         return {
@@ -499,8 +503,8 @@
                     if (!left_middle) {
                         return;
                     }
-                    const { dw, title, legend, tip, x_name, y_data } = left_middle;
-                    this.leftMiddleTitle = title;
+                    const { dw, legend, tip, x_name, y_data } = left_middle;
+                    // this.leftMiddleTitle = title;
                     const chartContainer = document.getElementById('ynzb');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
@@ -659,8 +663,8 @@
                     if (!left_bottom) {
                         return;
                     }
-                    const { dw, legend, title, tip, max, x_name, y_data } = left_bottom;
-                    this.leftBottomTitle = title;
+                    const { dw, legend, tip, max, x_name, y_data } = left_bottom;
+                    // this.leftBottomTitle = title;
                     const chartContainer = document.getElementById('ynzs');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
@@ -826,8 +830,8 @@
                     if (!right_top) {
                         return;
                     }
-                    const { dw, legend, title, x_name, y_data } = right_top;
-                    this.rightTopTitle = title;
+                    const { dw, legend, x_name, y_data } = right_top;
+                    // this.rightTopTitle = title;
                     const myChart = echarts.init(document.getElementById('ynjg'));
                     window.addEventListener('resize', function() {
                         myChart.resize();
@@ -856,7 +860,7 @@
                             name,
                             type:'bar',
                             barWidth: 15,
-                            stack: title,
+                            stack: '123',
                             data: legendKeyMap[name],
                             itemStyle: {
                                 color: type === 0 ? colorList[index] : colorList[type - 1],
@@ -997,8 +1001,8 @@
                     if (!right_middle) {
                         return;
                     }
-                    const { legend, title, dw, x_name, y_data } = right_middle;
-                    this.rightMiddleTitle = title;
+                    const { legend, dw, x_name, y_data } = right_middle;
+                    // this.rightMiddleTitle = title;
                     const chartContainer = document.getElementById('dqhl');
                     chartContainer.removeAttribute('_echarts_instance_');
                     const myChart = echarts.init(chartContainer);
@@ -1168,8 +1172,8 @@
                     if (!right_bottom) {
                         return;
                     }
-                    const { dw, title, x_name, y_data } = right_bottom;
-                    this.rightBottomTitle = title;
+                    const { dw, x_name, y_data } = right_bottom;
+                    // this.rightBottomTitle = title;
                     const seriesData = [], year = [];
                     for (let i = 0; i < x_name.length; i++) {
                         seriesData.push(y_data[i])
@@ -1318,8 +1322,8 @@
                  */
                 drawMapChart() {
                     const { map } = this.resData;
-                    const { dw, maps, title, value } = map;
-                    this.mapTitle = title;
+                    const { dw, maps, value } = map;
+                    // this.mapTitle = title;
                     this.mapUnit = dw;
                     this.mapValue = value.toString().split("");
                     const tooltipDw = maps.length > 0 ? maps[0].dw : "";
@@ -1372,7 +1376,7 @@
                                             </div>
                                             <div class="map-tooltip-content" style="padding: 10px 10px 10px 18px;">
                                                 <div class="content-item">年度: ${currentYear}年</div>
-                                                <div class="content-item">${title}: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> ${tooltipDw}</div>
+                                                <div class="content-item">${111}: <span style="color: #FBEE16;font-weight: 600;">${params.data.value.length > 1 ? params.data.value[params.data.value.length - 1] : params.data.value}</span> ${tooltipDw}</div>
                                             </div>
                                         </div>
                                     `
@@ -1414,7 +1418,10 @@
                                             show: false
                                         }
                                     }
-                                ]
+                                ],
+                                center: provinceName === '海南省' ? [109.844902, 19.0392] : undefined,
+                                layoutCenter: provinceName === '海南省' ? ['50%', '50%'] : undefined,
+                                layoutSize: provinceName === '海南省' ? '600%' : undefined
                             },
                             visualMap: {
                                 min,
@@ -1428,6 +1435,9 @@
                                     color: '#fff'
                                 },
                                 text: ['高', '低'],
+                                center: provinceName === '海南省' ? [109.844902, 19.0392] : undefined,
+                                layoutCenter: provinceName === '海南省' ? ['50%', '50%'] : undefined,
+                                layoutSize: provinceName === '海南省' ? '600%' : undefined
                             },
                             series: [{
                                 map: provinceName,
@@ -1482,6 +1492,11 @@
                                     }
                                 }
                             }]
+                        }
+                        if (provinceName === '海南省') {
+                            option.series[0].center = [109.844902, 19.0392];
+                            option.series[0].layoutCenter = ['50%', '50%'];
+                            option.series[0].layoutSize = "600%";
                         }
                         myChart.setOption(option)
                     }
@@ -1773,6 +1788,7 @@
                 }
             },
             mounted() {
+                this.region = regionDefault;
                 this.year = this.yearOptions.length && this.yearOptions[this.yearOptions.length - 1];
                 this.$nextTick(() => {
                     const that = this;
@@ -1782,14 +1798,18 @@
                         text: "数据加载中...",
                         background: 'rgba(0, 0, 0, 0.25)'
                     });
-                    $.get(`${severUrl}/Newxz/index`, {
+                    const reqParams = {
                         year,
                         cate,
                         dq,
                         type,
                         mold,
                         isfirst: 1
-                    }, function(data) {
+                    }
+                    if (this.region !== 'china') {
+                        reqParams.region = regionKeyMap[this.region]
+                    }
+                    $.get(`${severUrl}/Newxz/index`, reqParams, function(data) {
                         loading.close();
                         that.resData = data;
                         that.drawNHZLChart();

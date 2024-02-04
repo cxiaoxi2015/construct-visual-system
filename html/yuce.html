@@ -106,7 +106,7 @@
         </div>
         <div class="layout-ele">
             <div class="map-wrap">
-                <div class="map-back" v-show="region !== 'china'" @click="handleMapChina">返回全国</div>
+                <div class="map-back" v-show="region !== 'china'" v-if="regionDefault === 'china'" @click="handleMapChina">返回全国</div>
                 <div class="map" id="mapContainer"></div>
             </div>
             <div class="df-area" v-if="region === 'china'">
@@ -170,41 +170,41 @@
             <div class="scene" v-else>
                 <div class="scene-item">
                     <div class="scene-item-title">
-                        {{ resData.bottom1.title }}
+                        {{ resData.bottom1 && resData.bottom1.title }}
                         <div class="title-bg"></div>
                     </div>
                     <div class="scene-item-content">
                         <div class="item">
                             <div class="icon"></div>
-                            <span>{{ resData.bottom1.name1 }}</span>
-                            <span class="value">{{ resData.bottom1.value1 }}</span>
-                            <span>{{ resData.bottom1.dw1 }}</span>
+                            <span>{{ resData.bottom1 && resData.bottom1.name1 }}</span>
+                            <span class="value">{{ resData.bottom1 && resData.bottom1.value1 }}</span>
+                            <span>{{ resData.bottom1 && resData.bottom1.dw1 }}</span>
                         </div>
                         <div class="item">
                             <div class="icon"></div>
-                            <span>{{ resData.bottom1.name2 }}</span>
-                            <span class="value">{{ resData.bottom1.value2 }}</span>
-                            <span>{{ resData.bottom1.dw2 }}</span>
+                            <span>{{ resData.bottom1 && resData.bottom1.name2 }}</span>
+                            <span class="value">{{ resData.bottom1 && resData.bottom1.value2 }}</span>
+                            <span>{{ resData.bottom1 && resData.bottom1.dw2 }}</span>
                         </div>
                     </div>
                 </div>
                 <div class="scene-item">
                     <div class="scene-item-title">
-                        {{ resData.bottom2.title }}
+                        {{ resData.bottom2 && resData.bottom2.title }}
                         <div class="title-bg"></div>
                     </div>
                     <div class="scene-item-content">
                         <div class="item">
                             <div class="icon"></div>
-                            <span>{{ resData.bottom2.name1 }}</span>
-                            <span class="value">{{ resData.bottom2.value1 }}</span>
-                            <span>{{ resData.bottom2.dw1 }}</span>
+                            <span>{{ resData.bottom2 && resData.bottom2.name1 }}</span>
+                            <span class="value">{{ resData.bottom2 && resData.bottom2.value1 }}</span>
+                            <span>{{ resData.bottom2 && resData.bottom2.dw1 }}</span>
                         </div>
                         <div class="item">
                             <div class="icon"></div>
-                            <span>{{ resData.bottom2.name2 }}</span>
-                            <span class="value">{{ resData.bottom2.value2 }}</span>
-                            <span>{{ resData.bottom2.dw2 }}</span>
+                            <span>{{ resData.bottom2 && resData.bottom2.name2 }}</span>
+                            <span class="value">{{ resData.bottom2 && resData.bottom2.value2 }}</span>
+                            <span>{{ resData.bottom2 && resData.bottom2.dw2 }}</span>
                         </div>
                     </div>
                 </div>
@@ -347,7 +347,7 @@
             // 排放强度
             cate: "1",
             currentYear: '2023',
-            region: 'china',
+            region: '',
             leftBtnClass: '',
             rightBtnClass: '',
             alreadyAreaData: [],
@@ -1001,7 +1001,10 @@
                                         show: false
                                     }
                                 }
-                            ]
+                            ],
+                            center: provinceName === '海南省' ? [109.844902, 19.0392] : undefined,
+                            layoutCenter: provinceName === '海南省' ? ['50%', '50%'] : undefined,
+                            layoutSize: provinceName === '海南省' ? '600%' : undefined
                         },
                         visualMap: {
                             min,
@@ -1015,6 +1018,9 @@
                                 color: '#fff'
                             },
                             text: ['高', '低'],
+                            center: provinceName === '海南省' ? [109.844902, 19.0392] : undefined,
+                            layoutCenter: provinceName === '海南省' ? ['50%', '50%'] : undefined,
+                            layoutSize: provinceName === '海南省' ? '600%' : undefined
                         },
                         series: [{
                             map: provinceName,
@@ -1069,6 +1075,11 @@
                                 }
                             }
                         }]
+                    }
+                    if (provinceName === '海南省') {
+                        option.series[0].center = [109.844902, 19.0392];
+                        option.series[0].layoutCenter = ['50%', '50%'];
+                        option.series[0].layoutSize = "600%";
                     }
                     myChart.setOption(option)
                 }
@@ -1284,19 +1295,24 @@
             }
         },
         mounted() {
+            this.region = regionDefault;
             const loading = this.$loading({
                 text: "数据加载中...",
                 background: 'rgba(0, 0, 0, 0.25)'
             });
             const { cate, type, qj, dq } = this;
             const that = this;
-            $.get(`${severUrl}/Newyc/index`, {
+            const reqParams = {
                 cate,
                 type,
                 qj,
                 dq,
                 isfirst: 1
-            }, function(data) {
+            }
+            if (this.region !== 'china') {
+                reqParams.region = regionKeyMap[this.region]
+            }
+            $.get(`${severUrl}/Newyc/index`, reqParams, function(data) {
                 loading.close();
                 that.resData = data;
                 that.drawXFZLChart();

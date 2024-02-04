@@ -8,6 +8,17 @@
   <link rel="stylesheet" href="../css/elementUI.css">
   <link rel="stylesheet" href="../css/index.css">
   <link rel="stylesheet" href="../css/page/data-query.css">
+  <style>
+    .multiple-level-row {
+      border-bottom: 1px solid #2d69a9 !important;
+    }
+    .multiple-level-row .cell {
+      border-left: 1px solid #2d69a9 !important;
+    }
+    .is-leaf .cell {
+      border-left: 1px solid #2d69a9 !important;
+    }
+  </style>
 </head>
 <body>
 <div id="app">
@@ -84,6 +95,7 @@
         <el-table
           :data="tableData"
           height="100%"
+          :header-cell-class-name="getHeaderCellClassName"
           v-if="tableColumn.length && tableData.length">
           <template v-if="tableType === 'singleStage'">
             <el-table-column
@@ -92,7 +104,16 @@
               :prop="item.prop"
               align="center"
               :width="item.width || (tableColumn.length > 8 ? 150 : '')"
-              :fixed="item.fixed"></el-table-column>
+              :fixed="item.fixed">
+              <template v-if="item.children && item.children.length">
+                <el-table-column
+                  v-for="subItem in item.children"
+                  :label="subItem.label"
+                  :prop="subItem.prop"
+                  :key="subItem.prop"
+                  align="center"></el-table-column>
+              </template>
+            </el-table-column>
           </template>
           <template v-if="tableType === 'multistage'">
             <el-table-column
@@ -106,6 +127,14 @@
                 :label="item.label"
                 :prop="item.prop"
                 align="center">
+                <template v-if="item.children && item.children.length">
+                  <el-table-column
+                    v-for="subItem in item.children"
+                    :label="item.label"
+                    :prop="item.prop"
+                    :key="item.prop"
+                    align="center"></el-table-column>
+                </template>
                 <template v-if="tableUnitColumn.length">
                   <el-table-column
                     :label="tableUnitColumn[index].label"
@@ -383,6 +412,10 @@
 
       modelClick() {
         window.open('model.html')
+      },
+
+      getHeaderCellClassName({row, column, rowIndex, columnIndex}) {
+        return column.hasOwnProperty('children') && column.children.length && 'multiple-level-row'
       }
     },
     computed: {
